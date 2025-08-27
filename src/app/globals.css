@@ -9,56 +9,66 @@
 :where(input, button){ outline:none; }
 :where(:focus){ outline:none; }
 :where(:focus-visible){
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand) 55%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus-ring) 65%, transparent);
   border-radius: 12px;
 }
 
 /* انتخاب متن */
-::selection{ background: color-mix(in srgb, var(--brand) 35%, transparent); color: var(--brand-ink); }
+::selection{
+  background: color-mix(in srgb, var(--rose-500) 28%, transparent);
+  color: var(--brand-ink);
+}
 
 /* کاهش انیمیشن برای کاربران حساس به حرکت */
 @media (prefers-reduced-motion: reduce){
   *{ animation: none !important; transition: none !important; }
 }
 
-/* ───────────────── TOKENS ───────────────── */
+
+/* ───────────────── TOKENS (Pet-friendly Blue/Teal + Sun accents) ───────────────── */
 :root{
-  /* Surfaces (Dark, لوکس) */
-  --bg:   #111315;
-  --bg-2: #14171B;
-  --panel:#191D22;
-  --soft: #222831;
+  /* Surfaces (Dark, modern) */
+  --bg:   #0F1214;
+  --bg-2: #13171B;
+  --panel:#181D22;
+  --soft: #20262E;
 
   /* Text */
-  --text:  #EEF2F6;
-  --muted: #9CA3AF;
-  --line:  #2A3039;
+  --text:  #EEF3F7;
+  --muted: #A3ADB8;
+  --line:  #26313A;
 
-/* Brand (خرسی مدرن و خفن‌تر) */
---brand-800:#2C1810;   /* شکلات-مشکی تیره، بیس لوکس */
---brand-700:#4B2E24;   /* قهوه‌ای-مسی مدرن */
---brand-600:#7A3E2E;   /* مسی-سوخته (Primary CTA) */
---brand-500:#B45F36;   /* برنزی گرم (هاور و اکنت) */
---brand-300:#E6B17E;   /* کاراملی متالیک (برای highlight / چیپ) */
---brand: var(--brand-600);
---brand-ink:#FAFAFA;   /* متن روی برند */
+  /* Brand (Cerulean / Blue — primary CTA) */
+  --brand-800:#0B2545;
+  --brand-700:#12355B;
+  --brand-600:#2B78C6;     /* Primary CTA */
+  --brand-500:#49A2FF;     /* Hover/Accent */
+  --brand-300:#A9D6FF;     /* Highlight / Chip */
+  --brand: var(--brand-600);
+  --brand-ink:#FAFAFA;
 
-/* Accent (برای تضاد مدرن – سرد و لوکس) */
---accent-600:#00897B;  /* سبز-آبی تیل مدرن */
---accent-400:#26C6DA;  /* آبی-فیروزه‌ای درخشان */
---accent-200:#80DEEA;  /* فیروزه‌ای روشن */
+  /* “Rose” Partner repurposed → Green/Cyan (secondary CTA) */
+  --rose-700:#1E7A46;
+  --rose-600:#22A366;      /* Secondary CTA */
+  --rose-500:#49C27D;      /* Secondary Hover / Accent */
+  --rose-300:#AEE9C1;      /* Soft BG / Chip */
+  --rose-200:#DDF7E7;      /* Very subtle layers */
 
-/* Secondary Pop (خیلی کم برای دکمه خاص/Badge) */
---pop-500:#FF6F61;     /* کورال مدرن */
+  /* Cool Accent (Teal) — complementary */
+  --accent-600:#0FA3B1;
+  --accent-400:#2EC4B6;
+  --accent-200:#9FF0E5;
 
+  /* Secondary Pop (use sparingly) — Sun/Amber for alerts/badges */
+  --pop-500:#FFD166;
 
-  /* Accent (کارامل) */
-  --accent-700:#BF8C5C;
-  --accent-500:#D6A77A;
-  --accent-300:#E8C7A6;
+  /* “Caramel Accent” repurposed → Sun (Yellow system accent) */
+  --accent-700:#A88400;
+  --accent-500:#F1C40F;
+  --accent-300:#F9E79F;
   --accent: var(--accent-500);
 
-  /* Semantic */
+  /* Semantic (kept, tuned for dark) */
   --success:#10B981;
   --warning:#F59E0B;
   --danger: #EF4444;
@@ -66,13 +76,22 @@
   /* Radii & Shadows */
   --radius: 16px;
   --radius-lg: 22px;
-  --shadow: 0 18px 60px rgba(0,0,0,.45);
+  --shadow: 0 18px 60px rgba(0,0,0,.42);
 
-  /* Glows & Gradients */
-  --grad-hero: linear-gradient(to bottom, rgba(0,0,0,.25) 0%, rgba(0,0,0,.65) 62%, rgba(0,0,0,.85) 100%);
-  --glow-amber: radial-gradient(600px 320px at 20% 10%, rgba(214,167,122,.25), transparent 60%);
-  --glow-brown: radial-gradient(800px 420px at 85% 20%, rgba(164,117,81,.22), transparent 70%);
+  /* Focus & Mixes */
+  --focus-ring: color-mix(in srgb, var(--brand-500) 60%, var(--accent-500) 40%);
+  --brand-rose-grad: linear-gradient(90deg, var(--brand-600), var(--rose-600));
+
+  /* Glows & Gradients (pet-visible spectrum bias: blue/teal + sun) */
+  --grad-hero:
+    linear-gradient(to bottom, rgba(0,0,0,.18) 0%, rgba(0,0,0,.60) 60%, rgba(0,0,0,.85) 100%),
+    radial-gradient(820px 440px at 82% 18%, color-mix(in srgb, var(--brand-300) 18%, transparent) , transparent 70%);
+  --glow-amber: radial-gradient(680px 360px at 18% 12%, rgba(241,196,15,.22), transparent 60%);
+  --glow-brown: radial-gradient(800px 420px at 85% 20%, rgba(73,162,255,.14), transparent 70%);
+  --glow-rose:  radial-gradient(920px 540px at 10% -10%, rgba(46,196,182,.12), transparent 65%);
 }
+
+
 
 /* RTL */
 html[lang="fa"]{ direction: rtl; }
@@ -80,11 +99,12 @@ html[lang="fa"]{ direction: rtl; }
 /* Body */
 body{
   background:
-    radial-gradient(1200px 700px at 80% -10%, rgba(167,139,250,0.10), transparent 50%),
-    radial-gradient(900px 600px at 10% 20%, rgba(182,130,97,0.10), transparent 55%),
+    var(--glow-rose),
+    radial-gradient(1100px 680px at 80% -10%, rgba(167,139,250,0.08), transparent 50%),
+    radial-gradient(900px 600px at 10% 20%, rgba(182,130,97,0.08), transparent 55%),
     var(--bg);
   color: var(--text);
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans Arabic", "Vazirmatn", sans-serif;
+  font-family: var(--font-vazirmatn), sans-serif;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -107,7 +127,7 @@ body{
 /* ───────────────── UTILITIES ───────────────── */
 .badge{
   display:inline-block;
-  background: rgba(255,255,255,.08);
+  background: color-mix(in srgb, var(--rose-300) 18%, #FFFFFF08);
   border: 1px solid rgba(255,255,255,.14);
   padding: 7px 12px;
   font-size: 12px; font-weight: 700;
@@ -115,7 +135,7 @@ body{
   backdrop-filter: blur(8px);
   letter-spacing: .02em;
 }
-.link{ color: var(--brand); font-weight: 700; }
+.link{ color: var(--rose-500); font-weight: 700; }
 .link:hover{ text-decoration: underline; text-underline-offset: 3px; }
 
 /* ───────────────── BUTTONS ───────────────── */
@@ -124,10 +144,10 @@ body{
   gap:8px; padding: 10px 16px; border-radius: 999px;
   border: 1px solid transparent;
   background: var(--soft); color: var(--text);
-  transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease, border-color .2s ease, filter .2s ease;
   white-space: nowrap;
 }
-.btn:hover{ transform: translateY(-1px); }
+.btn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
 .btn:active{ transform: translateY(0); }
 
 .btn-primary,
@@ -142,13 +162,26 @@ body{
   background: var(--brand-500);
   box-shadow: 0 16px 38px rgba(185,130,97,.33);
 }
+
+/* CTA ثانویه با رز (برای کمپین‌ها/بنرها) */
+.btn-secondary{
+  background: var(--rose-600);
+  color: #FFFFFF;
+  border: 1px solid color-mix(in srgb, var(--rose-600) 70%, #000 30%);
+  box-shadow: 0 10px 28px rgba(218,111,149,.28);
+}
+.btn-secondary:hover{
+  background: var(--rose-500);
+  box-shadow: 0 16px 38px rgba(218,111,149,.35);
+}
+
 .btn-ghost{
   background: transparent;
   border-color: var(--line);
   color: var(--text);
 }
 .btn-ghost:hover{ background: rgba(255,255,255,.06); }
-.btn-light{ background:#fff; color:#111827; }
+.btn-light{ background:#fff; color:#0F172A; }
 .btn-sm{ padding: 8px 12px; font-size: 14px; }
 
 /* ───────────────── SECTIONS ───────────────── */
@@ -161,17 +194,18 @@ body{
 /* ───────────────── CATEGORIES ───────────────── */
 .catGrid{ display:grid; gap:12px; grid-template-columns: 1fr 1fr; }
 .catCard{
-  background: var(--panel);
+  background: linear-gradient(180deg, var(--panel) 0%, color-mix(in srgb, var(--panel) 70%, var(--rose-200) 30%) 100%);
   border:1px solid rgba(255,255,255,.06);
   border-radius: var(--radius);
   overflow: clip; box-shadow: var(--shadow);
   display:grid; grid-template-rows: 120px auto;
-  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, filter .2s ease;
 }
 .catCard:hover{
   transform: translateY(-2px);
   border-color: rgba(255,255,255,.18);
   box-shadow: 0 22px 50px rgba(0,0,0,.45);
+  filter: saturate(1.03);
 }
 .catMedia{ position: relative; }
 .catImg{ object-fit: cover; }
@@ -182,29 +216,34 @@ body{
 /* ───────────────── PRODUCTS ───────────────── */
 .prodGrid{ display:grid; gap:12px; grid-template-columns: 1fr 1fr; }
 .card{
-  background: linear-gradient(180deg, var(--panel), var(--soft));
+  background: linear-gradient(180deg, var(--panel) 0%, var(--soft) 100%);
   border: 1px solid rgba(255,255,255,.06);
   border-radius: calc(var(--radius) + 4px);
   overflow: clip; box-shadow: var(--shadow);
-  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, filter .2s ease;
 }
 .card:hover{
   transform: translateY(-2px);
   border-color: rgba(255,255,255,.18);
   box-shadow: 0 26px 60px rgba(0,0,0,.50);
+  filter: brightness(1.03);
 }
 .cardMedia{ position: relative; aspect-ratio: 1 / 1; }
 .cardImg{ object-fit: cover; }
 .cardBody{ padding: 12px; display:flex; flex-direction:column; gap:8px; }
 .cardTitle{ margin:0; font-size:15px; }
+
+/* قیمت: قهوه‌ای یا رز بر اساس پراپ (با کلاس کمکی) */
+.price{ color: var(--brand-500); font-weight: 800; }
+.price--rose{ color: var(--rose-500); }
+
 .cardFooter{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
-.price{ color: var(--brand); font-weight: 800; }
 
 /* ───────────────── FEATURES ───────────────── */
 .features{ list-style:none; padding:0; margin:0; display:grid; gap:12px; grid-template-columns:1fr; }
 .features li{
   display:flex; gap:12px; align-items:flex-start;
-  background: var(--panel);
+  background: linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel) 82%, var(--rose-200) 18%));
   border:1px solid rgba(255,255,255,.06);
   border-radius: var(--radius);
   padding: 12px;
@@ -214,7 +253,11 @@ body{
 /* ───────────────── CTA BANNER ───────────────── */
 .cta{ position: relative; min-height: 220px; margin-block: 36px; overflow: clip; }
 .ctaImg{ object-fit: cover; object-position: center; }
-.ctaOverlay{ position:absolute; inset:0; background: linear-gradient(90deg, rgba(0,0,0,.7), rgba(0,0,0,.35)); }
+.ctaOverlay{
+  position:absolute; inset:0;
+  background: linear-gradient(90deg, rgba(0,0,0,.72), rgba(0,0,0,.35)),
+              radial-gradient(600px 300px at 10% 10%, rgba(218,111,149,.18), transparent 60%);
+}
 .ctaContent{
   position: relative; z-index: 2; height:100%;
   display:flex; flex-direction:column; justify-content:center; gap:10px;
@@ -305,7 +348,8 @@ main.container{ padding-top: 24px; }
 .heroCoupon__title{ font-size:12px; color:var(--text); opacity:.9; }
 .heroCoupon__code{
   font-weight:800; letter-spacing:.08em; font-size:13px;
-  background: var(--brand); color: var(--brand-ink);
+  background: var(--brand-rose-grad);
+  color: var(--brand-ink);
   padding:6px 10px; border-radius: 999px;
 }
 @keyframes floatY{ 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-6px);} }

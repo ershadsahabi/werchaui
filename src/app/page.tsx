@@ -10,7 +10,7 @@ export default function HomePage() {
       <section className="hero">
   {/* تصویر هیرو */}
   <Image
-    src="/publicimages/hero2.png"
+    src="/publicimages/hero6.jpg"
     alt="پتشاپ ورچا - بهترین‌ها برای دوست‌های پشمالو"
     fill
     priority
