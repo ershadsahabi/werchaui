@@ -91,6 +91,54 @@
   --glow-rose:  radial-gradient(920px 540px at 10% -10%, rgba(46,196,182,.12), transparent 65%);
 }
 
+html.light {
+  /* سطوح (Backgrounds) */
+  --bg:         #FFF7FA;      /* پس‌زمینه اصلی با ته‌رنگ صورتی */
+  --bg-2:       #FBFAF7;
+  --panel:      #FDF3F6;      /* پنل‌ها کمی صورتی */
+  --soft:       #F5E9EC;      /* مرزها و Hover با صورتی خیلی کمرنگ */
+
+  /* متن و خطوط */
+  --text:       #2D2C2B;      
+  --muted:      #807D79;      
+  --line:       #E2D6DA;      /* خط با هاله صورتی */
+
+  /* برند (Brand) */
+  --brand-800:  #8C5C2F;      
+  --brand-600:  #B1743A;      
+  --brand-500:  #DFA56D;      
+  --brand-300:  #F7D8B2;      
+  --brand:      var(--brand-600);
+  --brand-ink:  #1A1A1A;      
+
+  /* Rose (خنثی خاکستری-صورتی) */
+  --rose-700:   #606B6F;      
+  --rose-600:   #7D888C;
+  --rose-500:   #9DA7AC;
+  --rose-300:   #E6DADF;      /* روشن‌تر و صورتی‌تر */
+  --rose-200:   #F9EEF2;
+
+  /* Accent (تأکید و هایلایت) */
+  --accent-600: #AD795B;      
+  --accent-400: #CE9C79;      
+  --accent-200: #F8DDE6;      /* صورتی روشن برای Accent */
+  --accent:     var(--accent-400);
+
+  /* رنگ برجسته برای اعلان‌ها */
+  --pop-500:    #F2C94C;      
+
+  /* رنگ‌های معنایی (Semantic) */
+  --success:    #4CAF50;      
+  --warning:    #FF9800;      
+  --danger:     #F44336;      
+
+  /* سایه و جلوه‌ها */
+  --shadow:     0 8px 20px rgba(0, 0, 0, 0.05);
+
+  /* حلقه فوکوس و گرادیان */
+  --focus-ring: color-mix(in srgb, var(--brand-500) 50%, var(--accent-400) 50%);
+  --grad-hero:  linear-gradient(90deg, #5B42F3 0%, #FF2E9B 100%);
+}
 
 
 /* RTL */
@@ -366,4 +414,128 @@ main.container{ padding-top: 24px; }
   .hero{ min-height: 78vh; }
   .heroContent h1{ font-size: 44px; }
   .prodGrid{ grid-template-columns: repeat(6,1fr); }
+}
+
+
+.hero--modernSplit {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 92vh;
+  background: var(--bg);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.heroContentModern {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+  padding: 60px 40px;
+  z-index: 2;
+}
+.heroContentModern h1 {
+  font-size: clamp(28px, 5vw, 46px);
+  color: var(--text);
+  margin: 0;
+}
+.heroContentModern p {
+  color: var(--muted);
+  font-size: 16px;
+  max-width: 50ch;
+}
+
+.heroKpis {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.heroKpis li {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: var(--text);
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: 999px;
+}
+
+.heroActions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* کوپن شیشه‌ای */
+.heroCoupon--glass {
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 8px 14px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+.heroCoupon--glass code {
+  background: var(--brand-rose-grad);
+  color: var(--brand-ink);
+  padding: 6px 10px;
+  font-weight: bold;
+  font-size: 13px;
+  border-radius: 999px;
+}
+
+/* عکس سمت راست */
+.heroImageModern {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+.heroImageObject {
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(1.1) saturate(1.1);
+}
+
+/* Badge بالا سمت راست */
+.badgeHero {
+  align-self: flex-start;
+  background: var(--pop-500);
+  color: #000;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 999px;
+}
+
+/* رسپانسیو برای موبایل */
+@media (max-width: 768px) {
+  .hero--modernSplit {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .heroImageModern {
+    height: 320px;
+  }
+
+  .heroContentModern {
+    padding: 32px 20px;
+    text-align: center;
+    align-items: center;
+  }
+
+  .heroActions {
+    justify-content: center;
+  }
+
+  .heroKpis {
+    justify-content: center;
+  }
 }

@@ -1,0 +1,578 @@
+# نقشهٔ حرفه‌ای پیاده‌سازی «کاتالوگ محصولات + سفارش» (Django + Next.js)
+
+این بسته، هم بک‌اند (اپ‌های `catalog` و `orders`) را اضافه می‌کند هم فرانت (اتصال صفحهٔ شاپ به API واقعی + سبد خرید فرانت + ثبت سفارش با احراز هویت سشن/CSRF).
+
+> نکته: مطابق خواستهٔ شما، «سبد خرید» کاملاً فرانت‌محور (LocalStorage) است و فقط در زمان Checkout سفارش در بک‌اند ایجاد/اعتبارسنجی می‌شود.
+
+---
+
+## 1) بک‌اند – اپ `catalog` (محصولات)
+
+**ساختار فایل‌ها**
+
+```
+Werchaback/
+ └─ catalog/
+     ├─ __init__.py
+     ├─ admin.py
+     ├─ apps.py
+     ├─ models.py
+     ├─ serializers.py
+     ├─ views.py
+     ├─ urls.py
+     └─ migrations/
+```
+
+### `catalog/apps.py`
+
+```python
+from django.apps import AppConfig
+
+
+class CatalogConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'catalog'
+    verbose_name = 'Catalog'
+```
+
+### `catalog/models.py`
+
+```python
+
+```
+
+### `catalog/admin.py`
+
+```python
+
+```
+
+### `catalog/serializers.py`
+
+```python
+
+```
+
+### `catalog/views.py`
+
+```python
+
+```
+
+### `catalog/urls.py`
+
+```python
+
+```
+
+---
+
+## 2) بک‌اند – اپ `orders` (ثبت سفارش)
+
+**ساختار فایل‌ها**
+
+```
+Werchaback/
+ └─ orders/
+     ├─ __init__.py
+     ├─ admin.py
+     ├─ apps.py
+     ├─ models.py
+     ├─ serializers.py
+     ├─ views.py
+     ├─ urls.py
+     └─ migrations/
+```
+
+### `orders/apps.py`
+
+```python
+from django.apps import AppConfig
+
+
+class OrdersConfig(AppConfig):
+    default_auto_field = 'django.db.models.BigAutoField'
+    name = 'orders'
+    verbose_name = 'Orders'
+```
+
+### `orders/models.py`
+
+```python
+
+```
+
+### `orders/admin.py`
+
+```python
+
+```
+
+### `orders/serializers.py`
+
+```python
+
+```
+
+### `orders/views.py`
+
+```python
+
+```
+
+### `orders/urls.py`
+
+```python
+
+```
+
+---
+
+## 3) به‌روزرسانی تنظیمات و URL روت
+
+### `settings.py`
+
+* اضافه کردن اپ‌ها:
+
+```python
+INSTALLED_APPS = [
+    # ...
+    'accounts',
+    'catalog',
+    'orders',
+    'rest_framework',
+    'corsheaders',
+]
+```
+
+* (اختیاری) اگر فیلترهای DRF را می‌خواهید: `django_filters` را اضافه کنید.
+
+### `werchaapi/urls.py` (root)
+
+```python
+
+```
+
+---
+
+## 4) قرارداد API برای صفحهٔ شاپ
+
+`GET /api/catalog/products/?q=&cat=&brand=&min=&max=&sort=&page=&page_size=`
+
+**Response**
+
+```json
+{
+  "items": [
+    {"id": 1, "title": "…", "price": 185000, "image": "https://…", "rating": 4.6, "in_stock": true, "badge": "حراج", "category": "cat", "brand": "Whiskers"}
+  ],
+  "total": 16,
+  "pages": 2,
+  "page": 1,
+  "facets": {
+    "categories": [{"key":"dog","label":"سگ"}, …],
+    "brands": ["Wercha","Whiskers", …]
+  }
+}
+```
+
+---
+
+## 5) فرانت – به‌روزرسانی‌ها و فایل‌های جدید
+
+**ساختار پیشنهادی**
+
+```
+werchaui/src/
+ ├─ lib/
+ │   ├─ api.ts              # + endpoints جدید
+ │   ├─ client-csrf.ts
+ │   └─ server-api.ts
+ ├─ store/
+ │   └─ cart.ts             # سبد خرید با Zustand + persist
+ ├─ app/
+ │   ├─ shop/page.tsx       # اتصال به API واقعی
+ │   ├─ cart/page.tsx       # صفحه سبد خرید
+ │   └─ checkout/page.tsx   # ثبت سفارش (نیاز به login)
+ └─ components/
+     ├─ ProductCard.tsx     # دکمهٔ «افزودن به سبد»
+     └─ Header.tsx          # خواندن شمارش سبد از store
+```
+
+### `lib/api.ts` (به‌روزرسانی)
+
+```ts
+export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000').replace(/\/$/, '');
+export const endpoints = {
+  csrf: `${API_BASE}/api/accounts/csrf/`,
+  register: `${API_BASE}/api/accounts/register/`,
+  login: `${API_BASE}/api/accounts/login/`,
+  logout: `${API_BASE}/api/accounts/logout/`,
+  me: `${API_BASE}/api/accounts/me/`,
+  // جدید
+  products: `${API_BASE}/api/catalog/products/`,
+  orderCreate: `${API_BASE}/api/orders/create/`,
+};
+```
+
+### `store/cart.ts` (Zustand + Persist)
+
+```ts
+'use client';
+import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+
+export type CartItem = {
+  id: number;
+  title: string;
+  price: number;
+  image?: string | null;
+  qty: number;
+};
+
+type CartState = {
+  items: CartItem[];
+  add: (item: Omit<CartItem, 'qty'>, qty?: number) => void;
+  remove: (id: number) => void;
+  setQty: (id: number, qty: number) => void;
+  clear: () => void;
+};
+
+export const useCartStore = create<CartState>()(
+  persist(
+    (set, get) => ({
+      items: [],
+      add: (item, qty = 1) => {
+        const items = [...get().items];
+        const i = items.findIndex((x) => x.id === item.id);
+        if (i >= 0) items[i] = { ...items[i], qty: items[i].qty + qty };
+        else items.push({ ...item, qty });
+        set({ items });
+      },
+      remove: (id) => set({ items: get().items.filter((x) => x.id !== id) }),
+      setQty: (id, qty) => {
+        if (qty <= 0) return set({ items: get().items.filter((x) => x.id !== id) });
+        set({ items: get().items.map((x) => (x.id === id ? { ...x, qty } : x)) });
+      },
+      clear: () => set({ items: [] }),
+    }),
+    { name: 'wercha-cart', storage: createJSONStorage(() => localStorage) }
+  )
+);
+
+export const useCartCount = () =>
+  useCartStore((s) => s.items.reduce((sum, it) => sum + it.qty, 0));
+
+export const useCartTotal = () =>
+  useCartStore((s) => s.items.reduce((sum, it) => sum + it.price * it.qty, 0));
+```
+
+### `components/ProductCard.tsx` (دکمهٔ افزودن به سبد)
+
+```tsx
+'use client';
+import Image from 'next/image';
+import styles from './ProductCard.module.css';
+import { useCartStore } from '@/store/cart';
+
+type Product = {
+  id: number;
+  title: string;
+  price: number;
+  image?: string | null;
+  rating?: number;
+  inStock?: boolean;
+  badge?: string | null;
+  category?: string;
+  brand?: string;
+};
+
+export default function ProductCard({ product }: { product: Product }) {
+  const add = useCartStore((s) => s.add);
+  return (
+    <div className={styles.card}>
+      <a href={`/product/${product.id}`} className={styles.thumb}>
+        <Image src={product.image || '/publicimages/p1.jpg'} alt="" width={300} height={300} />
+      </a>
+      <div className={styles.body}>
+        <div className={styles.title}>{product.title}</div>
+        <div className={styles.price}>{product.price.toLocaleString('fa-IR')} تومان</div>
+        <button
+          className="btn"
+          onClick={() => add({ id: product.id, title: product.title, price: product.price, image: product.image || undefined }, 1)}
+          disabled={product.inStock === false}
+        >
+          افزودن به سبد
+        </button>
+      </div>
+    </div>
+  );
+}
+```
+
+### `components/Header.tsx` (خواندن شمار سبد)
+
+> فقط بخش مربوط به شمارنده؛ بقیهٔ فایل شما دست‌نخورده می‌ماند.
+
+```tsx
+// بالا:
+import { useCartCount } from '@/store/cart';
+
+export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
+  const liveCount = useCartCount();
+  const effectiveCount = liveCount ?? cartCount;
+  // ...
+  <Link href="/cart" className={`${styles.iconBtn} ${styles.cartBtn}`} aria-label="سبد خرید">
+    {iconCart}
+    {effectiveCount > 0 && <span className={styles.cartBadge}>{effectiveCount}</span>}
+  </Link>
+  // ...
+}
+```
+
+### `app/shop/page.tsx` (اتصال به API واقعی)
+
+```tsx
+/* صفحه شاپ – فچ از Django API */
+import styles from './Shop.module.css';
+import Link from 'next/link';
+import Image from 'next/image';
+import Filters from '@/components/shop/Filters';
+import SortBar from '@/components/shop/SortBar';
+import ProductCard from '@/components/ProductCard';
+import { endpoints } from '@/lib/api';
+
+const PAGE_SIZE = 12;
+
+async function fetchProducts(params: Record<string, string>) {
+  const usp = new URLSearchParams({ page_size: String(PAGE_SIZE), ...params });
+  const res = await fetch(`${endpoints.products}?${usp.toString()}`, { cache: 'no-store' });
+  if (!res.ok) throw new Error('failed');
+  return res.json();
+}
+
+export default async function ShopPage({ searchParams }: { searchParams: Record<string, string | string[] | undefined>; }) {
+  const s = {
+    q: typeof searchParams.q === 'string' ? searchParams.q : undefined,
+    cat: typeof searchParams.cat === 'string' ? searchParams.cat : undefined,
+    brand: typeof searchParams.brand === 'string' ? searchParams.brand : undefined,
+    min: typeof searchParams.min === 'string' ? searchParams.min : undefined,
+    max: typeof searchParams.max === 'string' ? searchParams.max : undefined,
+    sort: (['latest','price-asc','price-desc','rating'] as const).includes(searchParams.sort as any) ? (searchParams.sort as string) : 'latest',
+    page: typeof searchParams.page === 'string' ? searchParams.page : '1',
+  } as Record<string,string>;
+
+  const { items, pages, page, total, facets } = await fetchProducts(s);
+
+  return (
+    <div className={styles.root} dir="rtl">
+      <section className={styles.hero}>
+        <div className="container">
+          <div className={styles.bc}>
+            <Link href="/" className={styles.bcLink}>خانه</Link>
+            <span className={styles.bcSep}>/</span>
+            <span className={styles.bcHere}>فروشگاه</span>
+          </div>
+          <h1 className={styles.title}>فروشگاه</h1>
+          <p className={styles.subtitle}>{total} کالا؛ هرچی پتت لازم داره همین‌جاست ✨</p>
+        </div>
+      </section>
+
+      <section className="container">
+        <div className={styles.grid}>
+          <aside className={styles.sidebar}>
+            <Filters facets={facets} current={s as any} className={styles.filterCard} />
+          </aside>
+
+          <div className={styles.main}>
+            <SortBar total={total} current={s as any} className={styles.sortbar} />
+            {items.length === 0 ? (
+              <div className={styles.empty}>
+                <Image src="/publicimages/p6.jpg" alt="" width={80} height={80} />
+                <p>نتیجه‌ای پیدا نشد. فیلترها را تغییر بده.</p>
+                <Link href="/shop" className="btn">پاک کردن فیلترها</Link>
+              </div>
+            ) : (
+              <div className={styles.prodGrid}>
+                {items.map((p: any) => (<ProductCard key={p.id} product={p} />))}
+              </div>
+            )}
+
+            <div className={styles.pagination}>
+              {Array.from({ length: pages }, (_, i) => i + 1).map((n) => {
+                const params = new URLSearchParams(Object.entries(s).reduce((acc, [k, v]) => { if (v) acc[k] = String(v); return acc; }, {} as Record<string, string>));
+                params.set('page', String(n));
+                const href = `/shop?${params.toString()}`;
+                const isCurrent = Number(page) === n;
+                return (
+                  <Link key={n} href={href} className={`${styles.pageBtn} ${isCurrent ? styles.pageCurrent : ''}`} aria-current={isCurrent ? 'page' : undefined}>{n}</Link>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+}
+```
+
+### `app/cart/page.tsx`
+
+```tsx
+'use client';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useCartStore, useCartTotal } from '@/store/cart';
+
+export default function CartPage() {
+  const items = useCartStore((s) => s.items);
+  const remove = useCartStore((s) => s.remove);
+  const setQty = useCartStore((s) => s.setQty);
+  const total = useCartTotal();
+
+  return (
+    <div className="container" dir="rtl" style={{ padding: '2rem 0' }}>
+      <h1>سبد خرید</h1>
+      {items.length === 0 ? (
+        <p>سبد شما خالی است. <Link href="/shop">برو به فروشگاه</Link></p>
+      ) : (
+        <>
+          <div className="cart-list">
+            {items.map((it) => (
+              <div key={it.id} className="cart-row">
+                <Image src={it.image || '/publicimages/p1.jpg'} alt="" width={64} height={64} />
+                <div style={{ flex: 1 }}>{it.title}</div>
+                <input
+                  type="number"
+                  min={1}
+                  value={it.qty}
+                  onChange={(e) => setQty(it.id, Number(e.target.value) || 1)}
+                  style={{ width: 64 }}
+                />
+                <div>{(it.price * it.qty).toLocaleString('fa-IR')} تومان</div>
+                <button onClick={() => remove(it.id)}>حذف</button>
+              </div>
+            ))}
+          </div>
+          <div className="cart-summary" style={{ marginTop: 24 }}>
+            <div>جمع کل: {total.toLocaleString('fa-IR')} تومان</div>
+            <Link href="/checkout" className="btn" style={{ marginTop: 12 }}>ادامه ثبت سفارش</Link>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+```
+
+### `app/checkout/page.tsx`
+
+```tsx
+'use client';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useCartStore, useCartTotal } from '@/store/cart';
+import { postWithCsrf } from '@/lib/client-csrf';
+import { endpoints } from '@/lib/api';
+import LoginModal from '@/components/LoginModal';
+
+export default function CheckoutPage() {
+  const items = useCartStore((s) => s.items);
+  const clear = useCartStore((s) => s.clear);
+  const total = useCartTotal();
+  const router = useRouter();
+
+  const [me, setMe] = useState<any>(null);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [form, setForm] = useState({ full_name: '', phone: '', address: '', city: '', postal_code: '' });
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    // تلاش برای خواندن وضعیت ورود
+    fetch(endpoints.me, { credentials: 'include', cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then(setMe)
+      .catch(() => setMe(null));
+  }, []);
+
+  if (items.length === 0) {
+    return <div className="container" dir="rtl" style={{ padding: '2rem 0' }}><p>سبد خالی است.</p></div>;
+  }
+
+  const placeOrder = async () => {
+    setErr(null);
+    setLoading(true);
+    try {
+      const payload = {
+        items: items.map((it) => ({ product_id: it.id, qty: it.qty })),
+        ...form,
+      };
+      const data = await postWithCsrf(endpoints.orderCreate, payload);
+      clear();
+      router.push(`/cart?success=1`); // یا صفحهٔ تایید اختصاصی
+    } catch (e: any) {
+      setErr(e.message || 'خطا در ثبت سفارش');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="container" dir="rtl" style={{ padding: '2rem 0' }}>
+      <h1>نهایی‌سازی سفارش</h1>
+
+      {!me && (
+        <div className="alert" style={{ background: '#fff3cd', padding: 12, borderRadius: 8, margin: '12px 0' }}>
+          <p>برای ثبت سفارش باید وارد حساب شوید.</p>
+          <button className="btn" onClick={() => setLoginOpen(true)}>ورود</button>
+        </div>
+      )}
+
+      <div style={{ display: 'grid', gap: 16, maxWidth: 520 }}>
+        <input placeholder="نام و نام‌خانوادگی" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
+        <input placeholder="تلفن" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+        <input placeholder="شهر" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
+        <input placeholder="کد پستی" value={form.postal_code} onChange={(e) => setForm({ ...form, postal_code: e.target.value })} />
+        <textarea placeholder="آدرس کامل" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
+      </div>
+
+      <div style={{ marginTop: 16 }}>مبلغ قابل پرداخت: {total.toLocaleString('fa-IR')} تومان</div>
+      {err && <div style={{ color: 'crimson', marginTop: 8 }}>{err}</div>}
+
+      <button className="btn" disabled={!me || loading} onClick={placeOrder} style={{ marginTop: 12 }}>
+        {loading ? 'در حال ارسال…' : 'ثبت سفارش'}
+      </button>
+
+      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
+    </div>
+  );
+}
+```
+
+---
+
+## 6) نکات کلیدی و ارتقای حرفه‌ای
+
+* **Front-only Cart** مطابق خواستهٔ شماست. برای حرفه‌ای‌تر شدن در آینده:
+
+  * سینک سبد با سرور برای کاربران لاگین (multi-device)،
+  * رزرو موجودی در زمان Checkout و پرداخت آنلاین.
+* **ولیدیشن قوی بک‌اند**: در `OrderCreateSerializer` موجودی/قیمت از سرور محاسبه می‌شود و هر عدم‌انطباق منجر به خطا می‌شود.
+* **CSRF/Session**: همان الگوی فعلی شما حفظ شده؛ فقط `POST /api/orders/create/` نیاز به `credentials: 'include'` و CSRF دارد (که با `postWithCsrf` انجام شد).
+* **Facets/Sorting/Pagination**: قرارداد API دقیقاً با ساختار UI فعلی شما هم‌خوان است؛ فقط `ShopPage` اکنون از سرور می‌خواند.
+* **Media**: تصاویر محصول از مسیر `MEDIA_URL` سرو می‌شوند. در پنل ادمین آپلود کنید.
+
+---
+
+## 7) تست سریع (چک‌لیست)
+
+1. در ادمین: `Category`‌ها (dog/cat/bird/small) و چند `Brand` و `Product` بسازید؛ `in_stock=True` و `stock>0`.
+2. فرانت: `/shop` باید لیست واقعی بدهد؛ فیلتر/مرتب‌سازی/صفحه‌بندی کار کند.
+3. افزودن به سبد: در کارت محصول دکمه را بزنید؛ شمارندهٔ هدر آپدیت شود؛ `/cart` اقلام را نشان دهد.
+4. Checkout: اگر وارد نشده‌اید، پیام ورود ببینید؛ پس از ورود، آدرس را پر کنید و سفارش را ثبت کنید؛ در ادمین «Orders» را ببینید.
+
+---
+
+اگر دوست دارید، مرحلهٔ بعدی را هم برای «جزییات محصول» (صفحهٔ `/product/[slug]`)، پرداخت آنلاین (درگاه)، و «سفارش‌های من» در پروفایل کاربر طراحی و اضافه می‌کنم.

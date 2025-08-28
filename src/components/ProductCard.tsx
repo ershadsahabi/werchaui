@@ -1,38 +1,52 @@
+'use client';
 import Image from 'next/image';
-import styles from '@/app/shop/Shop.module.css';
+import styles from './ProductCard.module.css';
+import { useCartStore } from '@/store/cart';
+import { useCartUI } from '@/store/cart-ui';
 
 type Product = {
   id: number;
   title: string;
   price: number;
-  image: string;
-  rating: number;
-  inStock: boolean;
-  badge?: 'حراج' | 'جدید';
+  image?: string | null;
+  rating?: number;
+  inStock?: boolean;  
+  badge?: string | null;
+  category?: string;
+  brand?: string;
 };
 
 export default function ProductCard({ product }: { product: Product }) {
+  const add = useCartStore((s) => s.add);
+  const openCart = useCartUI((s) => s.openCart);
+
+  const handleAdd = () => {
+    add({ id: product.id, title: product.title, price: product.price, image: product.image || undefined }, 1);
+    openCart(); // بلافاصله مودال سبد را باز کن
+  };
+
   return (
-    <article className={`${styles.card} card`}>
-      <div className={styles.cardMedia}>
+    <div className={styles.card}>
+      <a href={`/product/${product.id}`} className={styles.thumb}>
+        <Image src={product.image || '/publicimages/p1.jpg'} alt="" width={300} height={300} />
         {product.badge && <span className={styles.badge}>{product.badge}</span>}
-        <Image src={product.image} alt={product.title} fill className={styles.cardImg} />
-      </div>
-      <div className={styles.cardBody}>
-        <h3 className={styles.cardTitle} title={product.title}>{product.title}</h3>
+      </a>
+      <div className={styles.body}>
+        <div className={styles.title} title={product.title}>{product.title}</div>
         <div className={styles.meta}>
-          <span className={styles.rating} aria-label={`امتیاز ${product.rating}`}>
-            ★ {product.rating.toFixed(1)}
-          </span>
-          <span className={`${styles.stock} ${product.inStock ? styles.in : styles.out}`}>
-            {product.inStock ? 'موجود' : 'ناموجود'}
-          </span>
+          <div className={styles.price}>{product.price.toLocaleString('fa-IR')} تومان</div>
+          {typeof product.rating === 'number' && (
+            <div className={styles.rating} aria-label={`امتیاز ${product.rating}`}>★ {product.rating}</div>
+          )}
         </div>
-        <div className={styles.cardFooter}>
-          <span className={styles.price}>{product.price.toLocaleString('fa-IR')} تومان</span>
-          <button className="btn btnPrimary">افزودن به سبد</button>
-        </div>
+        <button
+          className={styles.addBtn}
+          onClick={handleAdd}
+          disabled={product.inStock === false}
+        >
+          افزودن به سبد
+        </button>
       </div>
-    </article>
+    </div>
   );
 }

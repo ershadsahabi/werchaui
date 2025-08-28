@@ -1,4 +1,4 @@
-/* صفحه اصلی WERCHA – با اسلات عکس از /public و استایل حرفه‌ای، RTL و موبایل‌فرست */
+/* صفحه اصلی wircino – با اسلات عکس از /public و استایل حرفه‌ای، RTL و موبایل‌فرست */
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -7,53 +7,42 @@ export default function HomePage() {
   return (
     <div dir="rtl" className="homeRoot">
       {/* HERO */}
-      <section className="hero">
-  {/* تصویر هیرو */}
-  <Image
-    src="/publicimages/hero6.jpg"
-    alt="پتشاپ ورچا - بهترین‌ها برای دوست‌های پشمالو"
-    fill
-    priority
-    className="heroImg"
-    sizes="(max-width: 768px) 100vw, 100vw"
-  />
+<section className="hero hero--modernSplit" dir="rtl">
+  {/* متن سمت چپ */}
+  <div className="heroContentModern container">
+    <span className="badge badgeHero">🚚 ارسال امروز سنندج</span>
 
-  {/* افکت‌ها */}
-  <div className="heroOverlay" />
-  <div className="heroVignette" aria-hidden />
-  <div className="heroGlow heroGlow--left" aria-hidden />
-  <div className="heroGlow heroGlow--right" aria-hidden />
-  <div className="heroShine" aria-hidden />
-
-  {/* Badge ثابت گوشه؛ از روی چهره‌ها دور می‌شود */}
-  <span className="badge badgeHero">ارسال امروز سنندج 🚚</span>
-
-  {/* محتوای اصلی: تیتر → اکشن → KPI → توضیح (برای آزادشدن فضای تصویر) */}
-  <div className="heroContent container" role="region" aria-label="معرفی ورچا">
     <h1>هرچی پتت لازم داره، همین‌جاست!</h1>
+
+    <p>غذا، اسباب‌بازی، لوازم بهداشتی و خدمات گرومینگ با بهترین قیمت و پشتیبانی.</p>
+
+    <ul className="heroKpis">
+      <li>🩺 مشاوره دامپزشکی</li>
+      <li>✅ تضمین اصالت کالا</li>
+    </ul>
 
     <div className="heroActions">
       <Link href="/shop" className="btn btn-primary">مشاهده فروشگاه</Link>
       <Link href="/grooming" className="btn btn-ghost">نوبت گرومینگ</Link>
     </div>
 
-    <ul className="heroKpis" aria-label="ویژگی‌های ورچا">
-      <li>🩺 مشاوره دامپزشکی</li>
-      <li>✅ تضمین اصالت کالا</li>
-    </ul>
-
-    {/* متن توضیحی را آخر گذاشتیم تا مزاحم سوژه‌ها نشود */}
-    <p>غذا، اسباب‌بازی، لوازم بهداشتی و خدمات گرومینگ با بهترین قیمت و پشتیبانی.</p>
+    <aside className="heroCoupon heroCoupon--glass">
+      <span>۱۰٪ تخفیف اولین خرید</span>
+      <code>wircino</code>
+    </aside>
   </div>
 
-  {/* کارت شناور کوپن */}
-  <aside className="heroCoupon" aria-label="تخفیف خوش‌آمد">
-    <div className="heroCoupon__inner">
-      <span className="heroCoupon__title">۱۰٪ تخفیف اولین خرید</span>
-      <code className="heroCoupon__code">WERCHA10</code>
-    </div>
-  </aside>
+  {/* عکس بزرگ سمت راست */}
+  <div className="heroImageModern">
+    <Image
+      src="/publicimages/hero29.png"
+      alt="دوست پشمالو"
+      fill
+      className="heroImageObject"
+    />
+  </div>
 </section>
+
 
 
 
@@ -148,7 +137,7 @@ export default function HomePage() {
         <div className="ctaOverlay" />
         <div className="ctaContent container">
           <h2>اولین خریدت با ۱۰٪ تخفیف</h2>
-          <p>کد: <strong>WERCHA10</strong></p>
+          <p>کد: <strong>wircino</strong></p>
           <Link href="/shop" className="btn btn-light">شروع خرید</Link>
         </div>
       </section>

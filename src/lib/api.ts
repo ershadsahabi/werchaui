@@ -5,4 +5,8 @@ export const endpoints = {
   login: `${API_BASE}/api/accounts/login/`,
   logout: `${API_BASE}/api/accounts/logout/`,
   me: `${API_BASE}/api/accounts/me/`,
+
+  products: `${API_BASE}/api/catalog/products/`,
+  orderCreate: `${API_BASE}/api/orders/create/`,
+  
 };

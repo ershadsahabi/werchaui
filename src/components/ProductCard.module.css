@@ -1,0 +1,179 @@
+/* ───────────────── PRODUCTS (Card) ───────────────── */
+/* هماهنگ با tokens در globals.css  • موبایل‌فرست */
+
+.card{
+  background: linear-gradient(180deg, var(--panel) 0%, var(--soft) 100%);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: calc(var(--radius) + 4px);
+  overflow: clip;
+  box-shadow: var(--shadow);
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease, filter .2s ease;
+  display: grid;
+  grid-template-rows: auto 1fr;
+}
+.card:hover{
+  transform: translateY(-2px);
+  border-color: rgba(255,255,255,.18);
+  box-shadow: 0 26px 60px rgba(0,0,0,.50);
+  filter: brightness(1.03);
+}
+
+/* Media (تصویر) */
+.cardMedia,
+.thumb { /* alias برای سازگاری با TSX فعلی */
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: clip;
+  background: #0d1014;
+}
+
+/* در صورت ندادن className به <Image>، این سِلِکتور روی <img> داخلی اعمال می‌شود */
+.cardMedia :global(img),
+.thumb :global(img),
+.cardImg{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Badge روی تصویر */
+.badge{
+  position: absolute;
+  inset-inline-start: 8px;
+  inset-block-start: 8px;
+  background: var(--pop-500);
+  color: #000;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: .02em;
+  z-index: 2;
+}
+
+/* Body */
+.cardBody,
+.body{ /* alias */
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Title */
+.cardTitle,
+.title{ /* alias */
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* دو خط */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Meta (قیمت/امتیاز یا هرچیز کوتاه) */
+.meta{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Price */
+.price{ color: var(--brand-500); font-weight: 800; }
+.price--rose{ color: var(--rose-500); }
+
+/* Rating ستاره */
+.rating{
+  color: #fde68a; /* طلایی کم‌رنگ */
+  font-size: 13px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  opacity: .95;
+}
+
+/* وضعیت موجودی (اختیاری) */
+.stock{
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.08);
+}
+.in{ color: #10b981; border-color: rgba(16,185,129,.35); }
+.out{ color: #ef4444; border-color: rgba(239,68,68,.35); }
+
+/* Footer (برای قیمت + دکمه، اگر خواستی استفاده کنی) */
+.cardFooter{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* دکمه افزودن به سبد */
+.addBtn{
+  width: 100%;
+  border: 1px solid color-mix(in srgb, var(--brand) 72%, #000 28%);
+  background: var(--brand);
+  color: var(--brand-ink);
+  padding: 10px 12px;
+  border-radius: 12px;
+  font-weight: 700;
+  transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+  box-shadow: 0 10px 24px rgba(73,162,255,.18);
+}
+.addBtn:hover{
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: 0 16px 36px rgba(73,162,255,.28);
+}
+.addBtn:disabled{
+  opacity: .55;
+  cursor: not-allowed;
+  filter: grayscale(.25);
+}
+
+/* ───────────────── EXTRAS (اختیاری برای سکشن‌های Shop) ───────────────── */
+
+/* Features list (اگر در صفحه استفاده می‌کنی) */
+.features{
+  list-style: none; padding: 0; margin: 0;
+  display: grid; gap: 12px; grid-template-columns: 1fr;
+}
+.features li{
+  display: flex; gap: 12px; align-items: flex-start;
+  background: linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel) 82%, var(--rose-200) 18%));
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: var(--radius);
+  padding: 12px;
+}
+.featIcon{ font-size: 22px; line-height: 1; }
+
+/* CTA Banner (اختیاری) */
+.cta{ position: relative; min-height: 220px; margin-block: 36px; overflow: clip; border-radius: var(--radius-lg); }
+.ctaImg{ object-fit: cover; object-position: center; }
+.ctaOverlay{
+  position: absolute; inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.72), rgba(0,0,0,.35)),
+    radial-gradient(600px 300px at 10% 10%, rgba(218,111,149,.18), transparent 60%);
+}
+.ctaContent{
+  position: relative; z-index: 2; height: 100%;
+  display: flex; flex-direction: column; justify-content: center; gap: 10px;
+  padding: 18px;
+}
+.ctaContent h2{ margin: 0; font-size: 22px; }
+.ctaContent p{ margin: 0; color: var(--muted); }
+
+/* Testimonials (اختیاری) */
+.testiStrip{ display: grid; gap: 12px; grid-template-columns: 1fr; }
+
+/* ───────────────── Responsive ───────────────── */
+@media (min-width: 640px){
+  .cardTitle, .title{ font-size: 15.5px; }
+}
