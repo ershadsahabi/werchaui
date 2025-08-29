@@ -1,3 +1,4 @@
+// F:\Shahrivar1404\Werch_app\werchaui\src\store\cart.ts
 'use client';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -18,6 +19,10 @@ type CartState = {
   clear: () => void;
 };
 
+function broadcastCartChanged() {
+  try { window.dispatchEvent(new CustomEvent('cart:changed')); } catch {}
+}
+
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
@@ -28,13 +33,25 @@ export const useCartStore = create<CartState>()(
         if (i >= 0) items[i] = { ...items[i], qty: items[i].qty + qty };
         else items.push({ ...item, qty });
         set({ items });
+        broadcastCartChanged();
       },
-      remove: (id) => set({ items: get().items.filter((x) => x.id !== id) }),
+      remove: (id) => {
+        set({ items: get().items.filter((x) => x.id !== id) });
+        broadcastCartChanged();
+      },
       setQty: (id, qty) => {
-        if (qty <= 0) return set({ items: get().items.filter((x) => x.id !== id) });
+        if (qty <= 0) {
+          set({ items: get().items.filter((x) => x.id !== id) });
+          broadcastCartChanged();
+          return;
+        }
         set({ items: get().items.map((x) => (x.id === id ? { ...x, qty } : x)) });
+        broadcastCartChanged();
       },
-      clear: () => set({ items: [] }),
+      clear: () => {
+        set({ items: [] });
+        broadcastCartChanged();
+      },
     }),
     { name: 'wercha-cart', storage: createJSONStorage(() => localStorage) }
   )

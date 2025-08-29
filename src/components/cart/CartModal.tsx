@@ -5,6 +5,7 @@ import Image from 'next/image';
 import styles from './CartModal.module.css';
 import { useCartStore, useCartTotal } from '@/store/cart';
 import { useCartUI } from '@/store/cart-ui';
+import GuardedCheckoutLink from '@/components/GuardedCheckoutLink';
 
 export default function CartModal() {
   const open = useCartUI((s) => s.open);
@@ -55,7 +56,7 @@ export default function CartModal() {
 
         {items.length === 0 ? (
           <div className={styles.empty}>
-            <Image src="/publicimages/p6.jpg" alt="" width={80} height={80} />
+            <Image src="/publicimages/hero28.png" alt="" width={80} height={80} />
             <p>سبد شما خالی است.</p>
             <Link href="/shop" className="btn" onClick={closeCart}>رفتن به فروشگاه</Link>
           </div>
@@ -100,7 +101,9 @@ export default function CartModal() {
               </div>
               <div className={styles.actions}>
                 <Link href="/cart" className={styles.ghostBtn} onClick={closeCart}>مشاهده سبد</Link>
-                <Link href="/checkout" className="btn" onClick={closeCart}>ادامه ثبت سفارش</Link>
+                <GuardedCheckoutLink className={`${styles.checkoutBtn} btn`}>
+                ادامه ثبت سفارش
+                </GuardedCheckoutLink>              
               </div>
             </div>
           </>

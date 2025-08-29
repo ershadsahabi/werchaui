@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Cart.module.css';
 import { useCartStore, useCartTotal } from '@/store/cart';
+import GuardedCheckoutLink from '@/components/GuardedCheckoutLink';
 
 export default function CartPage() {
   const items = useCartStore((s) => s.items);
@@ -41,8 +42,10 @@ export default function CartPage() {
 
           <div className={styles.summary}>
             <div className={styles.total}>جمع کل: <strong>{total.toLocaleString('fa-IR')}</strong> تومان</div>
-            <Link href="/checkout" className={`${styles.checkoutBtn} btn`}>ادامه ثبت سفارش</Link>
-          </div>
+              <GuardedCheckoutLink className={`${styles.checkoutBtn} btn`}>
+                    ادامه ثبت سفارش
+              </GuardedCheckoutLink>
+            </div>
         </>
       )}
     </div>

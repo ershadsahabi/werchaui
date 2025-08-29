@@ -17,20 +17,25 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   useEffect(() => { idRef.current?.focus(); }, []);
 
   async function onSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!identifier || !password) {
-      setError('ایمیل/نام‌کاربری و رمز عبور را وارد کنید.');
-      return;
-    }
-    setError(null); setLoading(true);
-    try {
-      await postWithCsrf(endpoints.login, { identifier, password });
-      onSuccess?.();
-      r.refresh();
-    } catch (err: any) {
-      setError(err?.message || 'ورود ناموفق بود.');
-    } finally { setLoading(false); }
+  e.preventDefault();
+  if (!identifier || !password) {
+    setError('ایمیل/نام‌کاربری و رمز عبور را وارد کنید.');
+    return;
   }
+  setError(null); setLoading(true);
+  try {
+    await postWithCsrf(endpoints.login, { identifier, password });
+
+    await new Promise((r) => setTimeout(r, 80));
+    window.dispatchEvent(new CustomEvent('auth:changed', { detail: { loggedIn: true } }));
+
+    onSuccess?.();      // بستن مودال (همونی که قبلاً داشتی)
+    r.refresh();        // برای هدر/لی‌اوت SSR
+  } catch (err: any) {
+    setError(err?.message || 'ورود ناموفق بود.');
+  } finally { setLoading(false); }
+}
+
 
   return (
     <form onSubmit={onSubmit} className={form.form} dir="rtl" aria-label="فرم ورود">

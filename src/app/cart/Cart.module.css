@@ -1,7 +1,20 @@
 .root { padding: 24px 0; }
-.title { font-size: 22px; margin-bottom: 16px; }
-.empty { margin-top: 12px; }
-.list { display: grid; gap: 10px; }
+
+.title {
+  font-size: 22px;
+  margin-bottom: 16px;
+  color: var(--text);
+}
+
+.empty {
+  margin-top: 12px;
+  color: var(--muted);
+}
+
+.list {
+  display: grid;
+  gap: 10px;
+}
 
 .row {
   display: grid;
@@ -9,32 +22,82 @@
   gap: 12px;
   align-items: center;
   padding: 10px;
-  border: 1px solid var(--border, #e7e7e7);
-  border-radius: 12px;
-  background: var(--card, #fff);
+
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
 }
-.thumb { border-radius: 8px; background: #fafafa; }
-.info { display: grid; gap: 6px; }
-.name { font-size: 14px; }
-.price { font-weight: 700; }
+
+.thumb {
+  border-radius: 8px;
+  background: var(--soft);
+}
+
+.info {
+  display: grid;
+  gap: 6px;
+}
+
+.name {
+  font-size: 14px;
+  color: var(--text);
+}
+
+.price {
+  font-weight: 700;
+  color: var(--brand-500);
+}
 
 .qty input {
-  width: 70px; height: 36px; border-radius: 8px; border: 1px solid #ddd;
-  text-align: center; font-family: inherit;
+  width: 70px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--soft);
+  color: var(--text);
+  text-align: center;
+  font-family: inherit;
 }
+
 .remove {
-  background: transparent; border: 0; font-size: 18px; cursor: pointer; color: #888;
+  background: transparent;
+  border: 0;
+  font-size: 18px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color .2s ease;
 }
-.remove:hover { color: #111; }
+.remove:hover {
+  color: var(--danger);
+}
 
 .summary {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: 16px; padding-top: 12px; border-top: 1px dashed #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+  color: var(--text);
 }
-.total { font-size: 16px; }
-.checkoutBtn { margin-inline-start: auto; }
+
+.total {
+  font-size: 16px;
+}
+.total strong {
+  color: var(--brand-500);
+}
+
+.checkoutBtn {
+  margin-inline-start: auto;
+}
 
 @media (max-width: 600px) {
-  .row { grid-template-columns: 64px 1fr auto; }
-  .remove { grid-column: 3; }
+  .row {
+    grid-template-columns: 64px 1fr auto;
+  }
+  .remove {
+    grid-column: 3;
+  }
 }

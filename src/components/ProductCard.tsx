@@ -28,7 +28,7 @@ export default function ProductCard({ product }: { product: Product }) {
   return (
     <div className={styles.card}>
       <a href={`/product/${product.id}`} className={styles.thumb}>
-        <Image src={product.image || '/publicimages/p1.jpg'} alt="" width={300} height={300} />
+        <Image src={product.image || '/publicimages/hero22.png'} alt="" width={300} height={300} />
         {product.badge && <span className={styles.badge}>{product.badge}</span>}
       </a>
       <div className={styles.body}>

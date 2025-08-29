@@ -35,7 +35,7 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
       <div className={`${styles.inner} container`}>
         {/* برند */}
         <Link href="/" className={styles.logo} aria-label="خانه ورچه">
-          <Image src="/publicimages/logo10.png" alt="" width={36} height={36} />
+          <Image src="/publicimages/logo21.png" alt="" width={36} height={36} />
         </Link>
 
         {/* سرچ دسکتاپ */}
@@ -54,8 +54,6 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
         {/* ناوبری دسکتاپ */}
         <nav className={styles.navDesktop} aria-label="ناوبری اصلی">
           <Link href="/shop">فروشگاه</Link>
-          <Link href="/categories">دسته‌بندی‌ها</Link>
-          <Link href="/grooming">گرومینگ</Link>
           <Link href="/blog">بلاگ</Link>
           <Link href="/contact">تماس</Link>
         </nav>
@@ -127,8 +125,6 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
 
         <nav className={styles.navList} aria-label="منوی موبایل">
           <Link href="/shop" onClick={()=>setOpen(false)}>فروشگاه</Link>
-          <Link href="/categories" onClick={()=>setOpen(false)}>دسته‌بندی‌ها</Link>
-          <Link href="/grooming" onClick={()=>setOpen(false)}>گرومینگ</Link>
           <Link href="/blog" onClick={()=>setOpen(false)}>بلاگ</Link>
           <Link href="/contact" onClick={()=>setOpen(false)}>تماس</Link>
           {user ? (

@@ -8,5 +8,6 @@ export const endpoints = {
 
   products: `${API_BASE}/api/catalog/products/`,
   orderCreate: `${API_BASE}/api/orders/create/`,
-  
+  lastAddress: `${API_BASE}/api/orders/last-address/`,   
+
 };
