@@ -1,4 +1,3 @@
-// F:\Shahrivar1404\Werch_app\werchaui\src\store\cart.ts
 'use client';
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
@@ -9,6 +8,7 @@ export type CartItem = {
   price: number;
   image?: string | null;
   qty: number;
+  stock?: number;            // 👈 جدید: سقف
 };
 
 type CartState = {
@@ -18,6 +18,11 @@ type CartState = {
   setQty: (id: number, qty: number) => void;
   clear: () => void;
 };
+
+function clampQty(qty: number, stock?: number) {
+  if (typeof stock === 'number' && stock >= 1) return Math.min(qty, stock);
+  return qty;
+}
 
 function broadcastCartChanged() {
   try { window.dispatchEvent(new CustomEvent('cart:changed')); } catch {}
@@ -30,8 +35,12 @@ export const useCartStore = create<CartState>()(
       add: (item, qty = 1) => {
         const items = [...get().items];
         const i = items.findIndex((x) => x.id === item.id);
-        if (i >= 0) items[i] = { ...items[i], qty: items[i].qty + qty };
-        else items.push({ ...item, qty });
+        if (i >= 0) {
+          const s = items[i].stock;
+          items[i] = { ...items[i], qty: clampQty(items[i].qty + qty, s) };
+        } else {
+          items.push({ ...item, qty: clampQty(qty, item.stock) });
+        }
         set({ items });
         broadcastCartChanged();
       },
@@ -45,7 +54,11 @@ export const useCartStore = create<CartState>()(
           broadcastCartChanged();
           return;
         }
-        set({ items: get().items.map((x) => (x.id === id ? { ...x, qty } : x)) });
+        set({
+          items: get().items.map((x) =>
+            x.id === id ? { ...x, qty: clampQty(qty, x.stock) } : x
+          ),
+        });
         broadcastCartChanged();
       },
       clear: () => {

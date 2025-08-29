@@ -35,7 +35,7 @@ export default function HomePage() {
   {/* عکس بزرگ سمت راست */}
   <div className="heroImageModern">
     <Image
-      src="/publicimages/hero37.png"
+      src="/publicimages/hero38.png"
       alt="دوست پشمالو"
       fill
       className="heroImageObject"

@@ -1,13 +1,14 @@
+// F:\Shahrivar1404\Werch_app\werchaui\src\app\checkout\page.tsx
 import { getMe } from '@/lib/server-api';
-import CheckoutForm from '@/components/checkout/CheckoutForm';
+import CheckoutGate from '@/components/checkout/CheckoutGate';
+import styles from './CheckoutPage.module.css';
 
 export default async function CheckoutPage() {
   const me = await getMe();
-  // اگر کاربر لاگین نیست، بهتره این صفحه اصلاً رندر نشه؛ GuardedCheckoutLink این را هندل می‌کند.
   return (
-    <div dir="rtl" className="container" style={{maxWidth: 720, margin: '24px auto'}}>
-      <h1 style={{marginBottom: 16}}>ثبت سفارش</h1>
-      <CheckoutForm />
+    <div dir="rtl" className={`container ${styles.wrap}`}>
+      <h1 className={styles.title}>ثبت سفارش</h1>
+      <CheckoutGate initialUser={me} />
     </div>
   );
 }

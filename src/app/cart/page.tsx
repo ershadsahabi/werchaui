@@ -26,13 +26,23 @@ export default function CartPage() {
                 <div className={styles.info}>
                   <div className={styles.name}>{it.title}</div>
                   <div className={styles.price}>{(it.price * it.qty).toLocaleString('fa-IR')} تومان</div>
+                  {(typeof it.stock === 'number') && (
+                    <div style={{fontSize:12, color:'var(--muted)'}}>
+                      حداکثر موجودی: <b>{it.stock.toLocaleString('fa-IR')}</b> عدد
+                      {it.stock === 0 && <span style={{color:'var(--danger)'}}> — ناموجود</span>}
+                    </div>
+                  )}
                 </div>
                 <div className={styles.qty}>
                   <input
                     type="number"
                     min={1}
                     value={it.qty}
-                    onChange={(e) => setQty(it.id, Math.max(1, Number(e.target.value) || 1))}
+                    onChange={(e) => {
+                      const v = Math.max(1, Number(e.target.value) || 1);
+                      const capped = (typeof it.stock === 'number') ? Math.min(v, it.stock) : v;
+                      setQty(it.id, capped);
+                    }}
                   />
                 </div>
                 <button className={styles.remove} onClick={() => remove(it.id)} aria-label="حذف">✕</button>
@@ -42,10 +52,10 @@ export default function CartPage() {
 
           <div className={styles.summary}>
             <div className={styles.total}>جمع کل: <strong>{total.toLocaleString('fa-IR')}</strong> تومان</div>
-              <GuardedCheckoutLink className={`${styles.checkoutBtn} btn`}>
-                    ادامه ثبت سفارش
-              </GuardedCheckoutLink>
-            </div>
+            <GuardedCheckoutLink className={`${styles.checkoutBtn} btn`}>
+              ادامه ثبت سفارش
+            </GuardedCheckoutLink>
+          </div>
         </>
       )}
     </div>
