@@ -1,0 +1,114 @@
+/* موبایل‌اول، وابسته به توکن‌های app/variables.css */
+
+/* ===== پوستهٔ فوتر ===== */
+.footer {
+  position: relative;
+  background: var(--surface);
+  color: var(--text);
+  border-top: 1px solid var(--border);
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* نوار اَکسن بالا */
+.footer::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  opacity: .9;
+}
+
+/* فضای داخلی */
+.footerInner {
+  padding-block: 20px 16px; /* بالا/پایین */
+}
+
+/* ===== ستون‌ها (قابل توسعه) ===== */
+.footerCols {
+  display: grid;
+  gap: 16px;
+}
+
+/* در صورت افزودن هدینگ/لیست در آینده */
+.footerCols h3 {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text-strong);
+  margin-bottom: 8px;
+}
+.footerCols ul { list-style: none; padding: 0; margin: 0; }
+.footerCols li + li { margin-top: 6px; }
+.footerCols a {
+  color: var(--text-weak);
+  border-radius: var(--radius-sm);
+  padding: 4px 6px;
+  transition: color var(--transition-300), background var(--transition-300);
+}
+.footerCols a:hover {
+  color: var(--text-strong);
+  background: var(--surface-2);
+}
+
+/* ===== پایین فوتر ===== */
+.footerBottom {
+  display: grid;
+  gap: 10px;
+  padding-top: 16px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.copy {
+  color: var(--text-weak);
+  font-size: .925rem;
+}
+
+/* لینک‌های پایین */
+.footerBottomLinks {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.footerBottomLinks a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--transition-300);
+}
+.footerBottomLinks a:hover { color: var(--link-hover); }
+.dot { color: var(--text-weak); }
+
+/* ===== ریسپانسیو ===== */
+@media (min-width: 640px) {
+  .footerInner { padding-block: 28px 20px; }
+  .footerCols {
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: 18px 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .footerInner { padding-block: 36px 20px; }
+  .footerCols {
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 22px 18px;
+  }
+  .footerBottom {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+  }
+  .footerBottomLinks { justify-content: flex-end; }
+}
+
+/* احترام به کاهش حرکت */
+@media (prefers-reduced-motion: reduce) {
+  .footerCols a,
+  .footerBottomLinks a {
+    transition: none;
+  }
+}

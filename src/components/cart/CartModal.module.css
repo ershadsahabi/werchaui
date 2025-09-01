@@ -1,217 +1,344 @@
-/* ───────────────── WERCHA • CartModal (Modern, Glass, Mobile-first) ───────────────── */
+/* CartModal.module.css – پنل سبد خرید مدرن (Light/Dark)
+   هماهنگ با app/variables.css | حس نئونی + پت‌شاپ (🐾 لطیف)
+*/
 
-:root{
-  --cart-radius: 16px;
-  --cart-shadow: -14px 0 46px rgba(0,0,0,.30);
-  --cart-border: 1px solid rgba(255,255,255,.10);
-}
-
-/* Backdrop: بالاتر از هدر (z-index>1000 شما) */
-.backdrop{
+.backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0);
+  z-index: 90;
+  display: grid;
+  place-items: stretch;
+  background:
+    radial-gradient(60% 60% at 50% 50%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 60%),
+    rgba(0,0,0,.0);
+  -webkit-backdrop-filter: blur(0px);
+  backdrop-filter: blur(0px);
   opacity: 0;
   pointer-events: none;
-  transition: background .24s ease, opacity .24s ease;
-  z-index: 1200;
+  transition: opacity var(--transition-300), backdrop-filter var(--transition-300), background-color var(--transition-300);
 }
-.backdrop.open{
+.open {
   opacity: 1;
-  background: rgba(0,0,0,.40);
   pointer-events: auto;
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
-}
-
-/* Panel: کشویی از سمت راست (Force Right) */
-.panel{
-  position: absolute;
-  top: 0; bottom: 0; right: 0;           /* ← به‌صورت فیزیکی سمت راست */
-  width: min(480px, 100vw);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   background:
-    linear-gradient(180deg, color-mix(in srgb, var(--panel) 92%, #ffffff10 8%), var(--panel));
-  border-left: var(--cart-border);       /* ← مرز سمت چپ پنل */
-  box-shadow: var(--cart-shadow);
-  transform: translate3d(110%, 0, 0);
-  transition: transform .28s cubic-bezier(.25,.8,.25,1);
-  display: grid;
-  grid-template-rows: auto 1fr auto;
-  border-top-left-radius: var(--cart-radius);
-  border-bottom-left-radius: var(--cart-radius);
-  will-change: transform;
-  contain: layout paint;
+    radial-gradient(60% 60% at 50% 50%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 60%),
+    rgba(0,0,0,.5);
 }
-.slideIn{ transform: translate3d(0, 0, 0); }
-
-@media (max-width: 480px){
-  .panel{
-    width: 100vw;
-    border-radius: 0;
-    border-left: none;
-  }
+/* در لایت بک‌دراپ کمی روشن‌تر */
+:global(html.light) .open {
+  background:
+    radial-gradient(60% 60% at 50% 50%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 60%),
+    rgba(0,0,0,.28);
 }
 
-/* Header */
-.header{
-  position: sticky; top: 0; z-index: 1;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--panel) 96%, #ffffff0A 4%), var(--panel));
-  border-bottom: var(--cart-border);
-}
-.title{ font-weight: 800; letter-spacing: .01em; color: var(--text); }
-.close{
-  background: transparent; border: 0; color: var(--text);
-  width: 36px; height: 36px; border-radius: 999px;
-  font-size: 18px; line-height: 1;
-  display: inline-grid; place-items: center;
-  transition: background .18s ease, transform .18s ease, filter .18s ease;
-}
-.close:hover{ background: rgba(255,255,255,.06); transform: translateY(-1px); }
-.close:focus-visible{
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 55%, transparent);
-  outline: none;
-}
-
-/* Empty state */
-.empty{
-  display: grid; place-items: center; gap: 10px;
-  padding: 28px 18px; text-align: center;
+.panel {
+  /* از سمت راست اسلاید می‌شود؛ در موبایل مثل bottom-sheet */
+  position: right;
+  inset-inline-end: 0;
+  inset-block: 0;
+  inline-size: min(460px, 92vw);
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--surface) 96%, black 4%),
+      color-mix(in oklab, var(--surface-2) 96%, black 4%)
+    );
   color: var(--text);
-}
-.empty p{ margin: 0; color: var(--muted); }
-
-/* List + scrollbar ظریف */
-.list{
-  padding: 12px;
-  overflow: auto;
-  display: grid; gap: 10px;
-}
-.list::-webkit-scrollbar{ width: 10px; height: 10px; }
-.list::-webkit-scrollbar-thumb{ background: #3a414b; border-radius: 999px; }
-.list{ scrollbar-width: thin; scrollbar-color: #3a414b transparent; }
-
-/* Row: کارت آیتم سبد */
-.row{
+  border-inline-start: 1px solid color-mix(in oklab, var(--border) 70%, var(--text) 15%);
+  box-shadow: -12px 0 40px rgba(0,0,0,.28), 0 0 0 1px color-mix(in oklab, var(--primary) 16%, transparent);
+  transform: translateX(100%);
+  transition: transform 420ms cubic-bezier(.18,.88,.24,1.1);
   display: grid;
-  grid-template-columns: 56px 1fr auto auto;
-  gap: 10px; align-items: center;
-  padding: 10px;
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 12px;
-  background: linear-gradient(180deg, var(--panel), color-mix(in srgb, var(--panel) 86%, var(--soft) 14%));
-  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 10px;
+  padding: 16px;
 }
-.row:hover{
+.slideIn { transform: translateX(0); }
+
+:global(html.light) .panel {
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--surface) 98%, white 2%),
+      color-mix(in oklab, var(--surface-2) 98%, white 2%)
+    );
+  border-inline-start-color: color-mix(in oklab, var(--border) 75%, black 12%);
+  box-shadow: -12px 0 36px rgba(16,24,40,.12), 0 0 0 1px color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: 4px;
+}
+.title {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  font-size: 1.2rem;
+  font-weight: 900;
+  color: var(--text-strong);
+}
+.badge {
+  display: inline-grid;
+  place-items: center;
+  padding: .18rem .5rem;
+  font-size: .72rem;
+  font-weight: 900;
+  border-radius: 999px;
+  color: #0b0f14;
+  background: var(--grad-primary);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.2), inset 0 0 0 1px rgba(255,255,255,.24);
+}
+:global(html.light) .badge { color: #0e141b; }
+
+.close {
+  --s: 36px;
+  inline-size: var(--s);
+  block-size: var(--s);
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--text) 24%, var(--border) 76%);
+  background: color-mix(in oklab, var(--surface-2) 90%, var(--primary) 6%);
+  color: var(--text-strong);
+  cursor: pointer;
+  transition: transform var(--transition-300), background-color var(--transition-300), border-color var(--transition-300), box-shadow var(--transition-300);
+}
+.close:hover {
   transform: translateY(-1px);
-  border-color: rgba(255,255,255,.16);
-  box-shadow: 0 10px 26px rgba(0,0,0,.24);
+  background: color-mix(in oklab, var(--surface-2) 84%, var(--primary) 12%);
+  border-color: color-mix(in oklab, var(--primary) 38%, var(--border) 62%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 20%, transparent);
 }
-@media (max-width: 380px){
-  .row{ grid-template-columns: 48px 1fr auto; }
+.close:active { transform: translateY(0); }
+
+/* توضیح زیر تیتر */
+.subhead {
+  margin: 0 4px 8px;
+  font-size: .92rem;
+  color: color-mix(in oklab, var(--text) 86%, transparent);
 }
 
-/* Thumb */
-.thumb{
-  border-radius: 10px;
-  background: #0d1014;
+/* ===== Empty state ===== */
+.empty {
+  margin: auto;
+  text-align: center;
+  color: var(--text-weak);
+  display: grid;
+  place-items: center;
+  gap: 12px;
+}
+.emptyImg { filter: drop-shadow(0 6px 16px rgba(0,0,0,.2)); }
+
+/* ===== لیست آیتم‌ها ===== */
+.list {
+  overflow: auto;
+  padding-inline: 4px;
+  display: grid;
+  gap: 12px;
+  scrollbar-gutter: stable both-edges;
+}
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 64px 1fr auto;
+  gap: 12px;
+  align-items: start;
+  padding: 10px;
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 72%, var(--text) 8%);
+}
+.thumb {
+  inline-size: 64px;
+  block-size: 64px;
+  border-radius: var(--radius-sm);
   object-fit: cover;
-  width: 56px; height: 56px;
+  border: 1px solid color-mix(in oklab, var(--border) 68%, var(--text) 10%);
+  background: var(--muted);
 }
+.info { display: grid; gap: 6px; }
+.name {
+  font-weight: 900;
+  color: var(--text-strong);
+  line-height: 1.3;
+}
+.line {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+.unit { color: var(--text); font-weight: 700; }
+.sub  { color: var(--text-weak); font-weight: 600; }
+.stockNote { font-size: .8rem; color: color-mix(in oklab, var(--text) 78%, transparent); }
+.out { color: var(--danger); font-weight: 800; }
 
-/* Info */
-.info{ display: grid; gap: 6px; min-width: 0; }
-.name{
-  font-size: 13px; color: var(--text);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.line{ display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; }
-.unit{ font-size: 12px; color: var(--muted); }
-.sub{ font-weight: 800; color: var(--brand-500); }
-
-/* Qty control */
-.qty{
-  display: inline-flex; align-items: center; gap: 6px;
-  background: color-mix(in srgb, var(--soft) 90%, #ffffff08 10%);
-  border: 1px solid rgba(255,255,255,.12);
-  padding: 4px; border-radius: 10px;
-}
-.qty input{
-  width: 56px; height: 32px; text-align: center;
-  background: transparent; color: var(--text);
-  border: 1px solid rgba(255,255,255,.14); border-radius: 8px;
-}
-.qty input:focus-visible{
-  border-color: color-mix(in srgb, var(--brand) 70%, #000 30%);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--brand-500) 45%, transparent);
-  outline: none;
-}
-.qty button{
-  width: 28px; height: 28px;
-  border-radius: 8px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: rgba(255,255,255,.06);
+/* حذف آیتم */
+.remove {
+  position: absolute;
+  inset-inline-start: 8px;
+  inset-block-start: 8px;
+  inline-size: 28px;
+  block-size: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid color-mix(in oklab, var(--border) 70%, var(--text) 18%);
+  background: color-mix(in oklab, var(--surface-2) 88%, transparent);
   color: var(--text);
   cursor: pointer;
-  transition: background .16s ease, transform .16s ease;
+  transition: background-color var(--transition-300), border-color var(--transition-300), transform var(--transition-300), box-shadow var(--transition-300);
 }
-.qty button:hover{ background: rgba(255,255,255,.10); transform: translateY(-1px); }
-
-/* Remove */
-.remove{
-  background: transparent; border: 0; color: var(--muted);
-  width: 32px; height: 32px; border-radius: 999px;
-  font-size: 16px; display: inline-grid; place-items: center;
-  transition: background .16s ease, color .16s ease, transform .16s ease;
-}
-.remove:hover{ background: rgba(255,255,255,.06); color: var(--danger); transform: translateY(-1px); }
-.remove:focus-visible{
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger) 45%, transparent);
-  outline: none;
-}
-
-/* Footer */
-.footer{
-  position: sticky; bottom: 0; z-index: 1;
-  padding: 12px 16px;
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--panel) 96%, #ffffff0A 4%), var(--panel));
-  border-top: var(--cart-border);
-  display: grid; gap: 10px;
-  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-}
-.total{
-  font-size: 15px; color: var(--text);
-}
-.total strong{ color: var(--brand-500); }
-
-/* Actions */
-.actions{ display: flex; gap: 8px; flex-wrap: wrap; }
-.ghostBtn{
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 10px 12px;
-  border: 1px solid rgba(255,255,255,.14);
-  background: transparent;
-  color: var(--text);
-  border-radius: 12px;
-  cursor: pointer; text-align: center;
-  transition: background .18s ease, transform .18s ease, border-color .18s ease;
-}
-.ghostBtn:hover{
-  background: rgba(255,255,255,.06);
-  border-color: rgba(255,255,255,.22);
+.remove:hover {
+  background: color-mix(in oklab, var(--danger) 16%, var(--surface-2) 84%);
+  border-color: color-mix(in oklab, var(--danger) 40%, var(--border) 60%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--danger) 22%, transparent);
   transform: translateY(-1px);
 }
 
-/* Number input arrows (کروم) */
-.qty input::-webkit-outer-spin-button,
-.qty input::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
-.qty input[type=number]{ -moz-appearance: textfield; }
+/* ===== کنترل تعداد ===== */
+.qty {
+  display: grid;
+  grid-auto-flow: column;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--surface) 86%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 70%, var(--text) 12%);
+  padding: 6px;
+  height: 40px;
+}
+.qty button {
+  inline-size: 28px;
+  block-size: 28px;
+  display: grid;
+  place-items: center;
+  border: 1px solid color-mix(in oklab, var(--border) 70%, var(--text) 12%);
+  background: color-mix(in oklab, var(--surface-2) 90%, var(--primary) 6%);
+  color: var(--text-strong);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color var(--transition-300), border-color var(--transition-300), transform var(--transition-300), box-shadow var(--transition-300);
+}
+.qty button:hover { transform: translateY(-1px); }
+.qty button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+.qtyInput {
+  inline-size: 64px;
+  text-align: center;
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+  color: var(--text-strong);
+  border: 1px solid color-mix(in oklab, var(--border) 70%, var(--text) 12%);
+  border-radius: var(--radius-sm);
+  height: 28px;
+  font-weight: 800;
+}
 
-/* Reduce motion */
-@media (prefers-reduced-motion: reduce){
-  .backdrop{ transition: none; }
-  .panel{ transition: none; }
-  .row, .close, .qty button, .remove, .ghostBtn{ transition: none; }
+/* ===== Footer ===== */
+.footer {
+  border-top: 1px dashed color-mix(in oklab, var(--border) 75%, var(--text) 10%);
+  padding-top: 12px;
+  display: grid;
+  gap: 10px;
+}
+.total {
+  font-weight: 800;
+  color: var(--text-strong);
+}
+
+/* دکمه‌ها */
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 10px;
+}
+.primaryBtn,
+.checkoutBtn {
+  --h: 44px;
+  height: var(--h);
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--primary) 55%, black 12%);
+  background: var(--primary);
+  color: #0b0f14; /* خوانایی بالا روی primary */
+  font-weight: 900;
+  letter-spacing: .01em;
+  box-shadow: 0 8px 20px color-mix(in oklab, var(--primary) 28%, transparent);
+  transition: transform var(--transition-300), background-color var(--transition-300), border-color var(--transition-300), box-shadow var(--transition-300);
+}
+.primaryBtn:hover,
+.checkoutBtn:hover {
+  background: color-mix(in oklab, var(--primary) 88%, white 10%);
+  transform: translateY(-1px);
+}
+.primaryBtn:active,
+.checkoutBtn:active { transform: translateY(0); }
+
+.ghostBtn {
+  --h: 44px;
+  height: var(--h);
+  display: inline-grid;
+  place-items: center;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--text) 28%, var(--border) 72%);
+  background: color-mix(in oklab, var(--surface) 90%, transparent);
+  color: var(--text);
+  font-weight: 800;
+  transition: transform var(--transition-300), background-color var(--transition-300), border-color var(--transition-300), box-shadow var(--transition-300);
+}
+.ghostBtn:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--surface-2) 92%, var(--primary) 8%);
+  border-color: color-mix(in oklab, var(--primary) 30%, var(--border) 70%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 16%, transparent);
+}
+:global(html.light) .checkoutBtn { color: #0e141b; }
+
+/* ===== Scrollbars ===== */
+.list::-webkit-scrollbar { inline-size: 10px; }
+.list::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--primary) 35%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+@supports (scrollbar-color: auto) {
+  .list { scrollbar-color: color-mix(in oklab, var(--primary) 35%, transparent) transparent; scrollbar-width: thin; }
+}
+
+/* ===== موبایل: bottom-sheet ===== */
+@media (max-width: 640px) {
+  .panel {
+    inset-inline: 0;
+    inset-block-end: 0;
+    inline-size: 100%;
+    max-block-size: min(92vh, 720px);
+    border-inline-start: none;
+    border-block-start: 1px solid color-mix(in oklab, var(--border) 75%, var(--text) 12%);
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
+    transform: translateY(100%);
+    box-shadow: 0 -10px 40px rgba(0,0,0,.28);
+    grid-template-rows: auto auto 1fr auto;
+  }
+  .slideIn { transform: translateY(0); }
+  .row {
+    grid-template-columns: 64px 1fr;
+    padding-inline-start: 10px;
+    padding-inline-end: 40px; /* جا برای remove */
+  }
+  .remove {
+    inset-inline-start: auto;
+    inset-inline-end: 8px;
+  }
+  .actions {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,19 +1,50 @@
-.card{
+/* کارت دروازه‌ی ورود – خوانا در شب/روز */
+.card {
+  max-inline-size: 720px;
+  margin-inline: auto;
   background:
-    linear-gradient(180deg, var(--panel) 0%, color-mix(in srgb, var(--panel) 70%, var(--rose-200) 30%) 100%);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: var(--radius);
-  padding: 20px;
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--surface) 96%, black 4%),
+      color-mix(in oklab, var(--surface-2) 96%, black 4%)
+    );
+  border: 1px solid color-mix(in oklab, var(--border) 72%, var(--text) 10%);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
+  padding: 18px 16px;
+  display: grid;
+  gap: 10px;
+  text-align: center;
+}
+:global(html.light) .card {
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--surface) 98%, white 2%),
+      color-mix(in oklab, var(--surface-2) 98%, white 2%)
+    );
+  border-color: color-mix(in oklab, var(--border) 75%, black 12%);
 }
 
-.title{
-  margin: 0 0 6px;
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--text);
+.title {
+  font-weight: 900;
+  font-size: clamp(1.1rem, 1rem + .6vw, 1.3rem);
+  color: var(--text-strong);
 }
-.text{
-  margin: 0 0 12px;
-  color: var(--muted);
+.text {
+  color: color-mix(in oklab, var(--text) 86%, transparent);
+  margin-bottom: 6px;
 }
+
+.actions { display: grid; place-items: center; }
+
+.primaryBtn {
+  min-height: 44px;
+  padding-inline: 16px;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--primary) 55%, black 12%);
+  background: var(--primary);
+  color: #0b0f14;
+  font-weight: 900;
+  letter-spacing: .01em;
+  box-shadow: 0 8px 20px color-mix(in oklab, var(--primary) 28%, transparent);
+}
+:global(html.light) .primaryBtn { color: #0e141b; }

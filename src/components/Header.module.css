@@ -1,206 +1,276 @@
-/* Header.module.css */
+/* موبایل-اول، استفاده از توکن‌های app/variables.css */
 
+/* ===== نوار هدر ===== */
 .header {
-  background: var(--panel);
-  padding-block: 12px;
-  border-bottom: 1px solid var(--line);
   position: sticky;
   top: 0;
-  z-index: 1000;
+  inset-inline: 0;
+  z-index: 50;
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: saturate(140%) blur(10px);
+  -webkit-backdrop-filter: saturate(140%) blur(10px);
+  transition: background var(--transition-300), border-color var(--transition-300), box-shadow var(--transition-300);
 }
+.headerOpen { box-shadow: 0 12px 24px rgba(0,0,0,.25); }
 
 .inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: var(--text);
-}
-
-.brandText {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.brandSub {
-  font-size: 12px;
-  color: var(--muted);
-  margin-right: 4px;
-}
-
-.search {
-  flex: 1;
-  margin: 0 16px;
-  display: none;
-}
-
-.searchInput {
-  width: 100%;
-  padding: 8px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--soft);
-  color: var(--text);
-}
-
-.searchBtn {
-  margin-inline-start: -32px;
-  background: transparent;
-  border: none;
-  color: var(--text);
-}
-
-.navDesktop {
-  display: none;
-  gap: 18px;
-  font-weight: 500;
-  font-size: 15px;
-}
-
-.actions {
-  display: flex;
-  align-items: center;
   gap: 10px;
+  min-height: 64px;
 }
 
-.iconBtn {
-  background: transparent;
-  border: none;
-  color: var(--text);
-  display: flex;
+/* ===== لوگو ===== */
+.logo {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px;
-  border-radius: 999px;
-  transition: background 0.2s;
+  width: 40px; height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  overflow: hidden;
 }
 
-.iconBtn:hover {
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.cartBtn {
-  position: relative;
-}
-
-.cartBadge {
-  position: absolute;
-  top: -6px;
-  left: -6px;
-  background: var(--rose-500);
-  color: #fff;
-  font-size: 10px;
-  font-weight: bold;
-  border-radius: 999px;
-  padding: 2px 6px;
-}
-
-.authBtn {
-  background: transparent;
-  border: 1px solid var(--line);
-  color: var(--text);
-  padding: 6px 12px;
-  border-radius: 999px;
-  font-size: 14px;
-}
-
-.authPrimary {
-  background: var(--rose-600);
-  color: white;
-  border-color: transparent;
-}
-
-.email {
-  font-size: 13px;
-  color: var(--muted);
-  margin-inline-end: 6px;
-}
-
-.burger {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 6px;
-  background: transparent;
-  border: none;
-}
-
-.burger span {
-  width: 20px;
-  height: 2px;
-  background: var(--text);
-}
-
-.navMobile {
+/* ===== سرچ ===== */
+.search {
   display: none;
-  background: var(--panel);
-  padding: 16px;
-}
-
-.navMobileOpen {
-  display: block;
-}
-
-.navList {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  font-weight: 500;
-}
-
-.mobileTop {
-  margin-bottom: 16px;
-}
-
-.searchMobile {
-  display: flex;
-  gap: 8px;
-}
-
-.quickActions {
-  display: flex;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.quickAction {
-  display: flex;
+  flex: 1 1 auto;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 6px 4px 8px;
+  transition: border-color var(--transition-300), background var(--transition-300), box-shadow var(--transition-300);
+}
+.search:focus-within {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 24%, transparent);
+}
+.searchOpen { display: flex; }
+
+.searchInput {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  width: 100%;
+  min-height: 40px;
+  padding: 0 8px;
+}
+.searchInput::placeholder { color: var(--text-weak); }
+
+.searchBtn {
+  width: 36px; height: 36px;
+  border-radius: 999px;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  color: var(--text-weak);
+  transition: background var(--transition-300), color var(--transition-300);
+}
+.searchBtn:hover { background: var(--surface-2); color: var(--text); }
+
+/* ===== ناوبری دسکتاپ ===== */
+.navDesktop {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  margin-inline-start: 6px;
+}
+.navDesktop a {
+  color: var(--text-weak);
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-300), color var(--transition-300);
+}
+.navDesktop a:hover {
+  color: var(--text-strong);
+  background: var(--surface-2);
 }
 
-.userMobile {
-  margin-top: 12px;
-}
-
-.authRow {
+/* ===== اکشن‌ها ===== */
+.actions {
+  margin-inline-start: auto;
   display: flex;
+  align-items: center;
   gap: 8px;
-  margin-top: 12px;
 }
 
+/* آیکن‌باتن عمومی */
+.iconBtn {
+  position: relative;
+  width: 40px; height: 40px;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  transition: background var(--transition-300), border-color var(--transition-300), transform var(--transition-300);
+}
+.iconBtn:hover { background: var(--surface-2); }
+.iconBtn:active { transform: translateY(1px) scale(.98); }
+
+/* بیج سبد */
+.cartBtn { }
+.cartBadge {
+  position: absolute;
+  top: -4px;
+  inset-inline-end: -4px;
+  min-width: 18px; height: 18px;
+  padding-inline: 5px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--pet-white);
+  font-size: 11px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 1px solid color-mix(in oklab, black 16%, transparent);
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+
+/* کاربر/احراز هویت */
+.user { display: none; align-items: center; gap: 8px; }
+.email {
+  color: var(--text-weak);
+  max-width: 16ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font-size: .9rem;
+}
+.authBtn {
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  transition: background var(--transition-300), border-color var(--transition-300);
+}
+.authBtn:hover { background: var(--surface-2); }
+.authPrimary {
+  border-color: transparent;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 92%, transparent), var(--primary));
+  color: var(--pet-white);
+}
+.authPrimary:hover { background: var(--primary-press); }
+
+/* ===== برگر ===== */
+.burger {
+  display: inline-flex;
+  width: 40px; height: 40px;
+  align-items: center; justify-content: center;
+  flex-direction: column; gap: 4px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: background var(--transition-300), border-color var(--transition-300);
+}
+.burger:hover { background: var(--surface-2); }
+.burger span {
+  width: 18px; height: 2px; background: var(--text);
+  border-radius: 2px;
+  transition: transform var(--transition-300), opacity var(--transition-300);
+  transform-origin: 50% 50%;
+}
+.burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+.burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+.burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+/* ===== دراور موبایل ===== */
+.navMobile {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: color-mix(in oklab, var(--bg) 78%, black 10%);
+  transform: translateY(-100%);
+  transition: transform var(--transition-300);
+  padding: 16px 0 24px;
+  overflow-y: auto;
+  pointer-events: none;
+}
+.navMobileOpen {
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* دکمهٔ بستن که همیشه دیده می‌شود */
+.drawerClose {
+  position: sticky;
+  top: calc(env(safe-area-inset-top) + 8px);
+  z-index: 5;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 8px;
+}
+.drawerClose .burger {
+  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+}
+
+/* بدنهٔ منو */
+.mobileTop {
+  display: grid;
+  gap: 12px;
+  padding-block: 8px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* سرچ داخل دراور */
+.searchMobile { display: flex; gap: 8px; }
+
+/* اکشن‌های سریع */
+.quickActions { display: flex; gap: 8px; }
+.quickAction {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  position: relative;
+  transition: background var(--transition-300), border-color var(--transition-300);
+}
+.quickAction:hover { background: var(--surface-2); }
+
+/* لیست منوی موبایل */
+.navList {
+  display: grid;
+  gap: 8px;
+  padding-block: 16px 24px;
+}
+.navList a {
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 700;
+  transition: background var(--transition-300), border-color var(--transition-300);
+}
+.navList a:hover { background: var(--surface-2); }
+
+/* یوزر/احراز در موبایل */
+.userMobile {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.authRow { display: flex; gap: 8px; }
+
+/* ===== ریسپانسیو ===== */
 @media (min-width: 768px) {
-  .search {
-    display: block;
-  }
-  .navMobile,
-  .burger {
-    display: none;
-  }
-
-    .navDesktop {
-    display: flex;
-    gap: 18px;
-    font-weight: 500;
-    font-size: 15px;
-  }
-
+  .inner { min-height: 72px; gap: 14px; }
+  .user { display: flex; }
 }
+
+@media (min-width: 1024px) {
+  .search { display: flex; }
+  .navDesktop { display: flex; }
+  .burger { display: none; }
+  .navMobile { display: none; }
+}
+
+
+

@@ -1,43 +1,450 @@
+/* Modal.module.css – نسخه مخصوص خوانایی دکمه‌ها و "شرایط رو قبول دارم"
+   هماهنگ با app/variables.css (Light/Dark)
+   نکته: اگر فرم‌هات کلاس‌های دیگری دارند، سِلکتورهای عام مثل [type="submit"] هم پوشش می‌دهند.
+*/
+
 .wrap {
-  position: fixed; inset: 0; z-index: 1000;
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: contents;
 }
 
+/* ===== Backdrop ===== */
 .backdrop {
-  position: absolute; inset: 0;
-  background: rgba(0,0,0,.5);
-  backdrop-filter: blur(6px);
-  opacity: 0; animation: fadeIn .2s forwards ease-out;
+  position: fixed;
+  inset: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  background:
+    radial-gradient(60% 60% at 50% 50%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 60%),
+    rgba(0,0,0,.62);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+:global(html.light) .backdrop {
+  background:
+    radial-gradient(60% 60% at 50% 50%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 60%),
+    rgba(0,0,0,.35);
 }
 
+/* ===== Sheet ===== */
 .sheet {
-  position: absolute; inset: 0;
-  display: grid; place-items: center; padding: 16px;
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  pointer-events: none;
 }
 
+/* ===== Card ===== */
 .card {
-  width: 100%; max-width: 420px;
-  background: var(--panel);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 18px; box-shadow: var(--shadow);
-  transform: translateY(10px) scale(.98);
-  opacity: 0; animation: popIn .2s .05s forwards ease-out;
+  pointer-events: auto;
+  inline-size: min(560px, 96vw);
+  max-block-size: min(86vh, 920px);
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 12px;
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--surface) 96%, black 4%),
+      color-mix(in oklab, var(--surface-2) 96%, black 4%)
+    );
+  color: var(--text);
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in oklab, var(--border) 70%, var(--text) 20%);
+  box-shadow: var(--shadow);
+  padding: 18px 18px 16px;
+  transform-origin: center;
+  animation: modal-in 420ms cubic-bezier(.18,.88,.24,1.1);
+  position: relative;
+  overflow: clip;
+}
+:global(html.light) .card {
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--surface) 98%, white 2%),
+      color-mix(in oklab, var(--surface-2) 98%, white 2%)
+    );
+  border-color: color-mix(in oklab, var(--border) 70%, black 12%);
 }
 
+.elevated {
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, .35),
+    0 0 0 1px color-mix(in oklab, var(--primary) 22%, transparent),
+    0 0 36px color-mix(in oklab, var(--primary) 16%, transparent);
+}
+:global(html.light) .elevated {
+  box-shadow:
+    0 14px 40px rgba(16,24,40,.12),
+    0 0 0 1px color-mix(in oklab, var(--primary) 18%, transparent),
+    0 0 24px color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+/* ===== Header ===== */
 .header {
-  display:flex; align-items:center; justify-content:space-between;
-  padding: 14px 16px; border-bottom: 1px solid rgba(255,255,255,.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
-.header h3 { margin: 0; font-size: 18px; }
+.header h3 {
+  font-size: 1.28rem;
+  font-weight: 900;
+  letter-spacing: -.01em;
+  color: var(--text-strong);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin: 0;
+  text-shadow: 0 1px 0 rgba(0,0,0,.1);
+}
 
-.body { padding: 16px; }
-.footer { padding: 12px 16px; border-top: 1px solid rgba(255,255,255,.06); }
+/* توضیح زیر تیتر */
+.subhead {
+  margin: 0 2px;
+  color: color-mix(in oklab, var(--text) 88%, transparent);
+  font-size: .95rem;
+}
 
+/* Badge برند (پت‌شاپی لطیف) */
+.badge {
+  display: inline-grid;
+  place-items: center;
+  padding-inline: .6rem;
+  padding-block: .28rem;
+  font-size: .78rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  color: #0b0f14;
+  background: var(--grad-primary);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.2), inset 0 0 0 1px rgba(255,255,255,.24);
+}
+:global(html.light) .badge { color: #0e141b; }
+
+/* ===== Close button ===== */
 .closeBtn {
-  background: transparent; border: 1px solid rgba(255,255,255,.15);
-  color: var(--text); padding: 6px 10px; border-radius: 10px;
+  --size: 38px;
+  inline-size: var(--size);
+  block-size: var(--size);
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--surface-2) 90%, var(--primary) 6%);
+  border: 1px solid color-mix(in oklab, var(--text) 24%, var(--border) 76%);
+  color: var(--text-strong);
+  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  cursor: pointer;
+  transition:
+    transform var(--transition-300),
+    box-shadow var(--transition-300),
+    background-color var(--transition-300),
+    border-color var(--transition-300),
+    color var(--transition-300);
 }
-.closeBtn:hover { background: rgba(255,255,255,.06); }
+.closeBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0,0,0,.35), 0 0 0 3px color-mix(in oklab, var(--primary) 22%, transparent);
+  background: color-mix(in oklab, var(--surface-2) 84%, var(--primary) 12%);
+  border-color: color-mix(in oklab, var(--primary) 38%, var(--border) 62%);
+}
+.closeBtn:active {
+  transform: translateY(0);
+  background: var(--primary-press);
+  color: #0b0f14;
+  border-color: color-mix(in oklab, var(--primary-press) 50%, black 20%);
+}
+.closeBtn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+:global(html.light) .closeBtn {
+  background: color-mix(in oklab, #fff 86%, var(--primary) 6%);
+  border-color: color-mix(in oklab, var(--border) 60%, black 14%);
+  color: var(--ink-800l);
+}
 
-/* Animations */
-@keyframes fadeIn { to { opacity: 1; } }
-@keyframes popIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+/* ===== Body & Links ===== */
+.body {
+  overflow: auto;
+  padding: 8px 2px 2px;
+  scrollbar-gutter: stable both-edges;
+}
+.body a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+}
+.body a:hover { color: var(--link-hover); }
+
+/* ===========================
+   دکمه‌های فرم (ورود/ثبت‌نام)
+   =========================== */
+
+/* متغیرهای محلی برای رنگ متن روی primary */
+:root {
+  --btn-on-primary-dark: #061017;   /* خواناتر روی فیروزه‌ای/آبی نئونی */
+  --btn-on-primary-light: #0a1220;  /* خوانا روی آبی روشنِ لایت */
+}
+
+/* دکمه اصلی: اگر پروژه کلاس نداده، با type=submit هم می‌گیریمش */
+.primaryBtn,
+.body button[type="submit"],
+.body [data-variant="primary"] {
+  --h: 46px;
+  height: var(--h);
+  padding: 0 18px;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--primary) 55%, black 12%);
+  font-weight: 900;
+  letter-spacing: .01em;
+  line-height: 1;
+  cursor: pointer;
+  background: var(--primary);
+  color: var(--btn-on-primary-dark);
+  box-shadow: 0 8px 20px color-mix(in oklab, var(--primary) 28%, transparent);
+  transition:
+    background-color var(--transition-300),
+    border-color var(--transition-300),
+    color var(--transition-300),
+    box-shadow var(--transition-300),
+    transform var(--transition-300);
+}
+:global(html.light) .primaryBtn,
+:global(html.light) .body button[type="submit"],
+:global(html.light) .body [data-variant="primary"] {
+  color: var(--btn-on-primary-light);
+}
+
+.primaryBtn:hover,
+.body button[type="submit"]:hover,
+.body [data-variant="primary"]:hover {
+  background: color-mix(in oklab, var(--primary) 88%, white 10%);
+  transform: translateY(-1px);
+}
+.primaryBtn:active,
+.body button[type="submit"]:active,
+.body [data-variant="primary"]:active {
+  background: var(--primary-press);
+  transform: translateY(0);
+}
+.primaryBtn:focus-visible,
+.body button[type="submit"]:focus-visible,
+.body [data-variant="primary"]:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* دکمه ثانویه (اگر داشتی) */
+.secondaryBtn,
+.body [data-variant="secondary"] {
+  --h: 46px;
+  height: var(--h);
+  padding: 0 16px;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--text) 32%, var(--border) 68%);
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--text);
+  background: color-mix(in oklab, var(--surface) 90%, transparent);
+  transition:
+    background-color var(--transition-300),
+    border-color var(--transition-300),
+    color var(--transition-300),
+    box-shadow var(--transition-300),
+    transform var(--transition-300);
+}
+.secondaryBtn:hover,
+.body [data-variant="secondary"]:hover {
+  background: color-mix(in oklab, var(--surface-2) 92%, var(--primary) 8%);
+  border-color: color-mix(in oklab, var(--primary) 30%, var(--border) 70%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
+  transform: translateY(-1px);
+}
+:global(html.light) .secondaryBtn,
+:global(html.light) .body [data-variant="secondary"] {
+  color: var(--ink-800l);
+  background: #fff;
+  border-color: color-mix(in oklab, var(--border) 70%, black 12%);
+}
+
+/* ===========================
+   «شرایط رو قبول دارم»
+   =========================== */
+
+/* ردیف پذیرش شرایط – تلاش برای گرفتن حالت‌های مختلف نام‌گذاری */
+.consentRow,
+.termsRow,
+.agreeRow,
+.body .consent,
+.body .terms,
+.body .agree {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: .92rem;
+  color: color-mix(in oklab, var(--text) 94%, transparent);
+}
+
+/* چک‌باکس سفارشی با حال‌وهوای پت‌شاپ (🐾) */
+.consentRow input[type="checkbox"],
+.termsRow  input[type="checkbox"],
+.agreeRow  input[type="checkbox"],
+.body .consent input[type="checkbox"],
+.body .terms   input[type="checkbox"],
+.body .agree   input[type="checkbox"] {
+  inline-size: 20px;
+  block-size: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 6px;
+  border: 1px solid color-mix(in oklab, var(--text) 24%, var(--border) 76%);
+  background: color-mix(in oklab, var(--surface) 86%, transparent);
+  display: grid;
+  place-items: center;
+  margin-top: 2px;
+  cursor: pointer;
+  transition: background-color var(--transition-300), border-color var(--transition-300), box-shadow var(--transition-300);
+}
+.consentRow input[type="checkbox"]:hover,
+.termsRow  input[type="checkbox"]:hover,
+.agreeRow  input[type="checkbox"]:hover,
+.body .consent input[type="checkbox"]:hover,
+.body .terms   input[type="checkbox"]:hover,
+.body .agree   input[type="checkbox"]:hover {
+  border-color: color-mix(in oklab, var(--primary) 40%, var(--border) 60%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
+}
+
+.consentRow input[type="checkbox"]:checked,
+.termsRow  input[type="checkbox"]:checked,
+.agreeRow  input[type="checkbox"]:checked,
+.body .consent input[type="checkbox"]:checked,
+.body .terms   input[type="checkbox"]:checked,
+.body .agree   input[type="checkbox"]:checked {
+  background: var(--primary);
+  border-color: color-mix(in oklab, var(--primary) 60%, black 10%);
+}
+
+/* تیکِ 🐾 */
+.consentRow input[type="checkbox"]::after,
+.termsRow  input[type="checkbox"]::after,
+.agreeRow  input[type="checkbox"]::after,
+.body .consent input[type="checkbox"]::after,
+.body .terms   input[type="checkbox"]::after,
+.body .agree   input[type="checkbox"]::after {
+  content: "🐾";
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(.6);
+  transition: opacity var(--transition-300), transform var(--transition-300);
+  color: var(--btn-on-primary-dark);
+}
+:global(html.light) .consentRow input[type="checkbox"]::after,
+:global(html.light) .termsRow  input[type="checkbox"]::after,
+:global(html.light) .agreeRow  input[type="checkbox"]::after,
+:global(html.light) .body .consent input[type="checkbox"]::after,
+:global(html.light) .body .terms   input[type="checkbox"]::after,
+:global(html.light) .body .agree   input[type="checkbox"]::after {
+  color: var(--btn-on-primary-light);
+}
+
+.consentRow input[type="checkbox"]:checked::after,
+.termsRow  input[type="checkbox"]:checked::after,
+.agreeRow  input[type="checkbox"]:checked::after,
+.body .consent input[type="checkbox"]:checked::after,
+.body .terms   input[type="checkbox"]:checked::after,
+.body .agree   input[type="checkbox"]:checked::after {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* لیبلِ شرایط: کنتراست بالا + لینک پررنگ */
+.consentRow label,
+.termsRow  label,
+.agreeRow  label,
+.body .consent label,
+.body .terms   label,
+.body .agree   label {
+  user-select: none;
+  cursor: pointer;
+  color: color-mix(in oklab, var(--text) 96%, transparent);
+}
+.consentRow label a,
+.termsRow  label a,
+.agreeRow  label a,
+.body .consent label a,
+.body .terms   label a,
+.body .agree   label a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 2px;
+  font-weight: 800; /* برجسته برای خوانایی */
+}
+.consentRow label a:hover,
+.termsRow  label a:hover,
+.agreeRow  label a:hover,
+.body .consent label a:hover,
+.body .terms   label a:hover,
+.body .agree   label a:hover {
+  color: var(--link-hover);
+}
+
+/* اگر فرم از help/error استفاده می‌کند */
+.helpText,
+.errorText {
+  font-size: .86rem;
+  margin-top: 6px;
+}
+.helpText  { color: color-mix(in oklab, var(--text) 78%, transparent); }
+.errorText { color: var(--danger); }
+
+/* ===== Scrollbars ===== */
+.body::-webkit-scrollbar { inline-size: 10px; }
+.body::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--primary) 40%, transparent);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.body::-webkit-scrollbar-track { background: transparent; }
+@supports (scrollbar-color: auto) {
+  .body {
+    scrollbar-color: color-mix(in oklab, var(--primary) 40%, transparent) transparent;
+    scrollbar-width: thin;
+  }
+}
+
+/* ===== Animations & reduced motion ===== */
+@keyframes modal-in {
+  0% { opacity: 0; transform: translateY(16px) scale(.98); filter: saturate(.9); }
+  60% { transform: translateY(-4px) scale(1.008); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: saturate(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .card { animation: none !important; }
+  .closeBtn,
+  .primaryBtn,
+  .secondaryBtn { transition: none !important; }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .card {
+    inline-size: min(480px, 96vw);
+    padding: 16px 14px 12px;
+    border-radius: var(--radius);
+  }
+  .header h3 { font-size: 1.12rem; }
+  .subhead { font-size: .9rem; }
+}

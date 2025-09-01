@@ -1,3 +1,4 @@
+// F:\Shahrivar1404\Werch_app\werchaui\src\components\checkout\CheckoutGate.tsx
 'use client';
 import { useEffect, useState } from 'react';
 import LoginModal from '@/components/LoginModal';
@@ -9,7 +10,6 @@ export default function CheckoutGate({ initialUser }: { initialUser: any | null 
   const [user, setUser] = useState<any | null>(initialUser);
   const [loginOpen, setLoginOpen] = useState(false);
 
-  // اگر در همین صفحه لاگین/لاگ‌اوت شد، به‌روز شو
   useEffect(() => {
     const onAuth = async () => {
       try {
@@ -23,12 +23,16 @@ export default function CheckoutGate({ initialUser }: { initialUser: any | null 
 
   if (!user) {
     return (
-      <div className={styles.card} dir="rtl" role="alert">
+      <section className={styles.card} dir="rtl" role="alert">
         <h2 className={styles.title}>برای ثبت سفارش وارد شوید</h2>
         <p className={styles.text}>برای ادامه‌ی فرآیند، لازم است وارد حساب کاربری شوید.</p>
-        <button className="btn btnPrimary" onClick={() => setLoginOpen(true)}>ورود</button>
+        <div className={styles.actions}>
+          <button className={`${styles.primaryBtn} btn btnPrimary`} onClick={() => setLoginOpen(true)}>
+            ورود
+          </button>
+        </div>
         <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-      </div>
+      </section>
     );
   }
 

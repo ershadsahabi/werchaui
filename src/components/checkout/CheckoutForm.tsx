@@ -6,7 +6,7 @@ import { useCartStore, useCartTotal } from '@/store/cart';
 import { postWithCsrf } from '@/lib/client-csrf';
 import { endpoints } from '@/lib/api';
 import styles from './CheckoutForm.module.css';
-import LoginModal from '@/components/LoginModal';           // 👈 اضافه شد
+import LoginModal from '@/components/LoginModal';
 
 type ItemErr = { product_id: number; detail: string; title?: string; available?: number };
 
@@ -50,15 +50,13 @@ export default function CheckoutForm() {
   const [error, setError] = useState<string | null>(null);
   const [itemErrors, setItemErrors] = useState<ItemErr[]>([]);
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [loginOpen, setLoginOpen] = useState(false);        // 👈 اضافه شد
+  const [loginOpen, setLoginOpen] = useState(false);
 
-  const openLoginModal = () => {                            // 👈 اضافه شد
+  const openLoginModal = () => {
     setLoginOpen(true);
-    // اختیاری: به هدر هم سیگنال بده اگر خواستی آنجا هم باز شود
     try { window.dispatchEvent(new CustomEvent('auth:open-login')); } catch {}
   };
 
-  // Prefill آخرین آدرس
   useEffect(() => {
     (async () => {
       try {
@@ -94,19 +92,16 @@ export default function CheckoutForm() {
 
     setLoading(true);
     try {
-      // ⬅️ قبل از ارسال، وضعیت لاگین را چک کن
       try {
         const meRes = await fetch(endpoints.me, { credentials: 'include', cache: 'no-store' });
         if (!meRes.ok) {
           setError('برای ثبت سفارش باید وارد شوید.');
-          openLoginModal();                                     // 👈 باز کردن مودال
+          openLoginModal();
           setLoading(false);
           try { window.dispatchEvent(new CustomEvent('auth:changed', { detail: { loggedIn: false } })); } catch {}
           return;
         }
-      } catch {
-        // اگر چک شکست خورد، می‌ذاریم سرور تعیین تکلیف کند
-      }
+      } catch {}
 
       const payload = {
         items: items.map(it => ({ product_id: it.id, qty: it.qty })),
@@ -123,7 +118,7 @@ export default function CheckoutForm() {
       const raw = err?.message || '';
       if (looksAuthError(raw)) {
         setError('برای ثبت سفارش باید وارد شوید.');
-        openLoginModal();                                       // 👈 باز کردن مودال
+        openLoginModal();
         try { window.dispatchEvent(new CustomEvent('auth:changed', { detail: { loggedIn: false } })); } catch {}
         setLoading(false);
         return;
@@ -236,8 +231,8 @@ export default function CheckoutForm() {
 
         {itemErrors.length > 0 && (
           <div className={styles.alert} role="alert">
-            <div style={{fontWeight: 600, marginBottom: 6}}>مشکلات آیتم‌ها:</div>
-            <ul style={{margin: 0, paddingInlineStart: 18}}>
+            <div className={styles.alertTitle}>مشکلات آیتم‌ها:</div>
+            <ul className={styles.alertList}>
               {itemErrors.map((er, idx) => (
                 <li key={idx}>
                   {er.title ? <><b>{er.title}</b> (#{er.product_id})</> : <>محصول {er.product_id}</>}
@@ -245,27 +240,26 @@ export default function CheckoutForm() {
                   {typeof er.available === 'number' && (
                     er.available > 0
                       ? <> — حداکثر موجودی: <b>{er.available.toLocaleString('fa-IR')}</b></>
-                      : <> — <span style={{color:'var(--danger)'}}>ناموجود</span></>
+                      : <> — <span className={styles.out}>ناموجود</span></>
                   )}
                 </li>
               ))}
             </ul>
-            <div className={styles.hint} style={{marginTop:6}}>
+            <div className={styles.hint}>
               در صورت امکان، تعداد سبد شما به‌طور خودکار با موجودی فعلی هماهنگ شد.
             </div>
           </div>
         )}
 
-        {error && <p className={styles.alert} role="alert">{error}</p>}
+        {error && <p className={`${styles.alert} ${styles.alertError}`} role="alert">{error}</p>}
 
         <div className={styles.actions}>
-          <button className="btn btnPrimary" disabled={disabled}>
+          <button className={`${styles.submitBtn} btn btnPrimary`} disabled={disabled}>
             {loading ? 'در حال ثبت…' : 'ثبت نهایی سفارش'}
           </button>
         </div>
       </form>
 
-      {/* 👇 مودال لاگین؛ فقط وقتی لازم شد باز می‌شود */}
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
     </>
   );

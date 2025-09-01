@@ -1,0 +1,134 @@
+/* app/variables.css */
+/* ===== Night (Dark = پیش‌فرض) | نئونی، شفاف، کنتراست خوانا ===== */
+:root {
+  /* پایه‌های تازه و مدرن */
+  --ink-950: #070a0f;
+  --ink-900: #0b0f14;
+  --ink-800: #0f1621;
+  --ink-700: #121b2a;
+  --slate-300: #cdd9e5;
+  --slate-400: #b6c2cf;
+  --slate-500: #9aa7b5;
+
+  /* نئون‌های تم */
+  --cyan-400:  #22d3ee; /* primary */
+  --cyan-600:  #0891b2;
+  --violet-400:#a78bfa; /* secondary */
+  --violet-600:#7c3aed;
+  --magenta-400:#f472b6; /* accent */
+  --magenta-600:#db2777;
+
+  /* خاکستری‌ها و خطوط */
+  --line-700:  #1e2a3a;   /* border on dark */
+  --muted-800: #0f1a24;   /* muted surface */
+
+  /* برند/پت‌ها (سازگار با نسخه قبلی) */
+  --brown-600: #8b5e3c;     /* سگ */
+  --brown-700: #6f472b;
+  --pet-dog-brown: var(--brown-600);
+  --pet-cat-gray:  #8792a2;
+  --pet-white:     #ffffff;
+  --pet-pink:      #f48fb1;
+
+  /* توکن‌های تم (Dark default) */
+  --bg:            var(--ink-900);
+  --surface:       var(--ink-800);
+  --surface-2:     var(--ink-700);
+  --text:          #e9f1fa;
+  --text-weak:     var(--slate-400);
+  --text-strong:   #ffffff;
+
+  --primary:       var(--cyan-400);
+  --primary-press: var(--cyan-600);
+  --secondary:     var(--violet-400);
+  --secondary-press: var(--violet-600);
+  --accent:        var(--magenta-400);
+  --accent-weak:   color-mix(in oklab, var(--magenta-400) 28%, transparent);
+
+  --muted:         var(--muted-800);
+  --border:        var(--line-700);
+
+  --link:          var(--primary);
+  --link-hover:    var(--primary-press);
+
+  --focus-ring:    color-mix(in oklab, var(--cyan-400) 70%, white 25%);
+  --shadow:        0 12px 32px rgba(0, 0, 0, .28);
+
+  /* تایپوگرافی و رادیوس */
+  --font-sans: var(--font-vazirmatn), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 22px;
+  --container-w: 1120px;
+  --transition-300: 300ms cubic-bezier(.2,.8,.2,1);
+
+  /* گرادیان‌های آماده استفاده */
+  --grad-primary: linear-gradient(135deg, #22d3ee 0%, #60a5fa 50%, #a78bfa 100%);
+  --grad-accent:  linear-gradient(135deg, #f472b6 0%, #fb7185 50%, #f59e0b 100%);
+
+  /* شیشه‌ای لطیف */
+  --glass: rgba(255,255,255,.04);
+  --glass-border: rgba(255,255,255,.08);
+}
+
+/* ===== Day (Light) با کلاس روی <html class="light"> | روشن، تمیز، کنتراست ملایم ===== */
+html.light {
+  /* زمینه‌های لطیف */
+  --paper-000: #ffffff;
+  --paper-050: #f7fafc;
+  --paper-100: #eef3f8;
+
+  /* رنگ متن */
+  --ink-1000: #0e141b;
+  --ink-800l: #1b2530;
+  --ink-600l: #3b4a5a;
+
+  /* رنگ‌های تعاملی در روشنایی */
+  --cyan-500l:   #06b6d4;
+  --cyan-700l:   #0e7490;
+  --violet-500l: #8b5cf6;
+  --violet-700l: #6d28d9;
+  --magenta-500l:#ec4899;
+
+  --bg:          var(--paper-050);
+  --surface:     var(--paper-000);
+  --surface-2:   var(--paper-100);
+  --text:        var(--ink-800l);
+  --text-weak:   #5b6b7a;
+  --text-strong: var(--ink-1000);
+
+  --primary:       var(--cyan-500l);
+  --primary-press: var(--cyan-700l);
+  --secondary:     var(--violet-500l);
+  --secondary-press: var(--violet-700l);
+  --accent:        var(--magenta-500l);
+  --accent-weak:   color-mix(in oklab, var(--magenta-500l) 24%, transparent);
+
+  --muted:       #f3f6fa;
+  --border:      #e4e9f0;
+
+  --link:        var(--primary);
+  --link-hover:  var(--primary-press);
+
+  --focus-ring:  color-mix(in oklab, var(--cyan-500l) 60%, black 12%);
+  --shadow:      0 10px 28px rgba(16, 24, 40, .08);
+}
+
+/* ===== حالت‌های اختیاری (تم‌های وضعیت) ===== */
+:root,
+html.light {
+  /* موفق/هشدار/خطر – سازگار با هر دو تم */
+  --success:      #10b981;
+  --success-weak: color-mix(in oklab, #10b981 22%, transparent);
+  --warning:      #f59e0b;
+  --warning-weak: color-mix(in oklab, #f59e0b 22%, transparent);
+  --danger:       #ef4444;
+  --danger-weak:  color-mix(in oklab, #ef4444 22%, transparent);
+}
+
+/* ===== توصیه‌های استفاده (اختیاری)
+  - پس‌زمینه کارت‌ها: background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow);
+  - دکمه اصلی: background: var(--primary); &:active { background: var(--primary-press); }
+  - لایه نئونی ملایم: box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 30%, transparent);
+  - گرادیان خاص CTA: background: var(--grad-primary);
+===== */

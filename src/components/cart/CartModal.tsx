@@ -15,6 +15,7 @@ export default function CartModal() {
   const remove = useCartStore((s) => s.remove);
   const setQty = useCartStore((s) => s.setQty);
   const total = useCartTotal();
+
   const panelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -25,9 +26,9 @@ export default function CartModal() {
 
   useEffect(() => {
     if (open) {
-      const prev = document.body.style.overflow;
-      document.body.style.overflow = 'hidden';
-      return () => { document.body.style.overflow = prev; };
+      const prev = document.documentElement.style.overflow;
+      document.documentElement.style.overflow = 'hidden';
+      return () => { document.documentElement.style.overflow = prev; };
     }
   }, [open]);
 
@@ -40,53 +41,62 @@ export default function CartModal() {
       className={`${styles.backdrop} ${open ? styles.open : ''}`}
       onMouseDown={onBackdrop}
       aria-hidden={!open}
+      dir="rtl"
     >
       <div
         ref={panelRef}
         className={`${styles.panel} ${open ? styles.slideIn : ''}`}
         role="dialog"
         aria-modal="true"
-        aria-label="سبد خرید"
-        dir="rtl"
+        aria-labelledby="cartTitle"
+        aria-describedby="cartDesc"
       >
         <div className={styles.header}>
-          <div className={styles.title}>سبد خرید</div>
+          <h3 id="cartTitle" className={styles.title}>
+            سبد خرید <span className={styles.badge}>WERCINO</span>
+          </h3>
           <button className={styles.close} onClick={closeCart} aria-label="بستن">✕</button>
         </div>
 
+        <p id="cartDesc" className={styles.subhead}>
+          محصولات انتخابی شما. می‌توانید تعداد را تغییر دهید یا حذف کنید.
+        </p>
+
         {items.length === 0 ? (
           <div className={styles.empty}>
-            <Image src="/publicimages/hero28.png" alt="" width={80} height={80} />
+            <Image src="/publicimages/hero28.png" alt="" width={96} height={96} className={styles.emptyImg}/>
             <p>سبد شما خالی است.</p>
-            <Link href="/shop" className="btn" onClick={closeCart}>رفتن به فروشگاه</Link>
+            <Link href="/shop" className={styles.primaryBtn} onClick={closeCart}>رفتن به فروشگاه</Link>
           </div>
         ) : (
           <>
-            <div className={styles.list}>
+            <div className={styles.list} role="list">
               {items.map((it) => {
                 const hasStock = typeof it.stock === 'number';
                 const atMax = hasStock && it.qty >= (it.stock as number);
                 const isZero = hasStock && (it.stock as number) === 0;
 
                 return (
-                  <div key={it.id} className={styles.row}>
+                  <div key={it.id} className={styles.row} role="listitem">
                     <Image
                       src={it.image || '/publicimages/p1.jpg'}
-                      alt=""
-                      width={56}
-                      height={56}
+                      alt={it.title || 'محصول'}
+                      width={64}
+                      height={64}
                       className={styles.thumb}
                     />
                     <div className={styles.info}>
                       <div className={styles.name} title={it.title}>{it.title}</div>
                       <div className={styles.line}>
                         <div className={styles.unit}>{it.price.toLocaleString('fa-IR')} تومان</div>
-                        <div className={styles.sub}>{(it.price * it.qty).toLocaleString('fa-IR')} تومان</div>
+                        <div className={styles.sub}>
+                          {(it.price * it.qty).toLocaleString('fa-IR')} تومان
+                        </div>
                       </div>
                       {hasStock && (
-                        <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                        <div className={styles.stockNote} aria-live="polite">
                           {isZero
-                            ? <span style={{ color: 'var(--danger)' }}>ناموجود — لطفاً حذف کنید</span>
+                            ? <span className={styles.out}>ناموجود — لطفاً حذف کنید</span>
                             : <>حداکثر موجودی: <b>{(it.stock as number).toLocaleString('fa-IR')}</b> عدد</>
                           }
                         </div>
@@ -105,6 +115,7 @@ export default function CartModal() {
 
                       <input
                         type="number"
+                        inputMode="numeric"
                         min={1}
                         max={hasStock ? (it.stock as number) : undefined}
                         value={it.qty}
@@ -115,13 +126,13 @@ export default function CartModal() {
                           setQty(it.id, capped);
                         }}
                         onBlur={(e) => {
-                          // اطمینان از clamp بعد از خروج از فوکوس
                           const raw = Number(e.currentTarget.value);
                           const v = Number.isFinite(raw) ? Math.max(1, raw) : 1;
                           const capped = hasStock ? Math.min(v, it.stock as number) : v;
                           if (capped !== it.qty) setQty(it.id, capped);
                         }}
                         aria-label="تعداد"
+                        className={styles.qtyInput}
                       />
 
                       <button
@@ -157,7 +168,7 @@ export default function CartModal() {
               </div>
               <div className={styles.actions}>
                 <Link href="/cart" className={styles.ghostBtn} onClick={closeCart}>مشاهده سبد</Link>
-                <GuardedCheckoutLink className={`${styles.checkoutBtn} btn`} onClick={closeCart}>
+                <GuardedCheckoutLink className={styles.checkoutBtn} onClick={closeCart}>
                   ادامه ثبت سفارش
                 </GuardedCheckoutLink>
               </div>

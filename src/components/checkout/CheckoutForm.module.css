@@ -1,69 +1,133 @@
-.form{
-  background:
-    linear-gradient(180deg, var(--panel) 0%, var(--soft) 100%);
-  border: 1px solid rgba(255,255,255,.06);
-  border-radius: var(--radius);
-  padding: 16px;
-  box-shadow: var(--shadow);
-}
+/* CheckoutForm.module.css – مدرن، خوانا در Light/Dark، ریسپانسیو */
 
-.total{
-  margin-bottom: 12px;
-  color: var(--text);
-  opacity: .95;
-}
-.hint{ font-size: 12px; color: var(--muted); }
-
-.row{
+.form {
   display: grid;
+  gap: 16px;
+  max-inline-size: 920px;
+  margin-inline: auto;
+}
+
+/* بالای فرم: جمع سبد */
+.total {
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in oklab, var(--surface) 96%, transparent);
+  border: 1px solid color-mix(in oklab, var(--border) 72%, var(--text) 10%);
+  color: var(--text);
+  font-weight: 800;
+}
+.total strong { color: var(--text-strong); }
+.hint {
+  margin-top: 6px;
+  font-size: .88rem;
+  color: color-mix(in oklab, var(--text) 75%, transparent);
+}
+
+/* شبکه‌ی فیلدها */
+.row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
   gap: 12px;
 }
-@media (min-width: 640px){
-  .row{ grid-template-columns: 1fr 1fr; }
-  .row > div:nth-last-child(1){ grid-column: 1 / -1; } /* textarea ردیف کامل */
+@media (max-width: 720px) {
+  .row { grid-template-columns: 1fr; }
 }
 
-.input{
-  width: 100%;
-  padding: 11px 12px;
-  color: var(--text);
-  background: linear-gradient(180deg, var(--bg-2) 0%, color-mix(in srgb, var(--bg-2) 70%, var(--panel) 30%) 100%);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  transition: border-color .2s ease, box-shadow .2s ease, background .2s ease, filter .2s ease;
-}
-.input::placeholder{ color: color-mix(in srgb, var(--muted) 82%, transparent); }
-.input:focus{
-  border-color: color-mix(in srgb, var(--brand) 70%, #000 30%);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus-ring) 65%, transparent);
-  filter: brightness(1.03);
-}
-
-.invalid{
-  border-color: var(--danger) !important;
-  background: color-mix(in srgb, var(--danger) 8%, transparent);
-}
-.error{
-  color: var(--danger);
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.alert{
-  margin-top: 12px;
-  color: var(--danger);
-  background: color-mix(in srgb, var(--danger) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--danger) 26%, transparent);
+/* ورودی‌ها */
+.input {
+  inline-size: 100%;
+  min-height: 44px;
   padding: 10px 12px;
-  border-radius: 12px;
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+  color: var(--text);
+  border: 1px solid color-mix(in oklab, var(--border) 70%, var(--text) 12%);
+  outline: none;
+  transition: border-color var(--transition-300), box-shadow var(--transition-300), background-color var(--transition-300);
+}
+.input:focus {
+  border-color: color-mix(in oklab, var(--primary) 60%, var(--border) 40%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 20%, transparent);
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+}
+.input::placeholder {
+  color: color-mix(in oklab, var(--text) 55%, transparent);
 }
 
-.actions{
-  margin-top: 16px;
-  display: flex; gap: 8px; flex-wrap: wrap;
+/* textarea تمام عرض */
+.row textarea.input {
+  grid-column: 1 / -1;
+  min-height: 124px;
+  resize: vertical;
 }
 
-/* ورودی‌های عددی تمیزتر (کد پستی) */
-.input[type="number"]::-webkit-outer-spin-button,
-.input[type="number"]::-webkit-inner-spin-button{ -webkit-appearance: none; margin: 0; }
-.input[type="number"]{ -moz-appearance: textfield; }
+/* خطاهای فیلد */
+.invalid {
+  border-color: color-mix(in oklab, var(--danger) 60%, var(--border) 40%) !important;
+  background: color-mix(in oklab, var(--danger) 6%, var(--surface) 92%);
+}
+.error {
+  margin-top: 6px;
+  color: var(--danger);
+  font-size: .86rem;
+  font-weight: 700;
+}
+
+/* هشدار/پیام خطا عمومی */
+.alert {
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: color-mix(in oklab, var(--warning) 8%, var(--surface) 92%);
+  border: 1px solid color-mix(in oklab, var(--warning) 40%, var(--border) 60%);
+  color: var(--text);
+}
+.alertError {
+  background: color-mix(in oklab, var(--danger) 10%, var(--surface) 92%);
+  border-color: color-mix(in oklab, var(--danger) 55%, var(--border) 45%);
+}
+.alertTitle {
+  font-weight: 800;
+  margin-bottom: 6px;
+  color: var(--text-strong);
+}
+.alertList {
+  margin: 0;
+  padding-inline-start: 18px;
+}
+.out { color: var(--danger); font-weight: 800; }
+
+/* اکشن‌ها */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+.submitBtn {
+  min-height: 44px;
+  padding-inline: 16px;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--primary) 55%, black 12%);
+  background: var(--primary);
+  color: #0b0f14; /* خوانایی بالا روی primary */
+  font-weight: 900;
+  letter-spacing: .01em;
+  box-shadow: 0 8px 20px color-mix(in oklab, var(--primary) 28%, transparent);
+  transition: transform 160ms cubic-bezier(.2,.8,.2,1), background-color 160ms, border-color 160ms, box-shadow 160ms;
+}
+.submitBtn:hover {
+  transform: translateY(-1px);
+  background: color-mix(in oklab, var(--primary) 88%, white 10%);
+}
+:global(html.light) .submitBtn { color: #0e141b; }
+
+/* دسترس‌پذیری */
+input:focus-visible,
+textarea:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* کاهش حرکت */
+@media (prefers-reduced-motion: reduce) {
+  .input, .submitBtn { transition: none !important; }
+}
