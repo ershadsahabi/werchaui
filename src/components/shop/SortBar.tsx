@@ -29,15 +29,19 @@ export default function SortBar({
   };
 
   return (
-    <div className={`${styles.sortbar} ${className || ''}`}>
-      <div className={styles.count}><strong>{total}</strong> کالا</div>
+    <div className={`${styles.sortbar} ${className || ''}`} role="region" aria-label="مرتب‌سازی و شمارش نتایج">
+      <div className={styles.count} title={`${total.toLocaleString('fa-IR')} کالا`}>
+        <strong>{total.toLocaleString('fa-IR')}</strong> کالا
+      </div>
+
       <div className={styles.sorts}>
-        <label htmlFor="sort">مرتب‌سازی:</label>
+        <label htmlFor="sort" title="مرتب‌سازی نتایج">مرتب‌سازی:</label>
         <select
           id="sort"
           className={styles.select}
           value={current.sort || 'latest'}
           onChange={(e)=> setSort(e.target.value as any)}
+          title="انتخاب ترتیب نمایش"
         >
           <option value="latest">جدیدترین</option>
           <option value="price-asc">ارزان‌ترین</option>

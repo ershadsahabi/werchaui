@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { getMe } from "@/lib/server-api";
 import { Vazirmatn } from "next/font/google";
-import SimpleHeader from "@/components/SimpleHeader"; // ← تغییر دادیم
+// import SimpleHeader from "@/components/SimpleHeader"; // استفاده نمی‌شود
 
 export const metadata = {
   title: "Wircino",

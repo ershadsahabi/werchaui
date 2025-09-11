@@ -1,13 +1,16 @@
-/* Modal.module.css – نسخه مخصوص خوانایی دکمه‌ها و "شرایط رو قبول دارم"
-   هماهنگ با app/variables.css (Light/Dark)
-   نکته: اگر فرم‌هات کلاس‌های دیگری دارند، سِلکتورهای عام مثل [type="submit"] هم پوشش می‌دهند.
+/* Modal.module.css – نسخه‌ی رنگ/کنتراست تقویت‌شده (Dark/Light)
+   - بک‌دراپ خوش‌کنتراست با هاله‌ی برند
+   - کارت با مرز واضح و عمق کنترل‌شده
+   - ورودی‌ها/placeholder/فوکوس کاملاً خوانا
+   - دکمه‌ها با متن تضمینیِ خوانا در همه تم‌ها
+   - دسترس‌پذیری: focus ring استاندارد، hoverهای ملایم
 */
 
+/* ===== Root wrap ===== */
 .wrap {
   position: fixed;
   inset: 0;
   z-index: 80;
-  display: contents;
 }
 
 /* ===== Backdrop ===== */
@@ -15,81 +18,97 @@
   position: fixed;
   inset: 0;
   border: 0;
-  padding: 0;
-  margin: 0;
   cursor: pointer;
   background:
-    radial-gradient(60% 60% at 50% 50%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 60%),
-    rgba(0,0,0,.62);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
+    radial-gradient(60% 60% at 50% 50%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 62%),
+    color-mix(in oklab, #000 70%, var(--ink-900) 30%);
+  -webkit-backdrop-filter: blur(12px) saturate(110%);
+  backdrop-filter: blur(12px) saturate(110%);
 }
 :global(html.light) .backdrop {
   background:
-    radial-gradient(60% 60% at 50% 50%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 60%),
-    rgba(0,0,0,.35);
+    radial-gradient(60% 60% at 50% 50%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 62%),
+    color-mix(in oklab, rgba(0,0,0,.38) 70%, var(--paper-050) 30%);
 }
 
-/* ===== Sheet ===== */
+/* ===== Sheet (مرکزچینی + Safe Area) ===== */
 .sheet {
   position: fixed;
   inset: 0;
   display: grid;
   place-items: center;
-  padding: 24px;
+  --pad: clamp(12px, 4vw, 24px);
+  padding: var(--pad);
+  padding-left:  max(var(--pad), env(safe-area-inset-left));
+  padding-right: max(var(--pad), env(safe-area-inset-right));
+  padding-top:   max(var(--pad), env(safe-area-inset-top));
+  padding-bottom:max(var(--pad), env(safe-area-inset-bottom));
   pointer-events: none;
+  overscroll-behavior: none;
 }
 
 /* ===== Card ===== */
 .card {
   pointer-events: auto;
-  inline-size: min(560px, 96vw);
+  inline-size: min(560px, calc(100vw - 2 * var(--pad)));
   max-block-size: min(86vh, 920px);
   display: grid;
   grid-template-rows: auto auto 1fr;
   gap: 12px;
+
   background:
     linear-gradient(180deg,
-      color-mix(in oklab, var(--surface) 96%, black 4%),
-      color-mix(in oklab, var(--surface-2) 96%, black 4%)
+      color-mix(in oklab, var(--card-bg) 96%, transparent 4%),
+      color-mix(in oklab, var(--surface-2) 16%, var(--card-bg) 84%)
     );
   color: var(--text);
   border-radius: var(--radius-lg);
-  border: 1px solid color-mix(in oklab, var(--border) 70%, var(--text) 20%);
-  box-shadow: var(--shadow);
+  border: 1px solid var(--border-strong);
+  box-shadow:
+    var(--shadow),
+    0 0 0 1px color-mix(in oklab, var(--glass-border) 50%, transparent);
   padding: 18px 18px 16px;
   transform-origin: center;
   animation: modal-in 420ms cubic-bezier(.18,.88,.24,1.1);
   position: relative;
-  overflow: clip;
+  overflow: auto;
+  overscroll-behavior: contain;
+  margin-inline: auto;
 }
 :global(html.light) .card {
   background:
     linear-gradient(180deg,
-      color-mix(in oklab, var(--surface) 98%, white 2%),
-      color-mix(in oklab, var(--surface-2) 98%, white 2%)
+      color-mix(in oklab, var(--card-bg) 98%, #fff 2%),
+      color-mix(in oklab, var(--surface-2) 12%, var(--card-bg) 88%)
     );
-  border-color: color-mix(in oklab, var(--border) 70%, black 12%);
+  border-color: var(--border);
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px color-mix(in oklab, var(--border) 60%, transparent);
 }
+
+/* svw/dvh پشتیبانی جدید */
+@supports (width: 100svw) { .card { inline-size: min(560px, calc(100svw - 2 * var(--pad))); } }
+@supports (height: 100dvh) { .card { max-block-size: min(86dvh, 920px); } }
 
 .elevated {
   box-shadow:
-    0 20px 60px rgba(0, 0, 0, .35),
-    0 0 0 1px color-mix(in oklab, var(--primary) 22%, transparent),
-    0 0 36px color-mix(in oklab, var(--primary) 16%, transparent);
+    0 20px 60px rgba(0, 0, 0, .34),
+    0 0 0 1px color-mix(in oklab, var(--primary) 18%, transparent),
+    0 0 28px color-mix(in oklab, var(--primary) 12%, transparent);
 }
 :global(html.light) .elevated {
   box-shadow:
     0 14px 40px rgba(16,24,40,.12),
-    0 0 0 1px color-mix(in oklab, var(--primary) 18%, transparent),
-    0 0 24px color-mix(in oklab, var(--primary) 10%, transparent);
+    0 0 0 1px color-mix(in oklab, var(--primary) 14%, transparent),
+    0 0 18px color-mix(in oklab, var(--primary) 10%, transparent);
 }
 
 /* ===== Header ===== */
 .header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* RTL: عنوان راست، بستن چپ */
   gap: 12px;
 }
 .header h3 {
@@ -101,17 +120,17 @@
   align-items: center;
   gap: .5rem;
   margin: 0;
-  text-shadow: 0 1px 0 rgba(0,0,0,.1);
+  text-shadow: 0 1px 0 rgba(0,0,0,.06);
 }
 
 /* توضیح زیر تیتر */
 .subhead {
   margin: 0 2px;
-  color: color-mix(in oklab, var(--text) 88%, transparent);
+  color: var(--text-weak);
   font-size: .95rem;
 }
 
-/* Badge برند (پت‌شاپی لطیف) */
+/* ===== Badge برند ===== */
 .badge {
   display: inline-grid;
   place-items: center;
@@ -120,12 +139,11 @@
   font-size: .78rem;
   font-weight: 900;
   letter-spacing: .04em;
-  color: #0b0f14;
+  color: var(--on-primary, var(--btn-text, #0b0f14));
   background: var(--grad-primary);
   border-radius: 999px;
-  box-shadow: 0 0 0 1px rgba(255,255,255,.2), inset 0 0 0 1px rgba(255,255,255,.24);
+  box-shadow: 0 0 0 1px rgba(255,255,255,.22), inset 0 0 0 1px rgba(255,255,255,.22);
 }
-:global(html.light) .badge { color: #0e141b; }
 
 /* ===== Close button ===== */
 .closeBtn {
@@ -135,10 +153,10 @@
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: color-mix(in oklab, var(--surface-2) 90%, var(--primary) 6%);
-  border: 1px solid color-mix(in oklab, var(--text) 24%, var(--border) 76%);
-  color: var(--text-strong);
-  box-shadow: 0 2px 8px rgba(0,0,0,.28);
+  background: color-mix(in oklab, var(--surface-2) 88%, var(--primary) 8%);
+  border: 1px solid color-mix(in oklab, var(--text) 22%, var(--card-border) 78%);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0,0,0,.26);
   cursor: pointer;
   transition:
     transform var(--transition-300),
@@ -149,90 +167,230 @@
 }
 .closeBtn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(0,0,0,.35), 0 0 0 3px color-mix(in oklab, var(--primary) 22%, transparent);
-  background: color-mix(in oklab, var(--surface-2) 84%, var(--primary) 12%);
-  border-color: color-mix(in oklab, var(--primary) 38%, var(--border) 62%);
+  box-shadow: 0 6px 16px rgba(0,0,0,.34), 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
+  background: color-mix(in oklab, var(--surface-2) 82%, var(--primary) 14%);
+  border-color: color-mix(in oklab, var(--primary) 34%, var(--card-border) 66%);
 }
 .closeBtn:active {
   transform: translateY(0);
-  background: var(--primary-press);
-  color: #0b0f14;
-  border-color: color-mix(in oklab, var(--primary-press) 50%, black 20%);
+  background: var(--primary);
+  color: var(--on-primary, var(--btn-text, #0b0f14));
+  border-color: color-mix(in oklab, var(--primary-press) 42%, black 12%);
 }
 .closeBtn:focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
-:global(html.light) .closeBtn {
-  background: color-mix(in oklab, #fff 86%, var(--primary) 6%);
-  border-color: color-mix(in oklab, var(--border) 60%, black 14%);
-  color: var(--ink-800l);
-}
 
-/* ===== Body & Links ===== */
+/* =========================
+   فرم‌ها: پایهٔ خوانایی
+   ========================= */
 .body {
   overflow: auto;
   padding: 8px 2px 2px;
   scrollbar-gutter: stable both-edges;
 }
+
+/* ساختار عمومی فرم */
+.body form { display: grid; gap: 12px; }
+
+/* لیبل‌ها */
+.body label,
+.body .label {
+  color: var(--text);
+  font-weight: 800;
+  font-size: .95rem;
+  line-height: 1.5;
+}
+
+/* اینپوت‌ها/سلکت/تکستArea */
+.body input[type="text"],
+.body input[type="email"],
+.body input[type="password"],
+.body input[type="tel"],
+.body input[type="number"],
+.body select,
+.body textarea {
+  height: 44px;
+  padding: 0 12px;
+  border-radius: var(--radius);
+  border: 1px solid var(--input-border);
+  background: color-mix(in oklab, var(--input-bg) 96%, transparent);
+  color: var(--text);
+  outline: none;
+  transition: border-color var(--transition-300), box-shadow var(--transition-300), background-color var(--transition-300);
+}
+.body textarea { height: auto; min-height: 100px; padding: 10px 12px; resize: vertical; }
+.body input::placeholder,
+.body textarea::placeholder { color: color-mix(in oklab, var(--input-placeholder) 88%, transparent); }
+.body input:focus,
+.body select:focus,
+.body textarea:focus {
+  border-color: color-mix(in oklab, var(--primary) 42%, var(--input-border));
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 22%, transparent);
+}
+
+/* خطا/هِلپ */
+.helpText  { color: var(--text-mute); font-size: .86rem; margin-top: 6px; }
+.errorText { color: var(--danger);    font-size: .86rem; margin-top: 6px; }
+
+/* =========================
+   «مرا به خاطر بسپار»
+   ========================= */
+.rememberRow,
+.body .remember,
+.body .remember-row,
+.body .consentRow.remember,
+.body .agree.remember {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+  white-space: nowrap;
+  margin-top: 6px;
+  color: var(--text);
+  font-weight: 800;
+  font-size: .95rem;
+  user-select: none;
+}
+
+.body input[type="checkbox"] + label,
+.body label:has(> input[type="checkbox"]) {
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.body input[type="checkbox"] {
+  inline-size: 20px;
+  block-size: 20px;
+  appearance: none;
+  -webkit-appearance: none;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  border: 1px solid color-mix(in oklab, var(--text) 24%, var(--card-border) 76%);
+  background: color-mix(in oklab, var(--surface) 86%, transparent);
+  transition: background-color var(--transition-300), border-color var(--transition-300), box-shadow var(--transition-300), transform var(--transition-300);
+}
+.body input[type="checkbox"]:hover {
+  border-color: color-mix(in oklab, var(--primary) 38%, var(--card-border) 62%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 16%, transparent);
+}
+.body input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+.body input[type="checkbox"]:checked {
+  background: var(--primary);
+  border-color: color-mix(in oklab, var(--primary) 60%, black 10%);
+}
+.body input[type="checkbox"]::after {
+  content: "🐾";
+  font-size: 12px;
+  line-height: 1;
+  opacity: 0;
+  transform: scale(.6);
+  transition: opacity var(--transition-300), transform var(--transition-300);
+  color: var(--on-primary, #0b0f14);
+}
+.body input[type="checkbox"]:checked::after { opacity: 1; transform: scale(1); }
+
+/* =========================
+   لینک‌ها
+   ========================= */
 .body a {
   color: var(--link);
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 2px;
+  font-weight: 900;
 }
 .body a:hover { color: var(--link-hover); }
+.body a:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 
-/* ===========================
-   دکمه‌های فرم (ورود/ثبت‌نام)
-   =========================== */
+/* =========================
+   دکمه‌ها
+   ========================= */
 
-/* متغیرهای محلی برای رنگ متن روی primary */
-:root {
-  --btn-on-primary-dark: #061017;   /* خواناتر روی فیروزه‌ای/آبی نئونی */
-  --btn-on-primary-light: #0a1220;  /* خوانا روی آبی روشنِ لایت */
+/* Base */
+.primaryBtn,
+.secondaryBtn,
+.dangerBtn,
+.linkBtn,
+.body button[type="submit"],
+.body [data-variant] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* دکمه اصلی: اگر پروژه کلاس نداده، با type=submit هم می‌گیریمش */
+
+
+/* ====== دکمه پرایمری ====== */
 .primaryBtn,
 .body button[type="submit"],
 .body [data-variant="primary"] {
-  --h: 46px;
+  --h: 48px;
   height: var(--h);
   padding: 0 18px;
-  border-radius: var(--radius);
+  border-radius: calc(var(--radius) + 4px);
   border: 1px solid color-mix(in oklab, var(--primary) 55%, black 12%);
+  background: var(--grad-primary);
+  /* 👇 متن همیشه خواناست */
+  color: var(--on-primary, #ffffff);
   font-weight: 900;
   letter-spacing: .01em;
   line-height: 1;
   cursor: pointer;
-  background: var(--primary);
-  color: var(--btn-on-primary-dark);
-  box-shadow: 0 8px 20px color-mix(in oklab, var(--primary) 28%, transparent);
+  box-shadow:
+    0 10px 24px color-mix(in oklab, var(--primary) 28%, transparent),
+    0 0 0 1px color-mix(in oklab, #000 10%, transparent) inset;
+  position: relative;
+  overflow: hidden;
   transition:
+    transform var(--transition-300),
+    box-shadow var(--transition-300),
+    filter var(--transition-300),
     background-color var(--transition-300),
     border-color var(--transition-300),
-    color var(--transition-300),
-    box-shadow var(--transition-300),
-    transform var(--transition-300);
-}
-:global(html.light) .primaryBtn,
-:global(html.light) .body button[type="submit"],
-:global(html.light) .body [data-variant="primary"] {
-  color: var(--btn-on-primary-light);
+    color var(--transition-300);
 }
 
+
+.primaryBtn::after,
+.body button[type="submit"]::after,
+.body [data-variant="primary"]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.16), rgba(255,255,255,0));
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
 .primaryBtn:hover,
 .body button[type="submit"]:hover,
 .body [data-variant="primary"]:hover {
-  background: color-mix(in oklab, var(--primary) 88%, white 10%);
   transform: translateY(-1px);
+  box-shadow:
+    0 14px 32px color-mix(in oklab, var(--primary) 34%, transparent),
+    0 0 0 1px color-mix(in oklab, #000 14%, transparent) inset;
+  filter: saturate(1.04);
 }
 .primaryBtn:active,
 .body button[type="submit"]:active,
 .body [data-variant="primary"]:active {
-  background: var(--primary-press);
   transform: translateY(0);
+  background: color-mix(in oklab, var(--primary-press) 60%, var(--primary) 40%);
 }
 .primaryBtn:focus-visible,
 .body button[type="submit"]:focus-visible,
@@ -240,174 +398,97 @@
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
 }
+.primaryBtn:disabled,
+.body button[type="submit"]:disabled,
+.body [data-variant="primary"]:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  filter: grayscale(.08);
+}
 
-/* دکمه ثانویه (اگر داشتی) */
+
+/* ====== دکمه سکندری ====== */
 .secondaryBtn,
 .body [data-variant="secondary"] {
   --h: 46px;
   height: var(--h);
   padding: 0 16px;
   border-radius: var(--radius);
-  border: 1px solid color-mix(in oklab, var(--text) 32%, var(--border) 68%);
+  border: 1px solid var(--card-border);
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+  /* 👇 متن واضح‌تر در تم شب */
+  color: var(--text-strong);
   font-weight: 800;
   line-height: 1;
   cursor: pointer;
-  color: var(--text);
-  background: color-mix(in oklab, var(--surface) 90%, transparent);
   transition:
+    transform var(--transition-300),
+    box-shadow var(--transition-300),
     background-color var(--transition-300),
     border-color var(--transition-300),
-    color var(--transition-300),
-    box-shadow var(--transition-300),
-    transform var(--transition-300);
+    color var(--transition-300);
 }
+
+
+
 .secondaryBtn:hover,
 .body [data-variant="secondary"]:hover {
-  background: color-mix(in oklab, var(--surface-2) 92%, var(--primary) 8%);
-  border-color: color-mix(in oklab, var(--primary) 30%, var(--border) 70%);
+  background: color-mix(in oklab, var(--surface-2) 88%, var(--primary) 12%);
+  border-color: color-mix(in oklab, var(--primary) 28%, var(--card-border) 72%);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
   transform: translateY(-1px);
 }
 :global(html.light) .secondaryBtn,
 :global(html.light) .body [data-variant="secondary"] {
   color: var(--ink-800l);
-  background: #fff;
-  border-color: color-mix(in oklab, var(--border) 70%, black 12%);
+  background: var(--surface);
+  border-color: var(--card-border);
 }
+.secondaryBtn:disabled,
+.body [data-variant="secondary"]:disabled { opacity: .55; cursor: not-allowed; }
 
-/* ===========================
-   «شرایط رو قبول دارم»
-   =========================== */
-
-/* ردیف پذیرش شرایط – تلاش برای گرفتن حالت‌های مختلف نام‌گذاری */
-.consentRow,
-.termsRow,
-.agreeRow,
-.body .consent,
-.body .terms,
-.body .agree {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-top: 10px;
-  font-size: .92rem;
-  color: color-mix(in oklab, var(--text) 94%, transparent);
-}
-
-/* چک‌باکس سفارشی با حال‌وهوای پت‌شاپ (🐾) */
-.consentRow input[type="checkbox"],
-.termsRow  input[type="checkbox"],
-.agreeRow  input[type="checkbox"],
-.body .consent input[type="checkbox"],
-.body .terms   input[type="checkbox"],
-.body .agree   input[type="checkbox"] {
-  inline-size: 20px;
-  block-size: 20px;
-  appearance: none;
-  -webkit-appearance: none;
-  border-radius: 6px;
-  border: 1px solid color-mix(in oklab, var(--text) 24%, var(--border) 76%);
-  background: color-mix(in oklab, var(--surface) 86%, transparent);
-  display: grid;
-  place-items: center;
-  margin-top: 2px;
-  cursor: pointer;
-  transition: background-color var(--transition-300), border-color var(--transition-300), box-shadow var(--transition-300);
-}
-.consentRow input[type="checkbox"]:hover,
-.termsRow  input[type="checkbox"]:hover,
-.agreeRow  input[type="checkbox"]:hover,
-.body .consent input[type="checkbox"]:hover,
-.body .terms   input[type="checkbox"]:hover,
-.body .agree   input[type="checkbox"]:hover {
-  border-color: color-mix(in oklab, var(--primary) 40%, var(--border) 60%);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 18%, transparent);
-}
-
-.consentRow input[type="checkbox"]:checked,
-.termsRow  input[type="checkbox"]:checked,
-.agreeRow  input[type="checkbox"]:checked,
-.body .consent input[type="checkbox"]:checked,
-.body .terms   input[type="checkbox"]:checked,
-.body .agree   input[type="checkbox"]:checked {
-  background: var(--primary);
-  border-color: color-mix(in oklab, var(--primary) 60%, black 10%);
-}
-
-/* تیکِ 🐾 */
-.consentRow input[type="checkbox"]::after,
-.termsRow  input[type="checkbox"]::after,
-.agreeRow  input[type="checkbox"]::after,
-.body .consent input[type="checkbox"]::after,
-.body .terms   input[type="checkbox"]::after,
-.body .agree   input[type="checkbox"]::after {
-  content: "🐾";
-  font-size: 12px;
+/* Danger */
+.dangerBtn,
+.body [data-variant="danger"] {
+  --h: 46px;
+  height: var(--h);
+  padding: 0 16px;
+  border-radius: var(--radius);
+  border: 1px solid color-mix(in oklab, var(--danger) 60%, black 12%);
+  background: var(--danger);
+  color: var(--on-danger, #ffffff);
+  font-weight: 900;
   line-height: 1;
-  opacity: 0;
-  transform: scale(.6);
-  transition: opacity var(--transition-300), transform var(--transition-300);
-  color: var(--btn-on-primary-dark);
-}
-:global(html.light) .consentRow input[type="checkbox"]::after,
-:global(html.light) .termsRow  input[type="checkbox"]::after,
-:global(html.light) .agreeRow  input[type="checkbox"]::after,
-:global(html.light) .body .consent input[type="checkbox"]::after,
-:global(html.light) .body .terms   input[type="checkbox"]::after,
-:global(html.light) .body .agree   input[type="checkbox"]::after {
-  color: var(--btn-on-primary-light);
-}
-
-.consentRow input[type="checkbox"]:checked::after,
-.termsRow  input[type="checkbox"]:checked::after,
-.agreeRow  input[type="checkbox"]:checked::after,
-.body .consent input[type="checkbox"]:checked::after,
-.body .terms   input[type="checkbox"]:checked::after,
-.body .agree   input[type="checkbox"]:checked::after {
-  opacity: 1;
-  transform: scale(1);
-}
-
-/* لیبلِ شرایط: کنتراست بالا + لینک پررنگ */
-.consentRow label,
-.termsRow  label,
-.agreeRow  label,
-.body .consent label,
-.body .terms   label,
-.body .agree   label {
-  user-select: none;
   cursor: pointer;
-  color: color-mix(in oklab, var(--text) 96%, transparent);
+  box-shadow: 0 8px 20px color-mix(in oklab, var(--danger) 28%, transparent);
+  transition:
+    transform var(--transition-300),
+    background-color var(--transition-300),
+    border-color var(--transition-300),
+    color var(--transition-300),
+    box-shadow var(--transition-300);
 }
-.consentRow label a,
-.termsRow  label a,
-.agreeRow  label a,
-.body .consent label a,
-.body .terms   label a,
-.body .agree   label a {
+.dangerBtn:hover,
+.body [data-variant="danger"]:hover { transform: translateY(-1px); }
+.dangerBtn:active,
+.body [data-variant="danger"]:active { transform: translateY(0); }
+
+/* Link-like */
+.linkBtn,
+.body [data-variant="link"] {
+  background: transparent;
+  border: none;
   color: var(--link);
+  padding: 0;
+  height: auto;
+  font-weight: 900;
+  cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 2px;
-  font-weight: 800; /* برجسته برای خوانایی */
 }
-.consentRow label a:hover,
-.termsRow  label a:hover,
-.agreeRow  label a:hover,
-.body .consent label a:hover,
-.body .terms   label a:hover,
-.body .agree   label a:hover {
-  color: var(--link-hover);
-}
-
-/* اگر فرم از help/error استفاده می‌کند */
-.helpText,
-.errorText {
-  font-size: .86rem;
-  margin-top: 6px;
-}
-.helpText  { color: color-mix(in oklab, var(--text) 78%, transparent); }
-.errorText { color: var(--danger); }
+.linkBtn:hover,
+.body [data-variant="link"]:hover { color: var(--link-hover); }
 
 /* ===== Scrollbars ===== */
 .body::-webkit-scrollbar { inline-size: 10px; }
@@ -435,16 +516,32 @@
   .card { animation: none !important; }
   .closeBtn,
   .primaryBtn,
-  .secondaryBtn { transition: none !important; }
+  .secondaryBtn,
+  .dangerBtn { transition: none !important; }
 }
 
-/* ===== Responsive ===== */
+/* ===== High Contrast preference ===== */
+@media (prefers-contrast: more) {
+  .card { border-color: color-mix(in oklab, var(--card-border) 60%, #8aa0ba 40%); }
+  .closeBtn { border-color: color-mix(in oklab, var(--card-border) 60%, #8aa0ba 40%); }
+}
+
+/* ===== Responsive tweaks ===== */
 @media (max-width: 480px) {
   .card {
-    inline-size: min(480px, 96vw);
-    padding: 16px 14px 12px;
     border-radius: var(--radius);
+    padding: 16px 14px 12px;
   }
   .header h3 { font-size: 1.12rem; }
   .subhead { font-size: .9rem; }
 }
+
+
+
+
+
+
+
+
+
+

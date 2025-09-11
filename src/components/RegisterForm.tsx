@@ -114,9 +114,15 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void }) 
         <a className={form.link} href="/terms">مشاهده قوانین</a>
       </div>
 
-      <button className={`btn btnPrimary ${form.btnFull}`} disabled={loading}>
-        {loading ? 'در حال ساخت حساب…' : 'ساخت حساب'}
-      </button>
+<button
+  type="submit"
+  data-variant="primary"
+  className={form.btnFull}
+  disabled={loading}
+>
+  {loading ? 'در حال ساخت حساب…' : 'ساخت حساب'}
+</button>
+
     </form>
   );
 }

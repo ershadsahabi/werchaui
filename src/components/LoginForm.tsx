@@ -82,9 +82,15 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
       {error && <p className={form.error}>{error}</p>}
 
       <div className={form.actions}>
-        <button className="btn btnPrimary" disabled={loading}>
-          {loading ? 'در حال ورود…' : 'ورود'}
-        </button>
+<button
+  type="submit"
+  data-variant="primary"
+  className={form.btnFull}
+  disabled={loading}
+>
+  {loading ? 'در حال ورود…' : 'ورود'}
+</button>
+
       </div>
     </form>
   );

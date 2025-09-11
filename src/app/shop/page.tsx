@@ -27,8 +27,6 @@ async function fetchProducts(params: Record<string, string>) {
   return res.json();
 }
 
-
-
 export default async function ShopPage({
   searchParams,
 }: {
@@ -62,52 +60,52 @@ export default async function ShopPage({
         </div>
       </section>
 
-        <section className="container">
-          <div className={styles.grid}>
-            <aside className={styles.sidebar}>
-              <Filters facets={facets} current={s as any} className={styles.filterCard} />
-            </aside>
+      <section className="container">
+        <div className={styles.grid}>
+          <aside className={styles.sidebar}>
+            <Filters facets={facets} current={s as any} className={styles.filterCard} />
+          </aside>
 
-            <div className={styles.main}>
-              <SortBar total={total} current={s as any} className={styles.sortbar} />
+          <div className={styles.main}>
+            <SortBar total={total} current={s as any} className={styles.sortbar} />
 
-              {items.length === 0 ? (
-                <div className={styles.empty}>
-                  <Image src="/publicimages/p6.jpg" alt="" width={80} height={80} />
-                  <p>نتیجه‌ای پیدا نشد. فیلترها را تغییر بده.</p>
-                  <Link href="/shop" className="btn">پاک کردن فیلترها</Link>
-                </div>
-              ) : (
-                <div className={styles.prodGrid}>
-                  {items.map((p: any) => (
-                    <ProductCard key={p.id} product={p} />
-                  ))}
-                </div>
-              )}
-
-              <div className={styles.pagination}>
-                {Array.from({ length: pages }, (_, i) => i + 1).map((n) => {
-                  const params = new URLSearchParams(
-                    Object.entries(s).reduce((acc, [k, v]) => { if (v) acc[k] = String(v); return acc; }, {} as Record<string, string>)
-                  );
-                  params.set('page', String(n));
-                  const href = `/shop?${params.toString()}`;
-                  const isCurrent = Number(page) === n;
-                  return (
-                    <Link
-                      key={n}
-                      href={href}
-                      className={`${styles.pageBtn} ${isCurrent ? styles.pageCurrent : ''}`}
-                      aria-current={isCurrent ? 'page' : undefined}
-                    >
-                      {n}
-                    </Link>
-                  );
-                })}
+            {items.length === 0 ? (
+              <div className={styles.empty}>
+                <Image src="/publicimages/p6.jpg" alt="" width={80} height={80} />
+                <p>نتیجه‌ای پیدا نشد. فیلترها را تغییر بده.</p>
+                <Link href="/shop" className="btn">پاک کردن فیلترها</Link>
               </div>
+            ) : (
+              <div className={styles.prodGrid}>
+                {items.map((p: any) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </div>
+            )}
+
+            <div className={styles.pagination}>
+              {Array.from({ length: pages }, (_, i) => i + 1).map((n) => {
+                const params = new URLSearchParams(
+                  Object.entries(s).reduce((acc, [k, v]) => { if (v) acc[k] = String(v); return acc; }, {} as Record<string, string>)
+                );
+                params.set('page', String(n));
+                const href = `/shop?${params.toString()}`;
+                const isCurrent = Number(page) === n;
+                return (
+                  <Link
+                    key={n}
+                    href={href}
+                    className={`${styles.pageBtn} ${isCurrent ? styles.pageCurrent : ''}`}
+                    aria-current={isCurrent ? 'page' : undefined}
+                  >
+                    {n}
+                  </Link>
+                );
+              })}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
     </div>
   );
 }

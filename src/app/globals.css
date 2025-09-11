@@ -33,6 +33,9 @@ body {
   text-rendering: optimizeLegibility;
 }
 
+/* 🔒 اسکرول‌لاک هنگام باز بودن دراور موبایل */
+body.no-scroll { overflow: hidden; }
+
 /* ===== Container سراسری ===== */
 .container {
   width: 100%;

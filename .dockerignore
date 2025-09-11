@@ -1,0 +1,26 @@
+# .dockerignore (root)
+.git/
+.gitignore
+.vscode/
+.idea/
+node_modules/
+**/node_modules/
+Dockerfile
+docker-compose*.yml
+*.log
+*.tar
+dist/
+build/
+out/
+.next/
+
+# بک‌اند و چیزهای غیر لازم هنگام build فرانت:
+Werchaback/
+media/
+static/
+staticfiles/
+
+# never send env files to build context
+.env*
+*.env
+

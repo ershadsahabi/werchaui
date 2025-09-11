@@ -1,134 +1,292 @@
-/* app/variables.css */
-/* ===== Night (Dark = پیش‌فرض) | نئونی، شفاف، کنتراست خوانا ===== */
+/* F:\Shahrivar1404\Werch_app\werchaui\src\app\variables.css
+   ==========================================================================
+   Design Tokens for Werch UI — Night (default) & Day (light) themes
+   هدف: خواناییِ مطمئن برای متن و دکمه‌ها در هر دو تم + هارمونی رنگی
+   نکته: تم شب پیش‌فرض است. برای روشن: <html class="light">
+   ========================================================================== */
+
+/* ===== Night (Dark = پیش‌فرض) ================================================= */
 :root {
-  /* پایه‌های تازه و مدرن */
-  --ink-950: #070a0f;
-  --ink-900: #0b0f14;
-  --ink-800: #0f1621;
-  --ink-700: #121b2a;
-  --slate-300: #cdd9e5;
-  --slate-400: #b6c2cf;
-  --slate-500: #9aa7b5;
+  /* ===== Neutrals / Inks ===== */
+  --ink-1000: #05070a;
+  --ink-950:  #070a10;
+  --ink-900:  #0a0f16;  /* bg */
+  --ink-850:  #0c131b;
+  --ink-800:  #101723;  /* surface */
+  --ink-750:  #131c2a;
+  --ink-700:  #172233;  /* surface-2 */
+  --ink-650:  #1a283d;
 
-  /* نئون‌های تم */
+  --slate-50:  #f6f9fc;
+  --slate-100: #eaf1f8;
+  --slate-200: #dbe6f1;
+  --slate-300: #c8d6e6;
+  --slate-400: #b7c6d8;  /* کمی روشن‌تر برای خوانایی روی سطوح تیره */
+  --slate-500: #95a8bb;
+  --slate-600: #7a8ea3;
+  --slate-700: #5e7084;
+
+  /* ===== Brand Neons ===== */
+  /* Cyan / Aqua (Primary) */
+  --cyan-300:  #67e8f9;
   --cyan-400:  #22d3ee; /* primary */
-  --cyan-600:  #0891b2;
-  --violet-400:#a78bfa; /* secondary */
-  --violet-600:#7c3aed;
-  --magenta-400:#f472b6; /* accent */
-  --magenta-600:#db2777;
+  --cyan-500:  #06b6d4;
+  --cyan-600:  #0891b2; /* primary-press */
+  --cyan-700:  #0e7490;
+  --cyan-800:  #155e75;
 
-  /* خاکستری‌ها و خطوط */
-  --line-700:  #1e2a3a;   /* border on dark */
+  /* Violet / Purple (Secondary) */
+  --violet-300:#c4b5fd;
+  --violet-400:#a78bfa; /* secondary */
+  --violet-500:#8b5cf6;
+  --violet-600:#7c3aed; /* secondary-press */
+  --violet-700:#6d28d9;
+
+  /* Magenta / Pink (Accent) */
+  --magenta-300:#f9a8d4;
+  --magenta-400:#f472b6; /* accent */
+  --magenta-500:#ec4899;
+  --magenta-600:#db2777;
+  --magenta-700:#be185d;
+
+  /* Complementary (برای بنرها/اشاره‌ها) */
+  --teal-400:  #2dd4bf;
+  --teal-600:  #0d9488;
+  --blue-400:  #60a5fa;
+  --blue-600:  #2563eb;
+  --indigo-400:#818cf8;
+  --indigo-600:#4f46e5;
+  --amber-400: #fbbf24;
+  --amber-600: #d97706;
+  --lime-400:  #a3e635;
+  --lime-600:  #65a30d;
+  --rose-400:  #fb7185;
+  --rose-600:  #e11d48;
+
+  /* ===== خطوط و سطوح ===== */
+  --line-700:  #243449;   /* کمی مشخص‌تر */
+  --line-800:  #1a2636;
   --muted-800: #0f1a24;   /* muted surface */
 
-  /* برند/پت‌ها (سازگار با نسخه قبلی) */
-  --brown-600: #8b5e3c;     /* سگ */
+  /* ===== برند/پت ===== */
+  --brown-600: #8b5e3c;
   --brown-700: #6f472b;
   --pet-dog-brown: var(--brown-600);
   --pet-cat-gray:  #8792a2;
   --pet-white:     #ffffff;
   --pet-pink:      #f48fb1;
 
-  /* توکن‌های تم (Dark default) */
+  /* ===== Semantic — Dark ===== */
   --bg:            var(--ink-900);
+  --bg-soft:       var(--ink-850);
   --surface:       var(--ink-800);
   --surface-2:     var(--ink-700);
-  --text:          #e9f1fa;
-  --text-weak:     var(--slate-400);
-  --text-strong:   #ffffff;
+  --surface-3:     var(--ink-650);
 
-  --primary:       var(--cyan-400);
-  --primary-press: var(--cyan-600);
-  --secondary:     var(--violet-400);
+  --text:          #e9f2fb;              /* متن عادی */
+  --text-weak:     var(--slate-400);      /* متن ضعیف‌تر ولی خوانا */
+  --text-mute:     var(--slate-500);      /* توضیحات/Placeholder */
+  --text-strong:   #ffffff;               /* تیتر/متن قوی */
+  --text-inverse:  var(--ink-900);        /* متن روی زمینه‌های روشن/نئونی */
+
+  --primary:         var(--cyan-400);
+  --primary-weak:    color-mix(in oklab, var(--cyan-400) 20%, transparent);
+  --primary-press:   var(--cyan-600);
+  --secondary:       var(--violet-400);
   --secondary-press: var(--violet-600);
-  --accent:        var(--magenta-400);
-  --accent-weak:   color-mix(in oklab, var(--magenta-400) 28%, transparent);
+  --accent:          var(--magenta-400);
+  --accent-weak:     color-mix(in oklab, var(--magenta-400) 30%, transparent);
 
   --muted:         var(--muted-800);
   --border:        var(--line-700);
+  --border-strong: var(--line-800);
 
   --link:          var(--primary);
   --link-hover:    var(--primary-press);
 
-  --focus-ring:    color-mix(in oklab, var(--cyan-400) 70%, white 25%);
-  --shadow:        0 12px 32px rgba(0, 0, 0, .28);
+  --focus-ring:    color-mix(in oklab, var(--cyan-400) 72%, white 18%);
+  --shadow-xs:     0 2px 8px rgba(0,0,0,.25);
+  --shadow-sm:     0 6px 18px rgba(0,0,0,.28);
+  --shadow:        0 12px 32px rgba(0,0,0,.30);
+  --shadow-lg:     0 24px 68px rgba(0,0,0,.36);
 
-  /* تایپوگرافی و رادیوس */
+  /* شیشه‌ای (Glass) */
+  --glass:         rgba(255,255,255,.05);
+  --glass-2:       rgba(255,255,255,.08);
+  --glass-border:  rgba(255,255,255,.12);
+  --backdrop:      blur(10px) saturate(115%);
+
+  /* گرادیان‌ها */
+  --grad-primary:  linear-gradient(135deg, #22d3ee 0%, #60a5fa 45%, #a78bfa 85%, #f472b6 100%);
+  --grad-accent:   linear-gradient(135deg, #f472b6 0%, #fb7185 40%, #f59e0b 70%, #a3e635 100%);
+  --grad-calm:     linear-gradient(135deg, #22d3ee 0%, #2dd4bf 50%, #a7f3d0 100%);
+  --grad-hero:     radial-gradient(1200px 700px at 20% -10%, #22d3ee33 0%, transparent 60%),
+                   radial-gradient(1000px 600px at 80% 110%, #a78bfa33 0%, transparent 60%);
+
+  /* تایپوگرافی/ابعاد/ترنزیشن */
   --font-sans: var(--font-vazirmatn), system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  --radius: 14px;
-  --radius-sm: 10px;
-  --radius-lg: 22px;
-  --container-w: 1120px;
+  --radius-2xs: 8px;
+  --radius-sm:  10px;
+  --radius:     14px;
+  --radius-lg:  22px;
+  --radius-xl:  30px;
+  --container-w: 1140px;
+  --transition-200: 200ms cubic-bezier(.2,.8,.2,1);
   --transition-300: 300ms cubic-bezier(.2,.8,.2,1);
+  --transition-500: 500ms cubic-bezier(.2,.8,.2,1);
 
-  /* گرادیان‌های آماده استفاده */
-  --grad-primary: linear-gradient(135deg, #22d3ee 0%, #60a5fa 50%, #a78bfa 100%);
-  --grad-accent:  linear-gradient(135deg, #f472b6 0%, #fb7185 50%, #f59e0b 100%);
+  /* Opacity Helpers */
+  --alpha-02: .02;
+  --alpha-04: .04;
+  --alpha-08: .08;
+  --alpha-12: .12;
+  --alpha-16: .16;
+  --alpha-24: .24;
 
-  /* شیشه‌ای لطیف */
-  --glass: rgba(255,255,255,.04);
-  --glass-border: rgba(255,255,255,.08);
-}
-
-/* ===== Day (Light) با کلاس روی <html class="light"> | روشن، تمیز، کنتراست ملایم ===== */
-html.light {
-  /* زمینه‌های لطیف */
-  --paper-000: #ffffff;
-  --paper-050: #f7fafc;
-  --paper-100: #eef3f8;
-
-  /* رنگ متن */
-  --ink-1000: #0e141b;
-  --ink-800l: #1b2530;
-  --ink-600l: #3b4a5a;
-
-  /* رنگ‌های تعاملی در روشنایی */
-  --cyan-500l:   #06b6d4;
-  --cyan-700l:   #0e7490;
-  --violet-500l: #8b5cf6;
-  --violet-700l: #6d28d9;
-  --magenta-500l:#ec4899;
-
-  --bg:          var(--paper-050);
-  --surface:     var(--paper-000);
-  --surface-2:   var(--paper-100);
-  --text:        var(--ink-800l);
-  --text-weak:   #5b6b7a;
-  --text-strong: var(--ink-1000);
-
-  --primary:       var(--cyan-500l);
-  --primary-press: var(--cyan-700l);
-  --secondary:     var(--violet-500l);
-  --secondary-press: var(--violet-700l);
-  --accent:        var(--magenta-500l);
-  --accent-weak:   color-mix(in oklab, var(--magenta-500l) 24%, transparent);
-
-  --muted:       #f3f6fa;
-  --border:      #e4e9f0;
-
-  --link:        var(--primary);
-  --link-hover:  var(--primary-press);
-
-  --focus-ring:  color-mix(in oklab, var(--cyan-500l) 60%, black 12%);
-  --shadow:      0 10px 28px rgba(16, 24, 40, .08);
-}
-
-/* ===== حالت‌های اختیاری (تم‌های وضعیت) ===== */
-:root,
-html.light {
-  /* موفق/هشدار/خطر – سازگار با هر دو تم */
+  /* وضعیت‌ها */
   --success:      #10b981;
-  --success-weak: color-mix(in oklab, #10b981 22%, transparent);
+  --success-weak: color-mix(in oklab, #10b981 24%, transparent);
   --warning:      #f59e0b;
-  --warning-weak: color-mix(in oklab, #f59e0b 22%, transparent);
+  --warning-weak: color-mix(in oklab, #f59e0b 24%, transparent);
   --danger:       #ef4444;
-  --danger-weak:  color-mix(in oklab, #ef4444 22%, transparent);
+  --danger-weak:  color-mix(in oklab, #ef4444 24%, transparent);
+
+  /* Component Tokens (بهبود خوانایی) */
+  --btn-bg:             var(--primary);
+  --btn-bg-press:       var(--primary-press);
+  --btn-text:           #061017; /* متن تیره روی primary نئونی */
+  --chip-bg:            color-mix(in oklab, var(--primary) 16%, var(--surface));
+  --chip-text:          var(--text);
+  --card-bg:            var(--surface);
+  --card-border:        var(--border);
+  --input-bg:           color-mix(in oklab, white 5%, var(--surface));
+  --input-border:       var(--border);
+  --input-placeholder:  color-mix(in oklab, var(--text) 62%, transparent);
+
+  --badge-info-bg:      color-mix(in oklab, var(--blue-400) 20%, transparent);
+  --badge-info-text:    #dbeafe;
+  --badge-tip-bg:       color-mix(in oklab, var(--lime-400) 22%, transparent);
+  --badge-tip-text:     #ecfdf5;
+
+  /* ← جدید: متن روی رنگ‌ها (برای دکمه/بج/نوار وضعیت) */
+  --on-primary:   #061017;
+  --on-secondary: #0a0f16;
+  --on-accent:    #09121a;
+  --on-muted:     var(--text);
+  --on-success:   #04120e;
+  --on-warning:   #141005;
+  --on-danger:    #140707;
 }
 
-/* ===== توصیه‌های استفاده (اختیاری)
-  - پس‌زمینه کارت‌ها: background: var(--surface); border: 1px solid var(--border); box-shadow: var(--shadow);
-  - دکمه اصلی: background: var(--primary); &:active { background: var(--primary-press); }
-  - لایه نئونی ملایم: box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 30%, transparent);
-  - گرادیان خاص CTA: background: var(--grad-primary);
-===== */
+/* ===== Day (Light) — خوانایی تقویت‌شده ============================== */
+html.light {
+  /* زمینه‌ها */
+  --paper-000: #fafcfe;
+  --paper-025: #f3f7fb;
+  --paper-050: #ecf2f8;
+  --paper-100: #e1e9f2;
+
+  /* Inks روشن (متن) */
+  --ink-1000: #101822;   /* strong text */
+  --ink-900l: #182331;
+  --ink-800l: #1f2a39;
+  --ink-700l: #2a3747;
+  --ink-600l: #3f4e60;
+
+  /* طیف‌های تعاملی روشن (کمی کم‌اشباع‌تر برای هارمونی) */
+  --cyan-400l:   #1ebad1;
+  --cyan-500l:   #10a8bf; /* primary */
+  --cyan-600l:   #0a95ab; /* press */
+  --cyan-700l:   #0c6e86;
+
+  --violet-400l: #957ff0;
+  --violet-500l: #7b5bed; /* secondary */
+  --violet-600l: #6f41e1;
+  --violet-700l: #5e2acb;
+
+  --magenta-400l:#e661a4;
+  --magenta-500l:#d6388d; /* accent */
+  --magenta-600l:#c12a77;
+
+  /* مکمل‌ها */
+  --blue-500l:   #346fe3;
+  --indigo-500l: #5a5eee;
+  --teal-500l:   #129e91;
+  --amber-500l:  #e1920a;
+  --lime-500l:   #76b815;
+  --rose-500l:   #e23d5a;
+
+  /* Semantic — Light */
+  --bg:            var(--paper-050);
+  --bg-soft:       var(--paper-025);
+  --surface:       var(--paper-000);
+  --surface-2:     #d9e3ee;   /* کمی تیره‌تر برای تمایز */
+  --surface-3:     #cdd9e7;
+
+  --text:          var(--ink-800l);
+  --text-weak:     #4a5a6e;   /* خواناتر از نسخهٔ قبلی */
+  --text-mute:     #5d6f83;   /* Placeholder تیره‌تر */
+  --text-strong:   var(--ink-1000);
+  --text-inverse:  #ffffff;
+
+  --primary:         var(--cyan-500l);
+  --primary-weak:    color-mix(in oklab, var(--cyan-500l) 22%, transparent);
+  --primary-press:   var(--cyan-600l);
+  --secondary:       var(--violet-500l);
+  --secondary-press: var(--violet-700l);
+  --accent:          var(--magenta-500l);
+  --accent-weak:     color-mix(in oklab, var(--magenta-500l) 24%, transparent);
+
+  --muted:         #e9eef5;
+  --border:        #c3cfde;   /* مرز مشخص‌تر */
+  --border-strong: #b3c2d6;
+
+  --link:          var(--primary);
+  --link-hover:    var(--primary-press);
+
+  --focus-ring:  color-mix(in oklab, var(--cyan-500l) 58%, black 12%);
+  --shadow-xs:   0 1px 4px rgba(16, 24, 40, .10);
+  --shadow-sm:   0 4px 16px rgba(16, 24, 40, .12);
+  --shadow:      0 10px 28px rgba(16, 24, 40, .14);
+  --shadow-lg:   0 20px 56px rgba(16, 24, 40, .16);
+
+  /* شیشه‌ای روشن */
+  --glass:        rgba(9,12,18,.08);
+  --glass-2:      rgba(9,12,18,.10);
+  --glass-border: rgba(9,12,18,.14);
+  --backdrop:     blur(8px) saturate(118%);
+
+  /* گرادیان‌ها */
+  --grad-primary: linear-gradient(135deg, #1ebad1 0%, #4b8ef0 45%, #957ff0 85%, #d6388d 100%);
+  --grad-accent:  linear-gradient(135deg, #e661a4 0%, #ea9c2a 45%, #76b815 100%);
+  --grad-calm:    linear-gradient(135deg, #86d8c8 0%, #5fd1c0 40%, #9fc7ea 100%);
+
+  /* Component — Light */
+  --btn-bg:             var(--primary);
+  --btn-bg-press:       var(--primary-press);
+  --btn-text:           #06222a; /* متن تیره روی رنگ روشن */
+  --chip-bg:            color-mix(in oklab, var(--primary) 12%, var(--surface));
+  --chip-text:          var(--text);
+  --card-bg:            var(--surface);
+  --card-border:        var(--border);
+  --input-bg:           #eef4fa; /* کمی تیره‌تر برای کنتراست */
+  --input-border:       var(--border);
+  --input-placeholder:  var(--text-mute);
+
+  --success:      #0fa77a;
+  --success-weak: color-mix(in oklab, #0fa77a 20%, transparent);
+  --warning:      #e2950a;
+  --warning-weak: color-mix(in oklab, #e2950a 20%, transparent);
+  --danger:       #e23d3d;
+  --danger-weak:  color-mix(in oklab, #e23d3d 20%, transparent);
+
+  /* متن روی رنگ‌ها */
+  --on-primary:   #06222a;
+  --on-secondary: #0f1b2c;
+  --on-accent:    #111626;
+  --on-muted:     var(--text);
+  --on-success:   #05231a;
+  --on-warning:   #261904;
+  --on-danger:    #260a0a;
+}
+

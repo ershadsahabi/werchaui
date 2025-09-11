@@ -1,75 +1,128 @@
+/* Form primitives — Werch UI themed (Dark/Light) */
+/* نگاشت‌ها:
+   --soft        → --input-bg
+   --brand       → --primary
+   --muted       → --text-mute
+   خطوط/مرزها   → --input-border / --border
+   رینگ فوکِس   → --focus-ring
+*/
+
 .form { display: grid; gap: 12px; }
 
-.grid {
-  display: grid; gap: 10px;
-}
+.grid { display: grid; gap: 10px; }
 @media (min-width: 520px){
   .grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* Input wrapper with icon */
-.row {
-  position: relative;
-}
+.row { position: relative; }
+
 .icon {
   position: absolute; inset-inline-start: 10px; top: 50%;
-  transform: translateY(-50%); opacity: .7; pointer-events: none;
+  transform: translateY(-50%);
+  color: var(--text-mute); opacity: .9; pointer-events: none;
   font-size: 16px;
 }
 
 /* Base input (compatible با کلاس global .input) */
 .input {
-  width: 100%; padding: 12px 12px;
+  width: 100%;
+  padding: 12px 12px;
   padding-inline-start: 36px; /* برای آیکن */
-  background: var(--soft);
-  border: 1px solid rgba(255,255,255,.1);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
   color: var(--text);
-  border-radius: 12px; outline: none;
-  transition: border-color .15s ease, box-shadow .15s ease;
+  border-radius: var(--radius-sm);
+  outline: none;
+  caret-color: var(--primary);
+  transition:
+    border-color var(--transition-200),
+    box-shadow var(--transition-200),
+    background-color var(--transition-200);
 }
+.input::placeholder { color: var(--input-placeholder); }
+
+.input:hover {
+  /* کمی بالاآوردن سطح برای حس تعاملی */
+  background: color-mix(in oklab, var(--input-bg) 88%, var(--surface) 12%);
+}
+
 .input:focus {
-  border-color: var(--brand);
-  box-shadow: 0 0 0 3px rgba(110,231,183,.15);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--focus-ring) 35%, transparent);
+}
+
+/* حالت‌های اعتبارسنجی اختیاری */
+.input[aria-invalid="true"], .input.is-invalid {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--danger) 28%, transparent);
+}
+.input.is-valid {
+  border-color: var(--success);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--success) 28%, transparent);
 }
 
 /* Password toggle */
 .pwToggle {
   position: absolute; inset-inline-end: 8px; top: 50%;
   transform: translateY(-50%);
-  background: transparent; border: none; color: var(--muted);
-  padding: 6px; border-radius: 8px;
+  background: transparent;
+  border: none;
+  color: var(--text-weak);
+  padding: 6px;
+  border-radius: 8px;
+  transition: background-color var(--transition-200), color var(--transition-200);
 }
-.pwToggle:hover { background: rgba(255,255,255,.06); color: var(--text); }
+.pwToggle:hover { background: var(--glass); color: var(--text); }
+.pwToggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--focus-ring) 35%, transparent);
+}
 
 /* Helper row */
 .helper {
   display:flex; align-items:center; justify-content:space-between;
-  gap: 8px; font-size: 12px; color: var(--muted);
+  gap: 8px; font-size: 12px; color: var(--text-mute);
 }
 
+/* Alerts */
 .error {
-  background: rgba(239,68,68,.12);
-  border: 1px solid rgba(239,68,68,.35);
-  color: #fecaca; padding: 10px 12px; border-radius: 10px;
-  font-size: 13px;
+  background: var(--danger-weak);
+  border: 1px solid color-mix(in oklab, var(--danger) 55%, var(--border));
+  color: var(--text);
+  padding: 10px 12px; border-radius: 10px; font-size: 13px;
 }
-
 .success {
-  background: rgba(110,231,183,.12);
-  border: 1px solid rgba(110,231,183,.4);
-  color: #d1fae5; padding: 10px 12px; border-radius: 10px;
-  font-size: 13px;
+  background: var(--success-weak);
+  border: 1px solid color-mix(in oklab, var(--success) 55%, var(--border));
+  color: var(--text);
+  padding: 10px 12px; border-radius: 10px; font-size: 13px;
 }
 
-/* Buttons (با تم شما هماهنگ) */
+/* Buttons & links */
 .actions { display: flex; gap: 8px; align-items: center; }
 .btnFull { width: 100%; }
-.link { color: var(--brand); font-weight: 600; }
-.link:hover { text-decoration: underline; }
+
+.link {
+  color: var(--link);
+  font-weight: 600;
+  transition: color var(--transition-200), text-decoration-color var(--transition-200);
+}
+.link:hover { color: var(--link-hover); text-decoration: underline; }
 
 /* Tiny badge on header */
 .badge {
   display:inline-block; padding: 3px 8px; border-radius: 999px;
-  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12);
-  font-size: 11px; color: var(--muted); margin-inline-start: 8px;
+  background: var(--glass-2); border: 1px solid var(--glass-border);
+  font-size: 11px; color: var(--text-mute); margin-inline-start: 8px;
+}
+
+/* ویرایش‌های دوستانه برای پت‌شاپ (اختیاری) */
+.badge--dog  { background: color-mix(in oklab, var(--pet-dog-brown) 16%, transparent); color: var(--text); }
+.badge--cat  { background: color-mix(in oklab, var(--pet-cat-gray) 16%, transparent);  color: var(--text); }
+.badge--pink { background: color-mix(in oklab, var(--pet-pink) 18%, transparent);      color: var(--text); }
+
+/* دسترس‌پذیری: احترام به کاهش انیمیشن */
+@media (prefers-reduced-motion: reduce) {
+  .input, .pwToggle, .link { transition: none; }
 }

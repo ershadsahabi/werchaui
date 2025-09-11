@@ -31,10 +31,20 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
   return (
     <header className={`${styles.header} ${open ? styles.headerOpen : ''}`} role="banner">
       <div className={`${styles.inner} container`}>
-        {/* برند */}
-        <Link href="/" className={styles.logo} aria-label="خانه ورچه">
-          <Image src="/publicimages/logo21.png" alt="" width={36} height={36} />
-        </Link>
+
+{/* برند */}
+<Link href="/" className={styles.logo} aria-label="خانه ورچه">
+  <Image
+    src="/publicimages/logo21.png"
+    alt=""
+    width={44}
+    height={44}
+    priority
+    className={styles.logoImg}
+  />
+</Link>
+
+
 
         {/* سرچ دسکتاپ */}
         <div className={`${styles.search} ${showSearch ? styles.searchOpen : ''}`}>

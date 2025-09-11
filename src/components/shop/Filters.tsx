@@ -8,6 +8,7 @@ type Search = {
   q?: string; cat?: string; brand?: string; min?: string; max?: string;
   sort?: 'latest'|'price-asc'|'price-desc'|'rating'; page?: string;
 };
+
 export default function Filters({
   facets,
   current,
@@ -46,8 +47,8 @@ export default function Filters({
     const chips: { key: string; label: string }[] = [];
     if (cat) chips.push({ key: 'cat', label: facets.categories.find(c=>c.key===cat)?.label || '' });
     if (brand) chips.push({ key: 'brand', label: brand });
-    if (min) chips.push({ key: 'min', label: `از ${min}` });
-    if (max) chips.push({ key: 'max', label: `تا ${max}` });
+    if (min) chips.push({ key: 'min', label: `از ${Number(min).toLocaleString('fa-IR')}` });
+    if (max) chips.push({ key: 'max', label: `تا ${Number(max).toLocaleString('fa-IR')}` });
     if (q) chips.push({ key: 'q', label: `جستجو: ${q}` });
     return chips;
   }, [cat, brand, min, max, q, facets.categories]);
@@ -55,43 +56,84 @@ export default function Filters({
   return (
     <div className={className}>
       {/* Mobile toggle */}
-      <button className={styles.filterToggle} onClick={()=>setOpen(o=>!o)}>
-        فیلترها {open ? '▲' : '▼'}
+      <button
+        type="button"
+        className={styles.filterToggle}
+        onClick={()=>setOpen(o=>!o)}
+        aria-expanded={open}
+        aria-controls="filters-panel"
+        title={open ? 'بستن فیلترها' : 'باز کردن فیلترها'}
+      >
+        {open ? 'بستن فیلترها ▲' : 'باز کردن فیلترها ▼'}
       </button>
 
-      <div className={`${styles.filterPanel} ${open ? styles.open : ''}`}>
+      <div id="filters-panel" className={`${styles.filterPanel} ${open ? styles.open : ''}`}>
         {/* جستجو */}
         <div className={styles.filterBlock}>
-          <label className={styles.blockTitle}>جستجو</label>
+          <label className={styles.blockTitle} htmlFor="q-input">جستجو</label>
           <div className={styles.row}>
-            <input className="input" placeholder="نام/برند" value={q} onChange={(e)=>setQ(e.target.value)} />
-            <button className="btn" onClick={()=>setParam({ q })}>جستجو</button>
+            {/* از styles.select برای رنگ/کنتراست ورودی‌ها استفاده می‌کنیم */}
+            <input
+              id="q-input"
+              className={styles.select}
+              placeholder="نام/برند"
+              value={q}
+              onChange={(e)=>setQ(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={()=>setParam({ q })}
+              title="اجرای جستجو"
+              /* تضمین کنتراست با توکن‌ها */
+              style={{
+                background: 'var(--btn-bg)',
+                color: 'var(--on-primary)',
+                border: '1px solid var(--btn-bg-press)',
+                borderRadius: '10px',
+                padding: '10px 12px',
+                fontWeight: 800,
+                boxShadow: '0 10px 18px color-mix(in oklab, var(--btn-bg) 20%, transparent)',
+                transition: 'filter .2s ease',
+              }}
+              onMouseOver={(e)=>((e.currentTarget.style.filter='brightness(1.05)'))}
+              onMouseOut={(e)=>((e.currentTarget.style.filter=''))}
+            >
+              جستجو
+            </button>
           </div>
         </div>
 
-        {/* دسته */}
+        {/* دسته‌بندی */}
         <div className={styles.filterBlock}>
-          <label className={styles.blockTitle}>دسته‌بندی</label>
-          <div className={styles.chips}>
-            {facets.categories.map(c => (
-              <button
-                key={c.key}
-                className={`${styles.chip} ${current.cat === c.key ? styles.chipOn : ''}`}
-                onClick={()=> setParam({ cat: current.cat === c.key ? '' : c.key })}
-              >
-                {c.label}
-              </button>
-            ))}
+          <span className={styles.blockTitle}>دسته‌بندی</span>
+          <div className={styles.chips} role="group" aria-label="فیلتر بر اساس دسته‌بندی">
+            {facets.categories.map(c => {
+              const on = current.cat === c.key;
+              return (
+                <button
+                  key={c.key}
+                  type="button"
+                  className={`${styles.chip} ${on ? styles.chipOn : ''}`}
+                  onClick={()=> setParam({ cat: on ? '' : c.key })}
+                  aria-pressed={on}
+                  title={on ? `حذف فیلتر ${c.label}` : `اعمال فیلتر ${c.label}`}
+                >
+                  {c.label}
+                </button>
+              );
+            })}
           </div>
         </div>
 
         {/* برند */}
         <div className={styles.filterBlock}>
-          <label className={styles.blockTitle}>برند</label>
+          <label className={styles.blockTitle} htmlFor="brand-select">برند</label>
           <select
+            id="brand-select"
             className={styles.select}
             value={brand}
             onChange={(e)=> setParam({ brand: e.target.value })}
+            title="انتخاب برند"
           >
             <option value="">همه برندها</option>
             {facets.brands.map(b => <option key={b} value={b}>{b}</option>)}
@@ -100,11 +142,43 @@ export default function Filters({
 
         {/* قیمت */}
         <div className={styles.filterBlock}>
-          <label className={styles.blockTitle}>قیمت (تومان)</label>
+          <label className={styles.blockTitle} htmlFor="min-input">قیمت (تومان)</label>
           <div className={styles.row}>
-            <input className="input" inputMode="numeric" placeholder="حداقل" value={min} onChange={e=>setMin(e.target.value)} />
-            <input className="input" inputMode="numeric" placeholder="حداکثر" value={max} onChange={e=>setMax(e.target.value)} />
-            <button className="btn" onClick={()=> setParam({ min, max })}>اعمال</button>
+            <input
+              id="min-input"
+              className={styles.select}
+              inputMode="numeric"
+              placeholder="حداقل"
+              value={min}
+              onChange={e=>setMin(e.target.value)}
+            />
+            <input
+              id="max-input"
+              className={styles.select}
+              inputMode="numeric"
+              placeholder="حداکثر"
+              value={max}
+              onChange={e=>setMax(e.target.value)}
+            />
+            <button
+              type="button"
+              onClick={()=> setParam({ min, max })}
+              title="اعمال بازهٔ قیمت"
+              style={{
+                background: 'var(--btn-bg)',
+                color: 'var(--on-primary)',
+                border: '1px solid var(--btn-bg-press)',
+                borderRadius: '10px',
+                padding: '10px 12px',
+                fontWeight: 800,
+                boxShadow: '0 10px 18px color-mix(in oklab, var(--btn-bg) 20%, transparent)',
+                transition: 'filter .2s ease',
+              }}
+              onMouseOver={(e)=>((e.currentTarget.style.filter='brightness(1.05)'))}
+              onMouseOut={(e)=>((e.currentTarget.style.filter=''))}
+            >
+              اعمال
+            </button>
           </div>
         </div>
 
@@ -116,10 +190,24 @@ export default function Filters({
               {selected.map(ch => (
                 <span key={ch.key} className={styles.selChip}>
                   {ch.label}
-                  <button onClick={()=> setParam({ [ch.key]: '' } as any)} aria-label="حذف فیلتر">✕</button>
+                  <button
+                    type="button"
+                    onClick={()=> setParam({ [ch.key]: '' } as any)}
+                    aria-label={`حذف فیلتر ${ch.label}`}
+                    title={`حذف فیلتر ${ch.label}`}
+                  >
+                    ✕
+                  </button>
                 </span>
               ))}
-              <button className={styles.clearAll} onClick={clearAll}>پاک کردن همه</button>
+              <button
+                type="button"
+                className={styles.clearAll}
+                onClick={clearAll}
+                title="پاک کردن همه فیلترها"
+              >
+                پاک کردن همه
+              </button>
             </div>
           </div>
         )}

@@ -12,10 +12,7 @@
   position: relative;
   isolation: isolate;
 }
-.bc {
-  display: flex; align-items: center; gap: 8px;
-  color: var(--text-weak); font-size: 13px;
-}
+.bc { display: flex; align-items: center; gap: 8px; color: var(--text-weak); font-size: 13px; }
 .bcLink { color: var(--link); }
 .bcLink:hover { text-decoration: underline; text-underline-offset: 3px; }
 .bcSep { opacity: .6; }
@@ -23,17 +20,19 @@
 .title { margin: 6px 0 0; font-size: 26px; letter-spacing: -.01em; }
 .subtitle { margin: 4px 0 0; color: var(--text-weak); }
 
-/* ── Layout */
+/* ── Layout (Parent grid) */
 .grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr; /* موبایل تک‌ستونه */
   gap: 16px;
   padding-block: 16px 22px;
 }
-.sidebar { order: 2; }
+
+/* ترتیب موبایل: فیلتر بالاتر از سورت و محصولات */
+.sidebar { order: 0; }  /* ⟵ مهم: فیلتر بالا بیاد */
 .main { order: 1; display: grid; gap: 16px; }
 
-/* ── Filters */
+/* کارت فیلتر */
 .filterCard {
   background: linear-gradient(
     180deg,
@@ -47,88 +46,7 @@
   backdrop-filter: blur(10px);
 }
 
-.filterToggle {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 100%;
-  background: color-mix(in oklab, var(--surface-2) 80%, transparent 20%);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 10px; margin-bottom: 10px;
-  color: var(--text);
-  transition: filter .2s ease, transform .2s ease, border-color .2s ease;
-}
-.filterToggle:hover {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
-  border-color: color-mix(in oklab, var(--border) 70%, var(--text) 30%);
-}
-
-.filterPanel { display: none; }
-.filterPanel.open { display: block; }
-
-.filterBlock {
-  display: grid; gap: 8px;
-  padding: 12px 0;
-  border-top: 1px solid var(--border);
-}
-.filterBlock:first-child { border-top: 0; }
-
-.blockTitle { font-weight: 800; font-size: 14px; letter-spacing: .01em; }
-
-.row { display: grid; gap: 8px; grid-template-columns: 1fr; }
-
-.select {
-  appearance: none;
-  background: color-mix(in oklab, var(--surface-2) 88%, transparent 12%);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 10px; padding: 10px 12px;
-  transition: border-color .2s ease, box-shadow .2s ease, filter .2s ease;
-}
-.select:hover { filter: brightness(1.04); }
-.select:focus-visible {
-  border-color: var(--focus-ring);
-  box-shadow: 0 0 0 3px var(--focus-ring);
-}
-
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip {
-  padding: 8px 12px; border-radius: 999px;
-  background: var(--glass); color: var(--text);
-  border: 1px solid var(--glass-border);
-  transition: transform .15s ease, filter .15s ease, border-color .15s ease, background .15s ease;
-}
-.chip:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-  border-color: color-mix(in oklab, var(--glass-border) 50%, var(--text) 50%);
-}
-.chipOn {
-  background: var(--primary);
-  color: var(--text-strong);
-  border-color: transparent;
-}
-
-.selected { margin-top: 6px; }
-.selTitle { font-size: 12px; color: var(--text-weak); margin-bottom: 6px; }
-.selChips { display: flex; flex-wrap: wrap; gap: 8px; }
-.selChip {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  border-radius: 999px; padding: 6px 10px; font-size: 13px;
-}
-.selChip button {
-  background: transparent; border: none; color: var(--text-weak);
-  cursor: pointer; padding: 0 2px;
-}
-.selChip button:hover { color: var(--text); }
-.clearAll {
-  background: transparent; border: none; color: var(--link);
-  cursor: pointer; padding: 0 4px;
-}
-.clearAll:hover { text-decoration: underline; }
-
-/* ── SortBar */
+/* ── نوار سورت */
 .sortbar {
   background: linear-gradient(
     180deg,
@@ -192,20 +110,141 @@
   box-shadow: 0 10px 26px color-mix(in oklab, var(--primary) 40%, transparent);
 }
 
-/* ── Responsive */
+/* ── Small screens (≥640px تا <768px): فیلتر و سورت کنار هم در سطر اول */
+@media (min-width: 640px) and (max-width: 767.98px) {
+  /* والد: دو ستون فقط برای سطر بالا */
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: auto; /* ردیف اول: فیلتر/سورت | ردیف دوم: محتوا تمام‌عرض */
+  }
+
+  /* ستون اول سطر اول: سایدبار (فیلتر) */
+  .sidebar {
+    grid-column: 1 / 2;
+    align-self: start;
+  }
+
+  /* ستون دوم سطر اول: فقط سورت‌بار (اولین فرزند .main) */
+  .main {
+    grid-column: 2 / 3;
+    display: grid;
+    grid-template-rows: auto 1fr; /* ردیف ۱: سورت | ردیف ۲: بقیه */
+    gap: 16px;
+  }
+
+  /* محصولات و بقیه‌ی محتوا، ردیف دوم ولی پهنای کامل زیرِ دو ستون */
+  .prodGrid,
+  .empty,
+  .pagination {
+    grid-column: 1 / -1;      /* ⟵ روی parent: تمام عرض */
+    /* چون اینها داخل .main هستند، برای تمام‌عرض شدن نیاز داریم .main هم تمام‌عرض شود: */
+  }
+
+  /* ترفند: در این breakpoint، بعد از اینکه ردیف بالا (فیلتر/سورت) چیده شد،
+     .main را در ردیف دوم تمام‌عرض می‌بریم تا prodGrid و ... پهن شوند. */
+  .main {
+    grid-column: 1 / -1;   /* ⟵ .main در ردیف دوم تمام‌عرض */
+  }
+
+  /* ولی سورت‌بار همچنان باید کنار فیلتر در ردیف اول باشد:
+     با نقل‌مکان سورت‌بار به «لایه‌ی جدا» با position: sticky هم‌تراز می‌ماند. */
+  .sortbar {
+    position: sticky;
+    top: 0; /* اگر هدر ثابت داری، این را تنظیم کن مثل 76px */
+    z-index: 1;
+  }
+}
+
+/* ── Desktop (≥768px): چیدمان کلاسیک دو ستونه */
 @media (min-width: 768px) {
   .grid { grid-template-columns: 280px 1fr; align-items: start; }
-  .sidebar { order: 1; position: sticky; top: 76px; height: fit-content; }
-  .main { order: 2; }
-  .filterToggle { display: none; }
-  .filterPanel { display: block; }
+  .sidebar { position: sticky; top: 76px; height: fit-content; }
   .prodGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .title { font-size: 28px; }
 }
+
+/* ── Large (≥1024px) */
 @media (min-width: 1024px) {
   .prodGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 }
 
-/* ── Optional helpers */
-.search { display: none; }
-.searchOpen { display: block; }
+/* ── Optional helpers از نسخهٔ قبلی (در صورت استفاده) */
+.filterToggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 100%;
+  background: color-mix(in oklab, var(--surface-2) 80%, transparent 20%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px; margin-bottom: 10px;
+  color: var(--text);
+  transition: filter .2s ease, transform .2s ease, border-color .2s ease;
+}
+.filterToggle:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+  border-color: color-mix(in oklab, var(--border) 70%, var(--text) 30%);
+}
+
+.filterPanel { display: none; }
+.filterPanel.open { display: block; }
+
+.filterBlock {
+  display: grid; gap: 8px;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+}
+.filterBlock:first-child { border-top: 0; }
+
+.blockTitle { font-weight: 800; font-size: 14px; letter-spacing: .01em; }
+.row { display: grid; gap: 8px; grid-template-columns: 1fr; }
+
+.select {
+  appearance: none;
+  background: color-mix(in oklab, var(--surface-2) 88%, transparent 12%);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 10px; padding: 10px 12px;
+  transition: border-color .2s ease, box-shadow .2s ease, filter .2s ease;
+}
+.select:hover { filter: brightness(1.04); }
+.select:focus-visible {
+  border-color: var(--focus-ring);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 8px 12px; border-radius: 999px;
+  background: var(--glass); color: var(--text);
+  border: 1px solid var(--glass-border);
+  transition: transform .15s ease, filter .15s ease, border-color .15s ease, background .15s ease;
+}
+.chip:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  border-color: color-mix(in oklab, var(--glass-border) 50%, var(--text) 50%);
+}
+.chipOn {
+  background: var(--primary);
+  color: var(--text-strong);
+  border-color: transparent;
+}
+
+.selected { margin-top: 6px; }
+.selTitle { font-size: 12px; color: var(--text-weak); margin-bottom: 6px; }
+.selChips { display: flex; flex-wrap: wrap; gap: 8px; }
+.selChip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: 999px; padding: 6px 10px; font-size: 13px;
+}
+.selChip button {
+  background: transparent; border: none; color: var(--text-weak);
+  cursor: pointer; padding: 0 2px;
+}
+.selChip button:hover { color: var(--text); }
+.clearAll {
+  background: transparent; border: none; color: var(--link);
+  cursor: pointer; padding: 0 4px;
+}
+.clearAll:hover { text-decoration: underline; }

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import styles from './ProductCard.module.css';
 import { useCartStore } from '@/store/cart';
 import { useCartUI } from '@/store/cart-ui';
+import { useState } from 'react';
 
 type Product = {
   id: number;
@@ -24,11 +25,13 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const stockVal = typeof product.stock === 'number' ? product.stock : undefined;
 
-  // 👇 اگر stock داریم، مرجع تصمیم فقط stock>0 است (Fail-safe)
+  // اگر stock داریم، مرجع تصمیم فقط stock>0 است
   const inStock =
     stockVal !== undefined
       ? stockVal > 0
       : (product.inStock ?? product.in_stock ?? true);
+
+  const [shape, setShape] = useState<'portrait' | 'landscape' | 'square' | ''>('');
 
   const handleAdd = () => {
     add(
@@ -46,33 +49,70 @@ export default function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className={styles.card}>
-      <a href={`/product/${product.id}`} className={styles.thumb}>
+      <a
+        href={`/product/${product.id}`}
+        className={`${styles.thumb} ${shape ? styles[shape] : ''}`}
+        aria-label={product.title}
+      >
         <Image
           src={product.image || '/publicimages/hero22.png'}
-          alt=""
-          width={300}
-          height={300}
+          alt={product.title || ''}
+          width={800}
+          height={800}
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 300px"
+          priority={false}
+          loading="lazy"
+          decoding="async"
+          onLoadingComplete={(img) => {
+            const w = img.naturalWidth || 1;
+            const h = img.naturalHeight || 1;
+            if (Math.abs(w - h) / Math.max(w, h) < 0.04) {
+              setShape('square');
+            } else if (h > w) {
+              setShape('portrait');
+            } else {
+              setShape('landscape');
+            }
+          }}
         />
+
+        {/* نشان سفارشی محصول */}
         {product.badge && <span className={styles.badge}>{product.badge}</span>}
-        {!inStock && (
-          <span className={styles.badge} style={{ background: 'var(--danger)' }}>
+
+        {/* وضعیت موجودی */}
+        {!inStock ? (
+          <span className={styles.badgeOut} aria-live="polite">
             ناموجود
           </span>
-        )}
+        ) : typeof stockVal === 'number' && stockVal > 0 ? (
+          <span className={styles.stockBadge} aria-live="polite">
+            موجودی {stockVal}
+          </span>
+        ) : null}
       </a>
 
       <div className={styles.body}>
-        <div className={styles.title} title={product.title}>
-          {product.title}
+        {/* ردیف مشترک: عنوان در راست، برند در چپ */}
+        <div className={styles.head}>
+          <div className={styles.title} title={product.title}>
+            {product.title}
+          </div>
+          {product.brand && (
+            <div className={styles.brand} title={`برند ${product.brand}`} aria-label={`برند ${product.brand}`}>
+              {product.brand}
+            </div>
+          )}
         </div>
 
         <div className={styles.meta}>
           <div className={styles.price}>
-            {product.price.toLocaleString('fa-IR')} تومان
+            {product.price.toLocaleString('fa-IR')} <span className={styles.tmn}>تومان</span>
           </div>
-          {typeof product.rating === 'number' && (
+
+        {typeof product.rating === 'number' && (
             <div className={styles.rating} aria-label={`امتیاز ${product.rating}`}>
-              ★ {product.rating}
+              <span aria-hidden>★</span>
+              {product.rating}
             </div>
           )}
         </div>
@@ -86,7 +126,6 @@ export default function ProductCard({ product }: { product: Product }) {
           title={!inStock ? 'این محصول موجود نیست' : undefined}
         >
           افزودن به سبد
-          {typeof stockVal === 'number' && stockVal > 0 ? ` (موجودی ${stockVal})` : ''}
         </button>
       </div>
     </div>

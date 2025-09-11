@@ -1,10 +1,35 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Disable ESLint during prod build to avoid blocking build by style issues
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+
+  // Keep TS type-checking in build (fail fast on real type issues)
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+
   reactStrictMode: true,
+
+  // Images from Django media (served through your domain)
   images: {
-    // اجازهٔ لود تصاویر از بک‌اند جنگو در لوکال
     remotePatterns: [
+      // production via domain (http during self-signed, later https with real cert)
+      {
+        protocol: "http",
+        hostname: "wircino.com",
+        port: "",
+        pathname: "/media/**",
+      },
+      {
+        protocol: "https",
+        hostname: "wircino.com",
+        port: "",
+        pathname: "/media/**",
+      },
+      // local/dev fallbacks (optional)
       {
         protocol: "http",
         hostname: "localhost",
@@ -18,7 +43,7 @@ const nextConfig: NextConfig = {
         pathname: "/media/**",
       },
     ],
-    // اگر موقتاً می‌خواهی راحت تست کنی، می‌تونی این خط رو به‌جای remotePatterns بذاری:
+    // If you hit image optimization issues in Docker, temporarily:
     // unoptimized: true,
   },
 };

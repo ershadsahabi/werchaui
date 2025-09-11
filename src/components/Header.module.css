@@ -1,4 +1,7 @@
-/* موبایل-اول، استفاده از توکن‌های app/variables.css */
+/* موبایل-اول، استفاده از توکن‌های app/variables.css
+   هدر کامل + رفتار صحیح موبایل (عدم اسکرول افقی) + مخفی‌سازی ورود/ثبت‌نام در هدرِ موبایل
+   و نمایش آن‌ها داخل دراور موبایل
+*/
 
 /* ===== نوار هدر ===== */
 .header {
@@ -19,24 +22,51 @@
   align-items: center;
   gap: 10px;
   min-height: 64px;
+  flex-wrap: nowrap;         /* جلوگیری از شکست عناصر */
+  overflow-x: clip;          /* پیشگیری از اسکرول افقی */
 }
 
-/* ===== لوگو ===== */
+/* ===== لوگو: اندازهٔ ثابت و بدون فشرده‌شدن ===== */
 .logo {
+  --logo-size: 44px;
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px; height: 40px;
-  border-radius: var(--radius-sm);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+  width: var(--logo-size);
+  height: var(--logo-size);
+  flex: 0 0 var(--logo-size);
+  min-width: var(--logo-size);
+  max-width: var(--logo-size);
+  border-radius: calc(var(--radius-sm) + 4px);
   overflow: hidden;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: var(--backdrop);
+  -webkit-backdrop-filter: var(--backdrop);
+  box-shadow: var(--shadow-xs);
+  transition:
+    transform var(--transition-300),
+    box-shadow var(--transition-300),
+    border-color var(--transition-300),
+    background var(--transition-300),
+    filter var(--transition-300);
 }
 
-/* ===== سرچ ===== */
+/* تصویر لوگو هم اندازهٔ باکس بمونه */
+.logoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4%;
+  pointer-events: none;
+}
+
+/* ===== ناحیهٔ جستجو: اول جمع می‌شود، نه لوگو ===== */
 .search {
-  display: none;
-  flex: 1 1 auto;
+  min-width: 0;             /* اجازهٔ جمع‌شدن محتوا */
+  flex: 1 1 200px;
+  display: none;            /* موبایل: داخل دراور است */
   align-items: center;
   gap: 6px;
   background: var(--surface);
@@ -49,8 +79,11 @@
   border-color: var(--primary);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 24%, transparent);
 }
-.searchOpen { display: flex; }
-
+.searchOpen {
+  display: flex;
+  min-width: 0;
+  flex: 1 1 180px;
+}
 .searchInput {
   background: transparent;
   border: none;
@@ -60,7 +93,6 @@
   padding: 0 8px;
 }
 .searchInput::placeholder { color: var(--text-weak); }
-
 .searchBtn {
   width: 36px; height: 36px;
   border-radius: 999px;
@@ -95,6 +127,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  flex: 0 0 auto;         /* از جمع‌شدن ناخواسته جلوگیری می‌کند */
 }
 
 /* آیکن‌باتن عمومی */
@@ -129,7 +162,7 @@
   box-shadow: 0 2px 6px rgba(0,0,0,.25);
 }
 
-/* کاربر/احراز هویت */
+/* کاربر/احراز هویت (نسخهٔ هدر/دسکتاپ) */
 .user { display: none; align-items: center; gap: 8px; }
 .email {
   color: var(--text-weak);
@@ -143,12 +176,18 @@
   background: var(--surface);
   color: var(--text);
   transition: background var(--transition-300), border-color var(--transition-300);
+  height: 36px;
+  line-height: 1;
+  font-weight: 800;
 }
 .authBtn:hover { background: var(--surface-2); }
 .authPrimary {
   border-color: transparent;
   background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 92%, transparent), var(--primary));
   color: var(--pet-white);
+  height: 36px;
+  line-height: 1;
+  font-weight: 900;
 }
 .authPrimary:hover { background: var(--primary-press); }
 
@@ -191,13 +230,13 @@
   pointer-events: auto;
 }
 
-/* دکمهٔ بستن که همیشه دیده می‌شود */
+/* دکمهٔ بستن که همیشه دیده می‌شود (در RTL چپ) */
 .drawerClose {
   position: sticky;
   top: calc(env(safe-area-inset-top) + 8px);
   z-index: 5;
   display: flex;
-  justify-content: flex-start;
+  justify-content: flex-end; /* RTL = چپ */
   margin-bottom: 8px;
 }
 .drawerClose .burger {
@@ -249,7 +288,7 @@
 }
 .navList a:hover { background: var(--surface-2); }
 
-/* یوزر/احراز در موبایل */
+/* یوزر/احراز در موبایل (داخل دراور) */
 .userMobile {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   padding: 12px;
@@ -259,18 +298,136 @@
 }
 .authRow { display: flex; gap: 8px; }
 
+/* ===== Logout (بدون تغییر JSX) ===== */
+.user > button,
+.user > a {
+  --lo-border: color-mix(in oklab, var(--danger) 26%, var(--border));
+  --lo-text:   color-mix(in oklab, var(--danger) 80%, var(--text));
+  --lo-bg:     transparent;
+  --lo-bg-h:   color-mix(in oklab, var(--danger) 10%, var(--surface));
+  --lo-bg-a:   color-mix(in oklab, var(--danger) 14%, var(--surface-2));
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--lo-border);
+  background: var(--lo-bg);
+  color: var(--lo-text);
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition-300),
+              border-color var(--transition-300),
+              color var(--transition-300),
+              transform var(--transition-300),
+              box-shadow var(--transition-300);
+}
+.user > button:hover,
+.user > a:hover {
+  background: var(--lo-bg-h);
+  border-color: color-mix(in oklab, var(--danger) 40%, var(--border));
+  color: color-mix(in oklab, var(--danger) 92%, var(--text));
+}
+.user > button:active,
+.user > a:active {
+  transform: translateY(1px);
+  background: var(--lo-bg-a);
+}
+.user > button:focus-visible,
+.user > a:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}
+
+/* تم روشن برای Logout */
+html.light .user > button,
+html.light .user > a {
+  --lo-border: color-mix(in oklab, var(--danger) 32%, var(--border));
+  --lo-text:   color-mix(in oklab, var(--danger) 72%, var(--ink-700l));
+  --lo-bg-h:   color-mix(in oklab, var(--danger) 8%, var(--surface));
+  --lo-bg-a:   color-mix(in oklab, var(--danger) 12%, var(--surface-2));
+}
+
+/* موبایل: Logout داخل .userMobile لمس‌پذیرتر */
+.userMobile > button,
+.userMobile > a {
+  --lo-border: color-mix(in oklab, var(--danger) 34%, var(--border));
+  --lo-text:   var(--text-inverse);
+  --lo-bg:     color-mix(in oklab, var(--danger) 82%, transparent);
+  --lo-bg-h:   color-mix(in oklab, var(--danger) 88%, transparent);
+  --lo-bg-a:   color-mix(in oklab, var(--danger) 72%, var(--surface-2));
+  height: 40px;
+  padding: 0 14px;
+  border-radius: var(--radius);
+  color: var(--lo-text);
+  background: var(--lo-bg);
+  border: 1px solid var(--lo-border);
+  font-weight: 800;
+}
+.userMobile > button:hover,
+.userMobile > a:hover {
+  background: var(--lo-bg-h);
+  border-color: color-mix(in oklab, var(--danger) 52%, var(--border));
+}
+.userMobile > button:active,
+.userMobile > a:active {
+  transform: translateY(1px);
+  background: var(--lo-bg-a);
+}
+html.light .userMobile > button,
+html.light .userMobile > a {
+  --lo-text: #fff;
+  --lo-bg:   color-mix(in oklab, var(--danger) 92%, white 8%);
+  --lo-bg-h: color-mix(in oklab, var(--danger) 96%, white 4%);
+  --lo-bg-a: color-mix(in oklab, var(--danger) 84%, var(--surface-2));
+}
+
+/* فاصله کنار ایمیل */
+.user > button,
+.user > a { margin-inline-start: 6px; }
+.userMobile > button,
+.userMobile > a { margin-inline-start: 8px; }
+
+/* ===== قوانین خاص موبایل: مخفی‌سازی ورود/ثبت‌نام در هدر ===== */
+@media (max-width: 1023.98px) {
+  /* دکمه‌های ورود/ثبت‌نام در هدر دیده نشوند */
+  .header .actions :where(.authBtn, .authPrimary),
+  .header .actions [data-auth="login"],
+  .header .actions [data-auth="register"] {
+    display: none !important;
+  }
+
+  /* نسخهٔ داخل دراور موبایل نمایش داده شود */
+  .navMobile :where(.authBtn, .authPrimary),
+  .navMobile [data-auth="login"],
+  .navMobile [data-auth="register"] {
+    display: inline-flex !important;
+  }
+
+  /* جمع‌وجور کردن آیکن‌ها برای جلوگیری از اسکرول افقی */
+  .iconBtn { width: 36px; height: 36px; }
+  .inner { gap: 8px; }
+}
+
 /* ===== ریسپانسیو ===== */
 @media (min-width: 768px) {
   .inner { min-height: 72px; gap: 14px; }
-  .user { display: flex; }
+  .user { display: flex; }                /* در تبلت به بعد: بلوک کاربر نمایان */
 }
 
 @media (min-width: 1024px) {
-  .search { display: flex; }
+  .search { display: flex; }              /* دسکتاپ: سرچ در هدر */
   .navDesktop { display: flex; }
   .burger { display: none; }
   .navMobile { display: none; }
+
+  /* کمی جمع‌تر در دسکتاپ بزرگ */
+  .user > button,
+  .user > a {
+    height: 34px;
+    padding: 0 10px;
+  }
 }
-
-
-
