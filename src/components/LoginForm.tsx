@@ -1,8 +1,8 @@
 'use client';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useId } from 'react';
 import { postWithCsrf } from '@/lib/client-csrf';
 import { endpoints } from '@/lib/api';
-import form from './Form.module.css';
+import s from './AuthModal.module.css';
 import { useRouter } from 'next/navigation';
 
 export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
@@ -14,83 +14,97 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
   const [error, setError] = useState<string | null>(null);
   const idRef = useRef<HTMLInputElement>(null);
 
+  const formId = useId();
+  const idInputId = `${formId}-identifier`;
+  const pwInputId = `${formId}-password`;
+  const errId = `${formId}-error`;
+
   useEffect(() => { idRef.current?.focus(); }, []);
 
   async function onSubmit(e: React.FormEvent) {
-  e.preventDefault();
-  if (!identifier || !password) {
-    setError('ایمیل/نام‌کاربری و رمز عبور را وارد کنید.');
-    return;
+    e.preventDefault();
+    if (!identifier || !password) { setError('ایمیل/نام‌کاربری و رمز عبور را وارد کنید.'); return; }
+    setError(null); setLoading(true);
+    try {
+      await postWithCsrf(endpoints.login, { identifier, password });
+      await new Promise((r) => setTimeout(r, 80));
+      window.dispatchEvent(new CustomEvent('auth:changed', { detail: { loggedIn: true } }));
+      onSuccess?.();
+      r.refresh();
+    } catch (err: any) {
+      setError(err?.message || 'ورود ناموفق بود.');
+    } finally { setLoading(false); }
   }
-  setError(null); setLoading(true);
-  try {
-    await postWithCsrf(endpoints.login, { identifier, password });
 
-    await new Promise((r) => setTimeout(r, 80));
-    window.dispatchEvent(new CustomEvent('auth:changed', { detail: { loggedIn: true } }));
-
-    onSuccess?.();      // بستن مودال (همونی که قبلاً داشتی)
-    r.refresh();        // برای هدر/لی‌اوت SSR
-  } catch (err: any) {
-    setError(err?.message || 'ورود ناموفق بود.');
-  } finally { setLoading(false); }
-}
-
+  const hasError = Boolean(error);
 
   return (
-    <form onSubmit={onSubmit} className={form.form} dir="rtl" aria-label="فرم ورود">
-      <div className={form.row}>
-        <span className={form.icon} aria-hidden>📧</span>
+    <form onSubmit={onSubmit} className={s.form} dir="rtl" aria-label="فرم ورود" noValidate>
+      <div className={s.field}>
+        <span className={s.icon} aria-hidden>📧</span>
         <input
           ref={idRef}
-          className={`${form.input} input`}
-          placeholder="ایمیل یا نام‌کاربری"
+          id={idInputId}
+          name="identifier"
+          className={`${s.input} ${identifier ? s.hasValue : ''}`}
           value={identifier}
           onChange={(e)=>setIdentifier(e.target.value)}
           autoComplete="username"
           inputMode="email"
+          placeholder=""
+          aria-invalid={hasError ? true : undefined}
+          aria-describedby={hasError ? errId : undefined}
+          required
         />
+        <label className={s.label} htmlFor={idInputId}>ایمیل یا نام‌کاربری</label>
       </div>
 
-      <div className={form.row}>
-        <span className={form.icon} aria-hidden>🔒</span>
+      <div className={s.field}>
+        <span className={s.icon} aria-hidden>🔒</span>
         <input
-          className={`${form.input} input`}
+          id={pwInputId}
+          name="password"
+          className={`${s.input} ${password ? s.hasValue : ''}`}
           type={showPw ? 'text' : 'password'}
-          placeholder="رمز عبور"
           value={password}
           onChange={(e)=>setPassword(e.target.value)}
           autoComplete="current-password"
+          placeholder=""
+          aria-invalid={hasError ? true : undefined}
+          aria-describedby={hasError ? errId : undefined}
+          required
         />
+        <label className={s.label} htmlFor={pwInputId}>رمز عبور</label>
+
         <button
           type="button"
-          className={form.pwToggle}
-          onClick={() => setShowPw(s => !s)}
+          className={s.pwToggle}
+          onClick={() => setShowPw(v => !v)}
           aria-label={showPw ? 'مخفی‌کردن رمز' : 'نمایش رمز'}
+          aria-pressed={showPw}
+          title={showPw ? 'مخفی‌کردن رمز' : 'نمایش رمز'}
         >
           {showPw ? '🙈' : '👁️'}
         </button>
       </div>
 
-      <div className={form.helper}>
-        <label>
-          <input type="checkbox" /> مرا به خاطر بسپار
+      <div className={s.helper}>
+        <label className={s.checkLabel}>
+          <input type="checkbox" className={s.check} /> مرا به خاطر بسپار
         </label>
-        <a className={form.link} href="/forgot">فراموشی رمز؟</a>
+        <a className={s.link} href="/forgot">فراموشی رمز؟</a>
       </div>
 
-      {error && <p className={form.error}>{error}</p>}
+      {hasError && <p id={errId} className={s.error} role="alert">{error}</p>}
 
-      <div className={form.actions}>
-<button
-  type="submit"
-  data-variant="primary"
-  className={form.btnFull}
-  disabled={loading}
->
-  {loading ? 'در حال ورود…' : 'ورود'}
-</button>
-
+      <div className={s.actions}>
+        <button
+          type="submit"
+          className={`${s.btnFull} ${s.submitBtn}`}
+          disabled={loading}
+        >
+          {loading ? 'در حال ورود…' : 'ورود'}
+        </button>
       </div>
     </form>
   );

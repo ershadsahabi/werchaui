@@ -1,0 +1,365 @@
+/* app/tokens.css
+   ==========================================================================
+   Component Design Tokens for Werch UI (Petshop)
+   - تکیه بر variables.css برای رنگ‌ها، سایه‌ها، ترنزیشن‌ها و تایپو
+   - همه‌ی توکن‌ها قابل Override محلی داخل CSS ماژول هر کامپوننت هستند.
+   - از Logical Properties برای RTL/LTR خودکار استفاده شده.
+   ========================================================================== */
+
+/* ===== Breakpoints (Logical) ============================================ */
+:root {
+  --bp-xs: 360px;
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+  --bp-2xl: 1536px;
+}
+
+/* ===== Size & Radius Scales ============================================= */
+:root {
+  /* Icon / Avatar sizes */
+  --size-2xs: 12px;
+  --size-xs:  14px;
+  --size-sm:  16px;
+  --size-md:  20px;
+  --size-lg:  24px;
+  --size-xl:  32px;
+  --size-2xl: 40px;
+  --size-3xl: 56px;
+
+  /* Radius (alias به variables.css) */
+  --r-2xs: var(--radius-2xs);
+  --r-sm:  var(--radius-sm);
+  --r-md:  var(--radius);
+  --r-lg:  var(--radius-lg);
+  --r-xl:  var(--radius-xl);
+  --r-pill: 999px;
+}
+
+/* ===== Spacing Scale (alias) ============================================ */
+:root {
+  --sp-0: 0;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 28px;
+  --sp-8: 32px;
+  --sp-10:40px;
+  --sp-12:48px;
+  --sp-16:64px;
+}
+
+/* ===== Elevation / Motion (alias) ======================================= */
+:root {
+  --elev-xs: var(--shadow-xs);
+  --elev-sm: var(--shadow-sm);
+  --elev-md: var(--shadow);
+  --elev-lg: var(--shadow-lg);
+
+  --dur-150: 150ms cubic-bezier(.2,.8,.2,1);
+  --dur-200: var(--transition-200);
+  --dur-300: var(--transition-300);
+  --dur-500: var(--transition-500);
+}
+
+/* ===== Z-Index (لایه‌بندی سازگار با هدر/دراور/مودال) =================== */
+:root {
+  --z-base: 1;
+  --z-header: 50;
+  --z-drawer: 40;
+  --z-dropdown: 60;
+  --z-tooltip: 70;
+  --z-modal: 1000;
+  --z-toast: 1100;
+}
+
+/* ===== Icons ============================================================ */
+:root {
+  --icon-size:    var(--size-md);
+  --icon-color:   var(--text);
+  --icon-weak:    var(--text-weak);
+  --icon-mute:    var(--text-mute);
+  --icon-primary: var(--primary);
+  --icon-success: var(--success);
+  --icon-warning: var(--warning);
+  --icon-danger:  var(--danger);
+  --icon-stroke:  1.75; /* برای آیکون‌های خطی */
+}
+
+
+/* ===== Links (LO = Link Object tokens) ================================= */
+:root {
+  --lo-text:   var(--link);
+  --lo-text-h: var(--link-hover);
+  --lo-bg:     transparent;
+  --lo-bg-h:   color-mix(in oklab, var(--primary) 12%, transparent);
+  --lo-border: color-mix(in oklab, var(--primary) 26%, var(--border));
+  --lo-deco:   underline 0.08em;
+}
+
+/* ===== Buttons ========================================================== */
+:root {
+  /* Size */
+  --btn-h-sm: 34px;   --btn-px-sm: 12px;  --btn-gap-sm: 8px;  --btn-fz-sm: .875rem;
+  --btn-h-md: 40px;   --btn-px-md: 16px;  --btn-gap-md: 10px; --btn-fz-md: .9375rem;
+  --btn-h-lg: 48px;   --btn-px-lg: 20px;  --btn-gap-lg: 12px; --btn-fz-lg: 1rem;
+
+  --btn-radius:  var(--r-lg);
+  --btn-shadow:  var(--elev-xs);
+  --btn-ring:    0 0 0 3px color-mix(in oklab, var(--focus-ring) 60%, transparent);
+
+  /* Variants (defaults via variables.css) */
+  --btn-solid-bg:        var(--btn-bg);
+  --btn-solid-bg-press:  var(--btn-bg-press);
+  --btn-solid-text:      var(--btn-text);
+  --btn-solid-border:    transparent;
+
+  --btn-secondary-bg:       var(--secondary);
+  --btn-secondary-press:    var(--secondary-press);
+  --btn-secondary-text:     var(--on-secondary);
+
+  --btn-ghost-bg:           transparent;
+  --btn-ghost-text:         var(--text);
+  --btn-ghost-border:       var(--border);
+
+  --btn-outline-bg:         transparent;
+  --btn-outline-text:       var(--text);
+  --btn-outline-border:     var(--border);
+
+  --btn-danger-bg:          var(--danger);
+  --btn-danger-press:       color-mix(in oklab, var(--danger) 84%, black 16%);
+  --btn-danger-text:        var(--on-danger);
+}
+
+/* ===== Badges / Chips / Tags =========================================== */
+:root {
+  --badge-h:        26px;
+  --badge-px:       10px;
+  --badge-radius:   var(--r-md);
+  --badge-fz:       .75rem;
+
+  --badge-info-bg:   var(--badge-info-bg);
+  --badge-info-text: var(--badge-info-text);
+  --badge-tip-bg:    var(--badge-tip-bg);
+  --badge-tip-text:  var(--badge-tip-text);
+
+  /* Petshop Specific */
+  --badge-sale-bg:   color-mix(in oklab, var(--rose-400) 25%, transparent);
+  --badge-sale-text: #ffeef1;
+  --badge-new-bg:    color-mix(in oklab, var(--lime-400) 22%, transparent);
+  --badge-new-text:  #f1ffe8;
+  --badge-hot-bg:    color-mix(in oklab, var(--amber-400) 24%, transparent);
+  --badge-hot-text:  #fff8e7;
+
+  /* Tag / Chip */
+  --tag-bg:         var(--chip-bg);
+  --tag-text:       var(--chip-text);
+  --tag-border:     var(--card-border);
+  --tag-radius:     var(--r-lg);
+  --tag-gap:        8px;
+}
+
+/* ===== Cards / Surfaces ================================================= */
+:root {
+  --card-bg:      var(--card-bg);
+  --card-border:  var(--card-border);
+  --card-radius:  var(--r-xl);
+  --card-pad:     var(--sp-4);
+  --card-shadow:  var(--elev-sm);
+  --card-gap:     var(--sp-4);
+  --card-title-fz: 1.0625rem;
+}
+
+/* ===== Forms ============================================================ */
+:root {
+  --field-gap:      var(--sp-2);
+  --field-label-fz: .875rem;
+  --field-help-fz:  .75rem;
+
+  --input-h-sm: 38px;
+  --input-h-md: 44px;
+  --input-h-lg: 52px;
+
+  --input-bg:     var(--input-bg);
+  --input-text:   var(--text);
+  --input-ph:     var(--input-placeholder);
+  --input-border: var(--input-border);
+  --input-radius: var(--r-md);
+  --input-pad-x:  12px;
+  --input-pad-y:  10px;
+  --input-ring:   0 0 0 3px color-mix(in oklab, var(--focus-ring) 50%, transparent);
+
+  --ctrl-accent:  var(--primary);
+  --ctrl-danger:  var(--danger);
+  --ctrl-success: var(--success);
+  --ctrl-warning: var(--warning);
+
+  /* Select / Dropdown */
+  --select-indicator: "▾";
+  --select-pad-r: 28px;
+
+  /* Switch */
+  --sw-w: 42px; --sw-h: 24px; --sw-pad: 3px;
+  --sw-track-off: color-mix(in oklab, var(--text) 14%, transparent);
+  --sw-track-on:  color-mix(in oklab, var(--primary) 30%, transparent);
+  --sw-thumb:     #fff;
+
+  /* Checkbox (Petshop Paw) */
+  --chk-size:   20px;
+  --chk-radius: 6px;
+  --chk-bg:     color-mix(in oklab, var(--surface) 86%, transparent);
+  --chk-border: color-mix(in oklab, var(--text) 24%, var(--card-border) 76%);
+  --chk-accent: var(--primary);
+  --chk-ring:   0 0 0 3px color-mix(in oklab, var(--focus-ring) 35%, transparent);
+  --chk-icon:   var(--icon-paw); /* از بالا */
+}
+
+/* ===== Table ============================================================ */
+:root {
+  --table-bg:       var(--surface);
+  --table-border:   var(--border);
+  --table-radius:   var(--r-lg);
+  --table-pad-y:    12px;
+  --table-pad-x:    14px;
+  --table-head-fz:  .8125rem;
+  --table-row-h:    48px;
+  --table-stripe:   color-mix(in oklab, var(--text) 3%, transparent);
+}
+
+/* ===== Navigation ======================================================= */
+:root {
+  --nav-h:          64px;
+  --nav-bg:         var(--surface);
+  --nav-border:     var(--border);
+  --nav-link:       var(--text);
+  --nav-link-active:var(--primary);
+  --nav-radius:     var(--r-lg);
+}
+
+/* ===== Breadcrumb / Pagination / Tabs ================================== */
+:root {
+  --crumb-gap: 6px;
+  --crumb-sep: "›";
+  --page-gap:  6px;
+  --tab-gap:   8px;
+
+  --tab-bg:     color-mix(in oklab, var(--text) 6%, transparent);
+  --tab-bg-act: color-mix(in oklab, var(--primary) 16%, transparent);
+  --tab-text:   var(--text);
+  --tab-text-act: var(--text-strong);
+  --tab-radius: var(--r-lg);
+}
+
+/* ===== Tooltip / Popover / Modal / Drawer ============================== */
+:root {
+  --tip-bg:       var(--ink-800, #101723);
+  --tip-text:     #eaf1f8;
+  --tip-pad:      8px 10px;
+  --tip-radius:   var(--r-sm);
+  --tip-shadow:   var(--elev-xs);
+
+  --popover-bg:     var(--surface);
+  --popover-text:   var(--text);
+  --popover-pad:    12px;
+  --popover-radius: var(--r-lg);
+  --popover-shadow: var(--elev-sm);
+
+  --modal-bg:     var(--surface);
+  --modal-text:   var(--text);
+  --modal-pad:    20px;
+  --modal-radius: var(--r-xl);
+  --modal-shadow: var(--elev-lg);
+  --backdrop-bg:  rgba(0,0,0,.45);
+
+  --drawer-w:     min(92vw, 420px);
+  --drawer-bg:    var(--surface);
+  --drawer-text:  var(--text);
+}
+
+/* ===== Alerts / Toasts ================================================= */
+:root {
+  --alert-radius: var(--r-lg);
+  --alert-pad:    12px 14px;
+
+  --toast-radius: var(--r-lg);
+  --toast-pad:    12px 14px;
+  --toast-gap:    8px;
+  --toast-shadow: var(--elev-sm);
+  --toast-pos-i:  16px; /* inline-start */
+  --toast-pos-b:  16px; /* block-end */
+}
+
+/* ===== Feedback: Skeleton / Progress / Rating ========================== */
+:root {
+  --skel-radius:  var(--r-md);
+  --skel-shimmer: linear-gradient(90deg,
+                        color-mix(in oklab, var(--text) 6%, transparent) 0%,
+                        color-mix(in oklab, var(--text) 10%, transparent) 40%,
+                        color-mix(in oklab, var(--text) 6%, transparent) 80%);
+  --skel-bg:      color-mix(in oklab, var(--text) 6%, transparent);
+
+  --progress-h:   8px;
+  --progress-bg:  color-mix(in oklab, var(--text) 10%, transparent);
+  --progress-fill:var(--primary);
+
+  --rating-size:  18px;
+  --rating-gap:   6px;
+  --rating-on:    var(--amber-400);
+  --rating-off:   var(--text-mute);
+}
+
+/* ===== Price / Commerce ================================================= */
+:root {
+  --price-fz:         1.125rem;  /* 18px */
+  --price-strong-fz:  1.375rem;  /* 22px */
+  --price-color:      var(--text-strong);
+  --price-off-fz:     .875rem;
+  --price-off-color:  var(--text-mute);
+  --price-discount-bg:   color-mix(in oklab, var(--success) 22%, transparent);
+  --price-discount-text: #eafff7;
+
+  --stock-ok:   var(--success);
+  --stock-low:  var(--warning);
+  --stock-out:  var(--danger);
+}
+
+/* ===== Product Card / Gallery (Petshop) ================================= */
+:root {
+  --product-img-ratio: 4/3; /* می‌تونی 1/1 یا 3/4 کنی */
+  --product-gap:       var(--sp-4);
+  --product-pad:       var(--sp-4);
+  --product-radius:    var(--r-xl);
+  --product-shadow:    var(--elev-sm);
+  --product-border:    var(--card-border);
+}
+
+/* ===== Avatars / Media ================================================== */
+:root {
+  --avatar-size:   var(--size-2xl);
+  --avatar-radius: var(--r-pill);
+  --avatar-ring:   0 0 0 3px color-mix(in oklab, var(--primary) 40%, transparent);
+}
+
+/* ===== Keyframes ======================================================== */
+@keyframes fade-in      { from { opacity: 0 } to { opacity: 1 } }
+@keyframes scale-pop    { 0% { transform: scale(.98); opacity: 0 } 100% { transform: scale(1); opacity: 1 } }
+@keyframes slide-up     { 0% { transform: translateY(10px); opacity: 0 } 100% { transform: translateY(0); opacity: 1 } }
+@keyframes shimmer      { 0% { background-position: -200% 0 } 100% { background-position: 200% 0 } }
+
+/* ===== Light Theme Adjustments (Optional fine-tune) ===================== */
+html.light {
+  --table-border:  color-mix(in oklab, var(--ink-800l) 18%, transparent);
+  --sw-track-off:  color-mix(in oklab, var(--ink-700l) 14%, transparent);
+
+  /* چک‌باکس روشن کمی تقویت شود */
+  --chk-bg:     #eef4fa;
+  --chk-border: #c3cfde;
+}
+
+
+
+

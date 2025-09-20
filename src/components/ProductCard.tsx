@@ -1,4 +1,6 @@
 'use client';
+
+// ساختار اصلی حفظ شده (anchor + Image با width/height و onLoadingComplete)
 import Image from 'next/image';
 import styles from './ProductCard.module.css';
 import { useCartStore } from '@/store/cart';
@@ -74,6 +76,7 @@ export default function ProductCard({ product }: { product: Product }) {
               setShape('landscape');
             }
           }}
+          className={styles.img}
         />
 
         {/* نشان سفارشی محصول */}
@@ -89,12 +92,15 @@ export default function ProductCard({ product }: { product: Product }) {
             موجودی {stockVal}
           </span>
         ) : null}
+
+        {/* جلوه نور ملایم */}
+        <span aria-hidden className={styles.shine} />
       </a>
 
       <div className={styles.body}>
         {/* ردیف مشترک: عنوان در راست، برند در چپ */}
         <div className={styles.head}>
-          <div className={styles.title} title={product.title}>
+          <div id={`p-title-${product.id}`} className={styles.title} title={product.title}>
             {product.title}
           </div>
           {product.brand && (
@@ -109,10 +115,10 @@ export default function ProductCard({ product }: { product: Product }) {
             {product.price.toLocaleString('fa-IR')} <span className={styles.tmn}>تومان</span>
           </div>
 
-        {typeof product.rating === 'number' && (
-            <div className={styles.rating} aria-label={`امتیاز ${product.rating}`}>
-              <span aria-hidden>★</span>
-              {product.rating}
+          {typeof product.rating === 'number' && (
+            <div className={styles.rating} aria-label={`امتیاز ${product.rating}`} style={{ ['--rating' as any]: product.rating }}>
+              <span className={styles.stars} aria-hidden />
+              <span className={styles.ratingNum}>{product.rating}</span>
             </div>
           )}
         </div>

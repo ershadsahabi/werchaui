@@ -1,0 +1,32 @@
+.inlineRef {
+  color: var(--link);
+  padding-inline: 2px;
+  border-radius: 6px;
+}
+.inlineRef:hover {
+  background: color-mix(in oklab, var(--primary) 14%, transparent);
+}
+
+/* لیست مراجع */
+.refList { counter-reset: ref; display: grid; gap: 10px; padding-inline-start: 0; }
+.refItem {
+  list-style: none;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--r-lg);
+  padding: 12px;
+  box-shadow: var(--elev-xs);
+  position: relative;
+}
+.refItem::before {
+  counter-increment: ref;
+  content: "[" counter(ref) "]";
+  position: absolute;
+  inset-inline-start: -8px; inset-block-start: -8px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+  box-shadow: var(--elev-xs);
+}

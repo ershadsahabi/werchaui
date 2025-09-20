@@ -1,0 +1,172 @@
+/* ================= Page Head (تیتر اصلی) ================= */
+.pageHead {
+  padding-block: 6px;
+}
+.pageHead h1 {
+  letter-spacing: -0.01em;
+}
+
+/* ================= Section Head ================= */
+/* متن‌محور، مینیمال، بدون شِمای دکمه‌ای */
+.sectionHead {
+  display: flex; align-items: center; justify-content: flex-start; gap: 10px;
+  margin-block: 8px 6px;
+}
+.sectionTitle {
+  --_accent: var(--primary);
+  position: relative;
+  font-size: 1.02rem;
+  font-weight: 900;
+  color: var(--text-strong);
+  padding: 0;                /* بدون padding دکمه‌ای */
+  background: none;          /* بدون پس‌زمینه */
+  border: none;              /* بدون بوردر */
+  line-height: 1.2;
+}
+
+
+.sectionTitle::after {
+  content: "";
+  display: block;
+  block-size: 2px;
+  inline-size: 72px;
+  background: color-mix(in oklab, var(--_accent) 38%, transparent);
+  border-radius: 999px;
+  margin-block-start: 8px;
+  margin-inline-start: 0; /* RTL */
+}
+
+/* Separator */
+.divider {
+  block-size: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in oklab, var(--text) 14%, transparent) 22%,
+    color-mix(in oklab, var(--text) 14%, transparent) 78%,
+    transparent 100%
+  );
+  border-radius: 999px;
+  opacity: .7;
+}
+
+/* ================= Cards Grid ================= */
+/* 3 → 2 → 1 ستون، فاصله‌ها هوشمند */
+.cardsGrid {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+@media (max-width: 1024px) {
+  .cardsGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .cardsGrid { grid-template-columns: 1fr; gap: var(--sp-3); }
+}
+.cardsGrid > * { min-inline-size: 0; }
+
+/* ================= Pagination (هماهنگ با کامپوننت) ================= */
+.pagination {
+  display: inline-flex; gap: 8px; align-items: center;
+  margin-block: var(--sp-4);
+}
+.page {
+  min-inline-size: 38px; height: 38px;
+  padding: 0 10px;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--border);
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+  transition: background var(--dur-150), border-color var(--dur-150), transform var(--dur-150);
+}
+.page:hover { transform: translateY(-1px); }
+.page[aria-current="page"] {
+  background: color-mix(in oklab, var(--primary) 20%, transparent);
+  border-color: color-mix(in oklab, var(--primary) 46%, var(--border));
+  font-weight: 800;
+}
+
+/* ================= Card Shell ================= */
+.card { overflow: hidden; position: relative; border-radius: var(--r-xl); }
+.cardInner { display: grid; gap: 12px; text-decoration: none; color: inherit; }
+
+/* ================= Media ================= */
+.media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: var(--r-xl);
+  background: var(--muted);
+  isolation: isolate;
+}
+.img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transform: scale(1.02);
+  transition: transform var(--dur-300);
+  will-change: transform;
+}
+.card:hover .img { transform: scale(1.06); }
+
+/* اگر قبلاً متای روی تصویر داشتی و دیگر لازم نیست */
+.mediaShade, .mediaBadges, .pill, .pillCat, .pillInfo { display: none !important; }
+
+/* ================= Body ================= */
+.body { display: grid; gap: 8px; padding-inline: 2px; }
+.title { font-size: 1.08rem; font-weight: 900; color: var(--text-strong); }
+.excerpt { font-size: .93rem; color: var(--text-weak); }
+
+/* ================= Meta Row: متن ساده ================= */
+.metaRow {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+  font-size: .85rem; color: var(--text-mute);
+  padding-inline: 2px;
+  margin-top: 2px;
+}
+.metaItem { color: var(--text-mute); }
+.metaSep { color: color-mix(in oklab, var(--text) 28%, transparent); }
+
+/* ================= Lift effect ================= */
+.card:hover {
+  box-shadow: var(--elev-md);
+  transform: translateY(-2px);
+  transition: transform var(--dur-200), box-shadow var(--dur-200);
+}
+
+/* ── Hero / Breadcrumb */
+.hero {
+  padding-block: 22px 18px;
+  border-bottom: 1px solid var(--border);
+  background:
+    radial-gradient(880px 420px at 12% -10%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%),
+    radial-gradient(880px 420px at 86% -8%, color-mix(in oklab, var(--secondary) 14%, transparent), transparent 60%),
+    var(--bg);
+  position: relative;
+  isolation: isolate;
+}
+.bc { display: flex; align-items: center; gap: 8px; color: var(--text-weak); font-size: 13px; }
+.bcLink { color: var(--link); }
+.bcLink:hover { text-decoration: underline; text-underline-offset: 3px; }
+.bcSep { opacity: .6; }
+.bcHere { color: var(--text); opacity: .9; }
+.title { margin: 6px 0 0; font-size: 26px; letter-spacing: -.01em; }
+.subtitle { margin: 4px 0 0; color: var(--text-weak); }
+
+/* ================= Night fine-tune ================= */
+@media (prefers-color-scheme: dark) {
+  .hero,
+  .card {
+    background: color-mix(in oklab, var(--surface) 92%, white 8%);
+    border-color: color-mix(in oklab, var(--border) 80%, white 20%);
+  }
+  .heroBody {
+    background: color-mix(in oklab, var(--surface) 92%, white 8%);
+  }
+}
+
+/* ================= Mobile polish ================= */
+@media (max-width: 640px) {
+  .cardInner { gap: 10px; }
+  .media { aspect-ratio: 4 / 3; border-radius: var(--r-lg); }
+  .title { font-size: 1rem; }
+  .excerpt { font-size: .9rem; }
+}

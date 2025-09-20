@@ -1,0 +1,13 @@
+/* F:\Shahrivar1404\Werch_app\werchaui\src\app\blog\prose.css  */
+
+.prose { color: var(--text); line-height: 1.9; font-size: 1.02rem; }
+.prose h2 { margin-block: 18px 10px; font-weight: 900; color: var(--text-strong); font-size: 1.3rem; }
+.prose h3 { margin-block: 14px 8px;  font-weight: 800; color: var(--text-strong); font-size: 1.1rem; }
+.prose p, .prose ul, .prose ol, .prose blockquote, .prose figure { margin-block: 10px; }
+.prose ul, .prose ol { padding-inline-start: 1.25em; }
+.prose li { margin-block: 6px; }
+.prose a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
+html:not(.light) .prose a:hover { color: var(--link-hover); }  /* فقط در بلاگ و فقط hover */
+.prose blockquote { border-inline-start: 3px solid var(--border); padding-inline: 12px; color: var(--text-weak); background: color-mix(in oklab, var(--text) 4%, transparent); border-radius: var(--r-sm); }
+.prose img { border-radius: var(--r-lg); }
+.prose .ref { font-size: .85em; vertical-align: super; }

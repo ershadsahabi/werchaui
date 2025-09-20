@@ -1,14 +1,26 @@
-/* ───────────────── PRODUCTS (Card) ───────────────── */
-/* موبایل‌فرست • هماهنگ با :root و html.light در variables.css */
+/* ───────────────── Product Card — Equalized & Themed (Final) ───────────────── */
+/* 1) نسبت ثابت برای هم‌قدی کارت‌ها
+   2) حذف کامل QuickAdd
+   3) کنتراست صحیح بج «موجودی» در شب/روز
+*/
 
-/* کارت با کنتراست و مرز مشخص‌تر */
+/* ===== Card ===== */
 .card {
-  background:
-    linear-gradient(180deg,
-      color-mix(in oklab, var(--surface) 96%, transparent 4%),
-      color-mix(in oklab, var(--surface-2) 92%, transparent 8%)
-    );
-  border: 1px solid var(--border-strong);     /* مرز کمی پررنگ‌تر */
+  /* Night (Dark) defaults */
+  --pc-grad-top: color-mix(in oklab, var(--surface) 96%, transparent 4%);
+  --pc-grad-bot: color-mix(in oklab, var(--surface-2) 92%, transparent 8%);
+  --pc-ring:     color-mix(in oklab, var(--focus-ring) 60%, transparent);
+  --pc-shadow:   0 16px 34px color-mix(in oklab, #000 20%, transparent);
+  --pc-glow1:    color-mix(in oklab, var(--primary) 22%, transparent);
+  --pc-glow2:    color-mix(in oklab, var(--secondary) 18%, transparent);
+
+  /* بج «موجودی» — تم شب */
+  --stock-bg:    rgba(0, 0, 0, 0.55);  /* نیمه‌شفاف مشکی */
+  --stock-text:  #ffffff;              /* متن سفید */
+  --stock-border: rgba(255, 255, 255, 0.2); /* مرز خیلی ظریف روشن */
+
+  background: linear-gradient(180deg, var(--pc-grad-top), var(--pc-grad-bot));
+  border: 1px solid var(--border-strong);
   border-radius: calc(var(--radius) + 2px);
   overflow: clip;
   box-shadow: var(--shadow-xs);
@@ -16,61 +28,66 @@
   display: grid;
   grid-template-rows: auto 1fr;
 }
-
-/* موبایل: هر خط دقیقاً یک کارت */
-@media (max-width: 639.98px) {
-  .card { grid-column: 1 / -1; }
-}
-
 .card:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in oklab, var(--border-strong) 70%, var(--text) 30%);
-  box-shadow: 0 14px 28px color-mix(in oklab, #000 18%, transparent);
-  filter: brightness(1.012);
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--border-strong) 65%, var(--text) 35%);
+  box-shadow: var(--pc-shadow);
 }
-
-/* حالت فوکوس برای دسترس‌پذیری و مرز مشخص */
 .card:focus-within {
-  outline: none;
   box-shadow:
-    0 0 0 2px color-mix(in oklab, var(--focus-ring) 65%, transparent),
-    0 10px 22px color-mix(in oklab, var(--focus-ring) 18%, transparent);
+    0 0 0 2px var(--pc-ring),
+    0 14px 30px color-mix(in oklab, var(--focus-ring) 20%, transparent);
   border-color: var(--focus-ring);
 }
 
-/* ── Media (قاب تصویر هوشمند) ───────────────────── */
+/* Light theme adjustments */
+html.light .card {
+  --pc-grad-top: color-mix(in oklab, var(--paper-000) 85%, transparent);
+  --pc-grad-bot: color-mix(in oklab, var(--paper-050) 90%, transparent);
+  --pc-ring:     color-mix(in oklab, var(--cyan-500l) 58%, transparent);
+  --pc-shadow:   0 16px 34px rgba(16,24,40,.12);
+  --pc-glow1:    color-mix(in oklab, var(--cyan-500l) 26%, transparent);
+  --pc-glow2:    color-mix(in oklab, var(--violet-500l) 20%, transparent);
+
+  /* بج «موجودی» — تم روشن (کنتراست قوی‌تر) */
+  --stock-bg:    rgba(255, 255, 255, 0.7); /* نیمه‌شفاف سفید */
+  --stock-text:  #000000;                  /* متن مشکی */
+  --stock-border: rgba(0, 0, 0, 0.15);     /* مرز خیلی ظریف تیره */
+}
+
+/* ===== Media (Equalized Height) ===== */
 .thumb {
   position: relative;
-  aspect-ratio: 1 / 1; /* پیش‌فرض: مربع */
+  aspect-ratio: var(--pc-img-ratio, var(--product-img-ratio)); /* از توکن سراسری؛ موبایل را در گرید 1-کالامی کردیم */
   overflow: clip;
-  background: var(--surface-2);
-
-  /* قاب واضح برای تصویر: مرز + سایهٔ درونی کم‌رنگ */
-  border-bottom: 1px solid var(--border-strong);           /* مرز بین عکس و بدنه */
+  background: var(--muted);
+  border-bottom: 1px solid var(--border-strong);
   box-shadow:
     inset 0 0 0 1px color-mix(in oklab, var(--glass-border) 70%, var(--border-strong) 30%),
-    inset 0 -1px 0 0 var(--border-strong);                 /* لبه‌ی پایینِ عکس */
-}
-.portrait { aspect-ratio: 4 / 5; }   /* عمودی */
-.landscape { aspect-ratio: 3 / 2; }  /* افقی */
-.square { aspect-ratio: 1 / 1; }     /* مربع */
-
-@media (max-width: 639.98px) {
-  .thumb { max-block-size: min(68vh, 560px); }
+    inset 0 -1px 0 0 var(--border-strong);
+  isolation: isolate;
 }
 
-/* تصویر بدون کشیدگی */
+/* شکل‌یاب حفظ می‌شود ولی ارتفاع را تغییر نمی‌دهد */
+.portrait {}
+.landscape {}
+.square {}
+
+/* تصویر همیشه نمایان است */
 .thumb :global(img),
 .cardMedia :global(img),
-.cardImg {
+.cardImg,
+.img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
   display: block;
+  transition: transform .25s ease, filter .25s ease;
 }
+.thumb:hover .img { transform: scale(1.02); filter: saturate(1.03); }
 
-/* Hairline تفکیک‌کنندهٔ ظریف زیر عکس (تقویت مرزبندی در تم روشن/تیره) */
+/* Hairline زیر عکس */
 .thumb::after {
   content: "";
   position: absolute;
@@ -87,13 +104,21 @@
   pointer-events: none;
 }
 
-/* ── Badgeها ─────────────────────────────────────── */
-.badge {
+/* جلوه شاین */
+.shine {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(880px 360px at 18% -18%, var(--pc-glow1) 0%, transparent 60%),
+    radial-gradient(760px 300px at 84% 118%, var(--pc-glow2) 0%, transparent 60%);
+  opacity: .0; transition: opacity .25s ease;
+}
+.thumb:hover .shine { opacity: .75; }
+
+/* ===== Badges ===== */
+.badge,
+.badgeOut,
+.stockBadge {
   position: absolute;
-  inset-inline-start: 8px;
-  inset-block-start: 8px;
-  background: var(--accent);
-  color: var(--on-accent);
   padding: 6px 10px;
   border-radius: 999px;
   font-weight: 800;
@@ -103,132 +128,101 @@
   box-shadow: var(--shadow-xs);
 }
 
+.badge {
+  inset-inline-start: 8px;
+  inset-block-start: 8px;
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
 .badgeOut {
-  position: absolute;
   inset-inline-end: 8px;
   inset-block-start: 8px;
   background: var(--danger);
   color: var(--on-danger);
-  padding: 6px 10px;
-  border-radius: 999px;
   font-weight: 900;
-  font-size: 12px;
-  letter-spacing: .01em;
-  z-index: 2;
-  box-shadow: var(--shadow-xs);
 }
 
+/* ✅ کنتراست صحیح در شب/روز با متغیرهای اختصاصی */
 .stockBadge {
-  position: absolute;
   inset-inline-start: 8px;
   inset-block-end: 8px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-weight: 900;
-  font-size: 12px;
-  letter-spacing: .01em;
-  z-index: 2;
-  box-shadow: var(--shadow-xs);
-  border: 1px solid color-mix(in oklab, var(--success) 35%, var(--border));
-  background: color-mix(in oklab, var(--success) 22%, var(--surface));
-  color: var(--on-success);
+  border: 1px solid var(--stock-border);
+  background: var(--stock-bg);
+  color: var(--stock-text);
 }
 
-/* ── Body ───────────────────────────────────────── */
+/* ===== Body ===== */
 .body {
   padding: 10px 12px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  background:
-    linear-gradient(180deg,
-      color-mix(in oklab, var(--surface) 98%, transparent 2%),
-      var(--surface)
-    );
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--surface) 98%, transparent 2%),
+    var(--surface)
+  );
 }
 
-/* ردیف عنوان + برند (در یک خط با فاصله‌ی منطقی) */
+/* عنوان + برند */
 .head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 10px;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px;
 }
-
-/* Title (سمت راست در RTL) */
 .title {
   margin: 0;
   font-size: 14.25px;
   line-height: 1.45;
   color: var(--text);
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 2;  /* ارتفاع یکنواخت بدنه کارت‌ها */
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex: 1 1 auto;
   min-width: 0;
 }
-
-/* برند (چیپ سمت چپ همان ردیف) */
 .brand {
   flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline-flex; align-items: center; gap: 6px;
   padding: 4px 10px;
   border-radius: 999px;
-  background:
-    linear-gradient(180deg,
-      color-mix(in oklab, var(--chip-bg) 92%, transparent 8%),
-      var(--chip-bg)
-    );
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--chip-bg) 92%, transparent 8%),
+    var(--chip-bg)
+  );
   color: var(--chip-text);
   border: 1px solid var(--glass-border);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: .01em;
-  box-shadow: var(--shadow-xs);
-  opacity: .98;
-  max-width: 48%;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  font-size: 12px; font-weight: 700; letter-spacing: .01em;
+  box-shadow: var(--shadow-xs); opacity: .98;
+  max-width: 48%; white-space: nowrap; text-overflow: ellipsis; overflow: hidden;
 }
-.brand::before {
-  content: '🏷️';
-  font-size: 12px;
-  line-height: 1;
-}
+.brand::before { content: '🏷️'; font-size: 12px; line-height: 1; }
 
-/* Meta */
+/* متا: قیمت و امتیاز */
 .meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
 }
 
-/* Price — کنتراست بهتر برای هر دو تم */
+/* قیمت */
 .price {
   color: var(--primary);
   text-shadow: 0 0 1px color-mix(in oklab, var(--primary) 35%, transparent);
-  font-weight: 900;
-  font-size: 14.25px;
+  font-weight: 900; font-size: 14.25px;
 }
 .tmn { font-weight: 700; opacity: .85; }
-.price--rose { color: var(--accent); }
 
-/* Rating */
-.rating {
-  color: var(--warning);
-  font-size: 12.25px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  opacity: .96;
+/* ریتینگ (ستاره‌های ماسکی) */
+.rating { display: inline-flex; align-items: center; gap: 6px; }
+.stars {
+  inline-size: 64px; block-size: 12px;
+  background: linear-gradient(90deg, var(--warning) calc(var(--_pct)*1%), color-mix(in oklab, var(--text-mute) 40%, transparent) 0);
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cg fill='%23000'%3E%3Cpolygon points='10,0 12.9,6.5 20,7.6 15,12.4 16.1,20 10,16.6 3.9,20 5,12.4 0,7.6 7.1,6.5'/%3E%3Cpolygon transform='translate(20,0)' points='10,0 12.9,6.5 20,7.6 15,12.4 16.1,20 10,16.6 3.9,20 5,12.4 0,7.6 7.1,6.5'/%3E%3Cpolygon transform='translate(40,0)' points='10,0 12.9,6.5 20,7.6 15,12.4 16.1,20 10,16.6 3.9,20 5,12.4 0,7.6 7.1,6.5'/%3E%3Cpolygon transform='translate(60,0)' points='10,0 12.9,6.5 20,7.6 15,12.4 16.1,20 10,16.6 3.9,20 5,12.4 0,7.6 7.1,6.5'/%3E%3Cpolygon transform='translate(80,0)' points='10,0 12.9,6.5 20,7.6 15,12.4 16.1,20 10,16.6 3.9,20 5,12.4 0,7.6 7.1,6.5'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20'%3E%3Cg fill='%23000'%3E%3Cpolygon points='10,0 12.9,6.5 20,7.6 15,12.4 16.1,20 10,16.6 3.9,20 5,12.4 0,7.6 7.1,6.5'/%3E%3Cpolygon transform='translate(20,0)' points='10,0 12.9,6.5 20,7.6 15,12.4 16.1,20 10,16.6 3.9,20 5,12.4 0,7.6 7.1,6.5'/%3E%3Cpolygon transform='translate(40,0)' points='10,0 12.9,6.5 20,7.6 15,12.4 16.1,20 10,16.6 3.9,20 5,12.4 0,7.6 7.1,6.5'/%3E%3Cpolygon transform='translate(60,0)' points='10,0 12.9,6.5 20,7.6 15,12.4 16.1,20 10,16.6 3.9,20 5,12.4 0,7.6 7.1,6.5'/%3E%3Cpolygon transform='translate(80,0)' points='10,0 12.9,6.5 20,7.6 15,12.4 16.1,20 10,16.6 3.9,20 5,12.4 0,7.6 7.1,6.5'/%3E%3C/g%3E%3C/svg%3E") center / contain no-repeat;
+  --_pct: calc((var(--_val, 5) / 5) * 100);
 }
+.ratingNum { font-size: 12.25px; color: var(--warning); opacity: .96; }
+:where(.rating)[style] .stars { --_val: var(--rating, 5); }
 
-/* دکمه افزودن */
+/* ===== CTA ===== */
 .addBtn {
   width: 100%;
   border: 1px solid color-mix(in oklab, var(--btn-bg) 72%, var(--text) 28%);
@@ -237,16 +231,13 @@
     var(--btn-bg)
   );
   color: var(--on-primary);
-  padding: 8px 10px;
+  padding: 10px 12px;
   border-radius: 12px;
-  font-weight: 900;
-  font-size: 13.5px;
-  line-height: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: transform .14s ease, filter .14s ease, box-shadow .14s ease, border-color .14s ease, background .14s ease;
+  font-weight: 900; font-size: 13.5px; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  transition:
+    transform .14s ease, filter .14s ease, box-shadow .14s ease,
+    border-color .14s ease, background .14s ease;
   box-shadow: 0 10px 22px color-mix(in oklab, var(--btn-bg) 22%, transparent);
 }
 .addBtn:hover {
@@ -259,14 +250,18 @@
   box-shadow: 0 14px 28px color-mix(in oklab, var(--btn-bg-press) 26%, transparent);
 }
 .addBtn:disabled {
-  opacity: .55;
-  cursor: not-allowed;
-  filter: grayscale(.25);
+  opacity: .55; cursor: not-allowed; filter: grayscale(.25);
   border-color: color-mix(in oklab, var(--border) 80%, var(--text) 20%);
   box-shadow: none;
 }
 
-/* ── Responsive ─────────────────────────── */
+/* ===== Mobile tweaks ===== */
+@media (max-width: 639.98px) {
+  /* در موبایل، هر کارت تمام عرض گرید را می‌گیرد (تنظیمات گرید در Shop.module.css انجام شده) */
+  .thumb { --pc-img-ratio: 1 / 1; } /* حس اینستاگرامی */
+}
+
+/* ===== Desktop font tweaks ===== */
 @media (min-width: 640px) {
   .title { font-size: 14.75px; }
   .price { font-size: 14.75px; }

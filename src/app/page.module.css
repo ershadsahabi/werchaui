@@ -1,4 +1,4 @@
-/* موبایل‌اول، تماماً مبتنی بر app/variables.css */
+/* موبایل‌اول، هماهنگ با variables.css / tokens.css / utilities.css */
 
 /* ===== Root ===== */
 .homeRoot {
@@ -14,7 +14,6 @@
   gap: 16px;
 }
 
-/* محتوای سمت راست (در RTL) */
 .heroContent {
   display: grid;
   gap: 14px;
@@ -51,7 +50,8 @@
   grid-template-columns: 1fr 1fr;
   gap: 6px 12px;
   list-style: none;
-  padding: 0; margin: 8px 0 0;
+  padding: 0;
+  margin: 8px 0 0;
   color: var(--text);
 }
 .heroKpis li { white-space: nowrap; }
@@ -85,10 +85,10 @@
   color: var(--text-strong);
 }
 
-/* تصویر سمت چپ (در RTL) */
+/* تصویر هیرو */
 .heroImageWrap {
   position: relative;
-  min-height: 240px; /* برای fill */
+  min-height: 240px; /* برای Image با fill */
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--border);
@@ -100,18 +100,12 @@
   filter: saturate(105%);
 }
 
-/* حالت split دسکتاپ */
-.heroModernSplit {
-  /* در موبایل، بالا/پایین است. در دسکتاپ کنارهم می‌شود */
-}
-
-/* ===== بخش مشترک ===== */
+/* ===== سکشن پایه ===== */
 .section {
   display: grid;
   gap: 16px;
   padding-block: 8px 0;
 }
-
 .sectionHeader {
   display: flex;
   align-items: center;
@@ -133,45 +127,49 @@
   color: var(--text-weak);
 }
 
-/* ===== گرید دسته‌بندی ===== */
+/* ===== دسته‌بندی‌ها: یکپارچه و یکنواخت ===== */
 .catGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
   gap: 10px;
 }
+
+/* کارت از کلاس card سراسری ارث می‌برد؛ فقط layout محلی */
 .catCard {
-  position: relative;
-  display: grid;
-  grid-template-rows: 1fr auto;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  overflow: hidden;
-  transition: transform var(--transition-300), background var(--transition-300), border-color var(--transition-300), box-shadow var(--transition-300);
+  display: flex;
+  flex-direction: column;
+  /* card و card--hover از utilities.css رفتار مرز/سایه/هاور را می‌دهند */
 }
-.catCard:hover {
-  transform: translateY(-2px);
-  background: var(--surface-2);
-  box-shadow: var(--shadow);
-}
+
+/* مدیای ثابت با نسبت یکنواخت (از توکن سراسری) */
 .catMedia {
   position: relative;
-  aspect-ratio: 1 / 1; /* مربع در موبایل */
+  aspect-ratio: var(--product-img-ratio); /* 4/3 به‌طور پیش‌فرض */
   background: var(--muted);
+  border-radius: calc(var(--card-radius) - 6px);
+  overflow: hidden;
 }
+
+/* تصویر یکدست: contain برای نریختن تناسب؛ padding برای نفس تصویر */
 .catImg {
   object-fit: contain;
   object-position: center;
+  padding: 10px;
+  /* کمی بهبود رندر روی تصاویر شفاف/PNG */
+  image-rendering: -webkit-optimize-contrast;
 }
+
+/* بدنه‌ی کارت با فاصله‌ی ثابت */
 .catBody {
   display: grid;
   gap: 6px;
-  padding: 10px 12px;
+  padding: var(--card-pad);
 }
 .catTitle {
   font-size: 1rem;
   font-weight: 800;
   color: var(--text);
+  line-height: 1.35;
 }
 .catCta {
   font-size: .9rem;
@@ -184,35 +182,13 @@
   place-items: center;
   text-align: center;
   gap: 10px;
-  padding: 16px;
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
 }
-.emptyIcon {
-  font-size: 36px;
-}
-.emptyTitle {
-  font-size: 1.1rem;
-  font-weight: 800;
-  color: var(--text-strong);
-}
-.emptyText {
-  color: var(--text-weak);
-  max-width: 60ch;
-  margin-inline: auto;
-}
-.emptyActions {
-  display: inline-flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  justify-content: center;
-  margin-top: 4px;
-}
+.emptyIcon { font-size: 36px; }
+.emptyTitle { font-size: 1.1rem; font-weight: 800; color: var(--text-strong); }
+.emptyText { color: var(--text-weak); max-width: 60ch; margin-inline: auto; }
+.emptyActions { display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
 
 /* ===== CTA Banner ===== */
-/* ===== CTA Banner – Sharp Background, Modern Neon ===== */
 .cta {
   position: relative;
   overflow: hidden;
@@ -222,10 +198,8 @@
   background: var(--surface);
   min-height: clamp(220px, 36vw, 420px);
   box-shadow: var(--shadow);
-  transform: translateZ(0); /* ضد بلر */
+  transform: translateZ(0);
 }
-
-/* تصویر: واضح، کمی boost ولی نه شسته‌شده */
 .ctaImg {
   object-fit: cover;
   object-position: center;
@@ -233,8 +207,6 @@
   transition: transform var(--transition-300), filter var(--transition-300);
   will-change: transform;
 }
-
-/* Overlay: تاریک‌سازیِ لبه‌ها برای خوانایی بدون خراب‌کردن وضوح وسط */
 .ctaOverlay {
   position: absolute;
   inset: 0;
@@ -246,14 +218,9 @@
     linear-gradient(180deg, color-mix(in oklab, var(--bg) 24%, transparent), transparent 60%),
     linear-gradient(0deg, color-mix(in oklab, var(--bg) 10%, transparent), transparent 60%);
 }
-
-/* خطوط نئونی خیلی لطیف در لبه‌ها */
 .cta::after {
   content: "";
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  z-index: 2;
+  position: absolute; inset: -1px; border-radius: inherit; z-index: 2;
   background:
     linear-gradient(135deg,
       color-mix(in oklab, var(--primary) 18%, transparent),
@@ -264,162 +231,60 @@
   opacity: .35;
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
-  padding: 1px; /* نازک */
+  padding: 1px;
   pointer-events: none;
 }
-
-/* محتوای داخل بنر */
 .ctaContent {
-  position: relative;
-  z-index: 3;
-  display: grid;
-  align-content: end;
-  gap: 10px;
-  padding: clamp(16px, 4vw, 28px)  clamp(16px, 5vw, 36px);
-  min-height: inherit;
-  color: var(--text);
+  position: relative; z-index: 3;
+  display: grid; align-content: end; gap: 10px;
+  padding: clamp(16px, 4vw, 28px) clamp(16px, 5vw, 36px);
+  min-height: inherit; color: var(--text);
   text-shadow: 0 2px 18px color-mix(in oklab, var(--bg) 45%, transparent);
 }
-
-/* تیتر: ضخیم و روشن؛ در دسکتاپ بزرگ‌تر */
 .ctaTitle {
-  font-weight: 900;
-  color: var(--text-strong);
-  letter-spacing: -.015em;
-  font-size: clamp(1.25rem, 2.6vw, 2rem);
-  line-height: 1.2;
+  font-weight: 900; color: var(--text-strong); letter-spacing: -.015em;
+  font-size: clamp(1.25rem, 2.6vw, 2rem); line-height: 1.2;
 }
-
-/* متنِ زیرتیتر/کد */
-.ctaText {
-  font-size: clamp(.95rem, 1.4vw, 1.05rem);
-  color: var(--text);
-}
-
-/* نمایش کد با چِپ شیشه‌ای */
+.ctaText { font-size: clamp(.95rem, 1.4vw, 1.05rem); color: var(--text); }
 .ctaText strong {
-  display: inline-block;
-  padding: .25rem .6rem;
-  border-radius: var(--radius-sm);
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
+  display: inline-block; padding: .25rem .6rem; border-radius: var(--radius-sm);
+  background: var(--glass); border: 1px solid var(--glass-border);
   box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent);
-  font-weight: 800;
-  letter-spacing: .02em;
+  font-weight: 800; letter-spacing: .02em;
 }
+.cta:hover .ctaImg { transform: scale(1.03); filter: contrast(110%) saturate(112%); }
+.cta:hover::after { opacity: .5; }
 
-/* افکت هاور خیلی لطیف روی خود سکشن */
-.cta:hover .ctaImg {
-  transform: scale(1.03);
-  filter: contrast(110%) saturate(112%);
-}
-.cta:hover::after {
-  opacity: .5;
-}
-
-/* چیدمان محتوای چپ/پایین (در RTL = راست/پایین) */
 @media (min-width: 720px) {
   .ctaContent {
     align-content: center;
-    justify-items: start; /* در RTL: سمت راست */
+    justify-items: start; /* RTL: راست */
     padding-block: clamp(28px, 8vw, 56px);
   }
 }
 
-/* حالت روشن: کمی تقویت کنتراست برای خوانایی */
 html.light .ctaText,
-html.light .ctaTitle {
-  text-shadow: 0 1px 10px color-mix(in oklab, var(--ink-800l) 15%, transparent);
+html.light .ctaTitle { text-shadow: 0 1px 10px color-mix(in oklab, var(--ink-800l) 15%, transparent); }
+html.light .cta::after { opacity: .25; }
+
+/* ===== ریسپانسیو ===== */
+@media (min-width: 640px) {
+  .homeRoot { gap: 36px; }
+  .heroImageWrap { min-height: 300px; }
+  .catGrid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
 }
-html.light .cta::after {
-  opacity: .25;
+
+@media (min-width: 1024px) {
+  .hero { grid-template-columns: 1fr 1fr; align-items: center; gap: 20px; }
+  .heroImageWrap { min-height: 420px; }
+  .heroKpis { grid-template-columns: auto auto auto; }
+  .section { gap: 20px; }
+  .catGrid { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
+  .catMedia { aspect-ratio: 4 / 3; } /* افقی‌تر در دسکتاپ */
 }
 
 /* احترام به کاهش حرکت */
 @media (prefers-reduced-motion: reduce) {
   .ctaImg { transition: none; }
   .cta:hover .ctaImg { transform: none; }
-}
-
-/* اگر دوست داشته باشی CTA رو قابل‌کلیک کنی */
-.cta:is(a, button) { cursor: pointer; }
-.cta:is(a, button):focus-visible {
-  outline: 0;
-  box-shadow:
-    0 0 0 4px color-mix(in oklab, var(--focus-ring) 60%, transparent),
-    var(--shadow);
-}
-
-
-
-
-
-/* ===== Buttons (لوکال صفحه) ===== */
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: .5rem;
-  border-radius: var(--radius-sm);
-  padding: .625rem 1rem;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text);
-  transition: background var(--transition-300), border-color var(--transition-300), transform var(--transition-300), color var(--transition-300);
-}
-.btn:hover { background: var(--surface-2); }
-.btn:active { transform: translateY(1px) scale(.99); }
-
-.btnPrimary {
-  border-color: transparent;
-  background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 92%, transparent), var(--primary));
-  color: var(--pet-white);
-}
-.btnPrimary:hover { background: var(--primary-press); }
-
-.btnGhost {
-  background: transparent;
-  color: var(--text);
-  border-color: var(--border);
-}
-.btnGhost:hover { background: var(--surface-2); }
-
-.btnLight {
-  background: var(--pet-white);
-  color: var(--gray-900);
-  border-color: var(--gray-200);
-}
-html.light .btnLight {
-  background: var(--surface-2);
-  color: var(--text);
-}
-
-/* ===== ریسپانسیو ===== */
-@media (min-width: 640px) {
-  .homeRoot { gap: 36px; }
-  .heroImageWrap { min-height: 300px; }
-  .catGrid { grid-template-columns: repeat(3, minmax(0,1fr)); }
-}
-
-@media (min-width: 1024px) {
-  .hero {
-    grid-template-columns: 1fr 1fr; /* split */
-    align-items: center;
-    gap: 20px;
-  }
-  .heroImageWrap {
-    min-height: 420px;
-  }
-  .heroKpis { grid-template-columns: auto auto auto; }
-  .section { gap: 20px; }
-  .catGrid { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; }
-  .catMedia { aspect-ratio: 4 / 3; } /* افقی‌تر در دسکتاپ */
-  .empty { padding: 24px; }
-  .cta { min-height: 320px; }
-  .ctaContent { padding-block: 40px; }
-}
-
-/* احترام به کاهش حرکت */
-@media (prefers-reduced-motion: reduce) {
-  .catCard, .btn { transition: none; }
 }

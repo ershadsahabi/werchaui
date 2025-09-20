@@ -1,0 +1,345 @@
+/* ==========================================================================
+   Auth Modal + Forms (Login / Register) — Mobile-first, RTL-first
+   - روی variables.css / tokens.css شما سوار است
+   - بهبود کنتراست در تم شب، touch targets ≥ 44px، تایپو 16px+ برای iOS
+   ========================================================================== */
+
+/* ====== Wrap / Backdrop / Sheet ======================================= */
+.wrap { position: fixed; inset: 0; z-index: var(--z-modal, 1000); }
+.backdrop {
+  position: fixed; inset: 0; border: 0; cursor: pointer;
+  background:
+    radial-gradient(60% 60% at 50% 50%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 62%),
+    color-mix(in oklab, #000 72%, var(--ink-900, #0a0f16) 28%);
+  -webkit-backdrop-filter: blur(10px) saturate(108%);
+  backdrop-filter: blur(10px) saturate(108%);
+}
+.sheet {
+  position: fixed; inset: 0; display: grid; place-items: end; /* موبایل: پنل پایین */
+  --pad: clamp(12px, 5vw, 24px);
+  padding: var(--pad);
+  padding-left:  max(var(--pad), env(safe-area-inset-left));
+  padding-right: max(var(--pad), env(safe-area-inset-right));
+  padding-top:   max(8px, env(safe-area-inset-top));
+  padding-bottom:max(var(--pad), env(safe-area-inset-bottom));
+  pointer-events: none;
+  overscroll-behavior: none;
+}
+
+/* ====== Card (Bottom Sheet در موبایل) ================================= */
+.card {
+  pointer-events: auto;
+  inline-size: 100%;
+  max-inline-size: 560px;
+  margin-inline: auto;
+
+  /* موبایل: Bottom-sheet احساس */
+  border-start-start-radius: clamp(16px, 3vw, 22px);
+  border-start-end-radius: clamp(16px, 3vw, 22px);
+  border-end-start-radius: clamp(10px, 2vw, 18px);
+  border-end-end-radius: clamp(10px, 2vw, 18px);
+
+  max-block-size: min(88dvh, 920px);
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  gap: 10px;
+
+  background:
+    linear-gradient(180deg,
+      color-mix(in oklab, var(--card-bg, var(--surface)) 96%, transparent 4%),
+      color-mix(in oklab, var(--surface-2) 16%, var(--card-bg, var(--surface)) 84%)
+    );
+  color: var(--text);
+  border: 1px solid var(--border-strong, var(--border));
+  box-shadow:
+    0 10px 24px rgba(0,0,0,.34),
+    0 0 0 1px color-mix(in oklab, var(--glass-border, rgba(255,255,255,.12)) 50%, transparent);
+  padding: clamp(12px, 3.5vw, 18px);
+  transform-origin: bottom center;
+  animation: modal-in 360ms cubic-bezier(.18,.88,.24,1.1);
+  position: relative;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.elevated {
+  box-shadow:
+    0 12px 28px rgba(0,0,0,.28),
+    0 0 0 1px color-mix(in oklab, var(--primary) 16%, transparent),
+    0 0 18px color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+@media (min-width: 640px) {
+  .sheet { place-items: center; }
+  .card  { border-radius: clamp(16px, 2vw, 22px); transform-origin: center; }
+}
+
+/* ====== Header ========================================================= */
+.header {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.title {
+  display: flex; align-items: center; gap: .5rem; margin: 0;
+  font-size: clamp(1.06rem, 2.6vw, 1.28rem);
+  font-weight: 900; letter-spacing: -.01em; color: var(--text-strong, #fff);
+  text-shadow: 0 1px 0 rgba(0,0,0,.06);
+}
+.subhead {
+  margin: 0 2px; color: var(--text-weak); font-size: clamp(.9rem, 2.2vw, .95rem);
+}
+
+/* Badge برند */
+.badge {
+  display: inline-grid; place-items: center;
+  padding-inline: .58rem; padding-block: .26rem;
+  font-size: .76rem; font-weight: 900; letter-spacing: .04em;
+  color: var(--on-primary, #0b0f14);
+  background: var(--grad-primary);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(255,255,255,.22), inset 0 0 0 1px rgba(255,255,255,.22);
+}
+
+/* Close button — تاچ‌تارگت 44px */
+.closeBtn {
+  --size: 44px;
+  inline-size: var(--size); block-size: var(--size);
+  display: grid; place-items: center; border-radius: 999px;
+  background: color-mix(in oklab, var(--surface-2) 88%, var(--primary) 8%);
+  border: 1px solid color-mix(in oklab, var(--text) 22%, var(--card-border, var(--border)) 78%);
+  color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,.22);
+  cursor: pointer;
+  transition: transform var(--dur-300, var(--transition-300)), background-color var(--dur-300, var(--transition-300)), border-color var(--dur-300, var(--transition-300));
+}
+.closeBtn:hover { transform: translateY(-1px); }
+.closeBtn:active { transform: translateY(0); }
+.closeBtn:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* ====== Body / Scrollbars ============================================= */
+.body {
+  overflow: auto; padding: 6px 0 0;
+  scrollbar-gutter: stable;
+}
+.body::-webkit-scrollbar { inline-size: 8px; }
+.body::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--primary) 40%, transparent);
+  border-radius: 999px;
+}
+
+/* ====== Form primitives (Mobile-first) ================================= */
+.form { display: grid; gap: 10px; }
+.grid { display: grid; gap: 8px; }
+@media (min-width: 520px){ .grid { grid-template-columns: 1fr 1fr; gap: 10px; } }
+
+/* فیلد + آیکن ایموجی */
+.field { position: relative; }
+.icon {
+  position: absolute; inset-inline-start: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 18px; opacity: .95; pointer-events: none;
+}
+
+/* ورودی‌ها — کنتراست شب، font-size ≥ 16px (جلوگیری از iOS zoom) */
+.input {
+  width: 100%;
+  padding: 14px 12px 10px;
+  padding-inline-start: 40px; /* جای آیکن */
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+  border: none;
+  color: var(--text);
+  border-radius: clamp(10px, 2.6vw, 12px);
+  outline: none;
+  caret-color: var(--primary);
+  font-size: 16px; /* مهم برای موبایل */
+  line-height: 1.5;
+  transition: border-color var(--dur-200, var(--transition-200)), box-shadow var(--dur-200, var(--transition-200)), background-color var(--dur-200, var(--transition-200));
+}
+
+html.light .input {
+  background: #fff;
+  border-color: #c3cfde;
+}
+/* —— placeholder: پیش‌فرض نامرئی، فقط هنگام فوکوس دیده شود —— */
+.input::placeholder { opacity: 0; }
+
+.input:focus::placeholder {
+  opacity: .9;           /* هنگام تایپ/فوکوس، هینت دیده شود */
+}
+
+.input:hover {
+  background: color-mix(in oklab, var(--surface) 88%, transparent);
+  border-color: color-mix(in oklab, var(--primary) 35%, var(--border) 65%);
+}
+.input:focus {
+  border-color: color-mix(in oklab, var(--primary) 76%, var(--border) 24%);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--focus-ring) 55%, transparent);
+}
+
+
+/* —— لیبل شناور: با focus یا وقتی مقدار دارد یا وقتی placeholder مخفی شد —— */
+.label {
+  position: absolute;
+  inset-inline-start: 40px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: .94rem;
+  color: var(--text-mute);
+  pointer-events: none;
+  transition:
+    transform var(--dur-200),
+    font-size var(--dur-200),
+    color var(--dur-200),
+    top var(--dur-200);
+}
+
+/* بالا رفتن لیبل وقتی:
+   1) فیلد فوکوس است، یا
+   2) کاربر مقداری وارد کرده (کلاس hasValue در JS)، یا
+   3) ورودی دیگر در حالت placeholder-shown نیست (یعنی کاراکتری وارد شده) */
+.input:focus + .label,
+.hasValue + .label,
+.input:not(:placeholder-shown) + .label {
+  top: 2px;
+  transform: translateY(0);
+  font-size: .78rem;
+  color: var(--text-weak);
+}
+
+/* خطا/موفقیت */
+.input[aria-invalid="true"] {
+  border-color: var(--danger);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--danger) 42%, transparent);
+}
+
+/* دکمه دیدن رمز — تاچ‌تارگت بزرگ */
+.pwToggle {
+  position: absolute; inset-inline-end: 6px; top: 50%; transform: translateY(-50%);
+  background: transparent; border: none; color: var(--text-weak);
+  padding: 8px; min-inline-size: 44px; min-block-size: 44px; border-radius: 10px; cursor: pointer;
+  transition: background-color var(--dur-200, var(--transition-200)), color var(--dur-200, var(--transition-200));
+}
+.pwToggle:hover { background: var(--glass, rgba(255,255,255,.08)); color: var(--text); }
+.pwToggle:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
+
+/* Helper row */
+.helper {
+  display:flex; align-items:center; justify-content:space-between;
+  gap: 8px; font-size: .9rem; color: var(--text-mute);
+}
+.link {
+  color: var(--link); font-weight: 800;
+  text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 2px;
+}
+
+/* ===== Checkbox (قبول شرایط) قابل‌مشاهده‌تر در حالت شب ===== */
+/* ===== Checkbox (قبول شرایط) — روشن در حالت شب، واضح در همه حالت‌ها ===== */
+.check {
+  inline-size: 22px;
+  block-size: 22px;
+  appearance: none;
+  -webkit-appearance: none;
+  border-radius: 6px;
+  margin-inline-end: 8px;
+  cursor: pointer;
+  display: inline-grid;
+  place-items: center;
+  transition: background-color var(--dur-200), border-color var(--dur-200), box-shadow var(--dur-200);
+  /* حالت شب: روشن و خوانا */
+  background: #eef4fa;                /* روشن‌تر تا توی دارک دیده بشه */
+  border: 2px solid #d1d9e6;          /* مرز مشخص */
+  box-shadow: 0 1px 0 rgba(0,0,0,.12) inset;
+}
+
+/* حالت تم روشن: مثل قبل بمونه (یا کمی نرم‌تر) */
+html.light .check {
+  background: #ffffff;
+  border-color: #c3cfde;
+}
+
+.check:hover {
+  border-color: color-mix(in oklab, var(--primary) 40%, #c3cfde);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--focus-ring) 35%, transparent);
+}
+
+.check:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--focus-ring) 55%, transparent);
+}
+
+.check::after {
+  content: "";
+  inline-size: 60%;
+  block-size: 60%;
+  transform: scale(0);
+  opacity: 0;
+  transition: transform var(--dur-200), opacity var(--dur-200);
+  /* تیک با ماسک ساده (می‌تونی با کاراکتر هم بذاری) */
+  background: #0b1520;                /* تیک تیره روی زمینه روشنِ شب */
+  -webkit-mask-image: linear-gradient(#000 0 0); /* fallback ساده */
+  mask-image: linear-gradient(#000 0 0);
+  clip-path: polygon(14% 54%, 26% 42%, 44% 62%, 78% 26%, 88% 36%, 44% 82%);
+}
+
+/* وقتی تیک زده می‌شود */
+.check:checked {
+  background: var(--primary);
+  border-color: color-mix(in oklab, var(--primary) 80%, black 10%);
+}
+.check:checked::after {
+  opacity: 1;
+  transform: scale(1);
+  background: var(--on-primary, #061017);  /* تیک تیره برای کنتراست روی پرایمری */
+}
+
+/* متن کنار چک‌باکس */
+.checkLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .94rem;
+  color: var(--text);
+}
+
+
+/* Alerts */
+.error, .success {
+  padding: 10px 12px; border-radius: 12px; font-size: .9rem;
+  border: 1px solid color-mix(in oklab, currentColor 55%, var(--border));
+}
+.error   { background: var(--danger-weak);  color: var(--text); }
+.success { background: var(--success-weak); color: var(--text); }
+
+/* Buttons — تاچ‌تارگت 48px */
+.actions { display: flex; gap: 8px; align-items: center; }
+.btnFull { width: 100%; }
+.submitBtn {
+  --h: 48px; height: var(--h); padding: 0 clamp(14px, 4vw, 18px);
+  border-radius: clamp(12px, 3vw, 16px);
+  border: 1px solid color-mix(in oklab, var(--primary) 55%, black 12%);
+  background: var(--grad-primary); color: var(--on-primary, #ffffff);
+  font-weight: 900; letter-spacing: .01em; line-height: 1; cursor: pointer;
+  box-shadow: 0 10px 22px color-mix(in oklab, var(--primary) 22%, transparent);
+  position: relative; overflow: hidden;
+  transition: transform var(--dur-300, var(--transition-300)), box-shadow var(--dur-300, var(--transition-300));
+}
+.submitBtn:active { transform: translateY(0); }
+.submitBtn:disabled { opacity: .6; cursor: not-allowed; filter: grayscale(.06); }
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .card, .closeBtn, .pwToggle, .submitBtn { transition: none !important; animation: none !important; }
+}
+
+/* Animations */
+@keyframes modal-in {
+  0% { opacity: 0; transform: translateY(16px) scale(.98); filter: saturate(.9); }
+  70% { transform: translateY(-2px) scale(1.005); }
+  100% { opacity: 1; transform: translateY(0) scale(1); filter: saturate(1); }
+}
+
+
+/* پیام خطای فیلدی کوچک (برای mismatch) */
+.fieldHint {
+  margin: 4px 2px -2px;
+  font-size: .82rem;
+  color: var(--danger);
+}
+
+

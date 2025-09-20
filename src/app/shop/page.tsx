@@ -1,3 +1,5 @@
+// src\app\shop\page.tsx
+
 import styles from './Shop.module.css';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -5,6 +7,8 @@ import Filters from '@/components/shop/Filters';
 import SortBar from '@/components/shop/SortBar';
 import ProductCard from '@/components/ProductCard';
 import { endpoints } from '@/lib/api';
+import { serverFetch } from "@/lib/server-fetch";
+
 
 const PAGE_SIZE = 12;
 
@@ -12,20 +16,24 @@ async function fetchProducts(params: Record<string, string>) {
   // فقط پارامترهای تعریف‌شده و غیرخالی به URL اضافه شوند
   const usp = new URLSearchParams({ page_size: String(PAGE_SIZE) });
   Object.entries(params).forEach(([k, v]) => {
-    if (v != null && v !== '' && v !== 'undefined' && v !== 'null') {
+    if (v != null && v !== "" && v !== "undefined" && v !== "null") {
       usp.set(k, String(v));
     }
   });
 
   const url = `${endpoints.products}?${usp.toString()}`;
-  const res = await fetch(url, { cache: 'no-store' });
+
+  // مهم: از serverFetch استفاده می‌کنیم تا کوکی کاربر پاس شود و زیر Throttle کاربر حساب شود
+  const res = await serverFetch(url, { method: "GET", revalidate: 300 });
+
   if (!res.ok) {
-    let body = '';
+    let body = "";
     try { body = await res.text(); } catch {}
     throw new Error(`Failed to load products: ${res.status} ${res.statusText}\nURL: ${url}\nBody: ${body}`);
   }
   return res.json();
 }
+
 
 export default async function ShopPage({
   searchParams,

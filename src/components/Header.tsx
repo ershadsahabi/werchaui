@@ -1,7 +1,7 @@
 // components/Header.tsx
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import styles from './Header.module.css';
@@ -16,48 +16,76 @@ import CartModal from './cart/CartModal';
 type HeaderProps = {
   initialUser: any | null;
   cartCount?: number;
+  initialTheme?: "light" | "dark";
 };
 
-export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
+export default function Header({ initialUser, cartCount = 0, initialTheme = "dark"}: HeaderProps) {
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  const [showSearch, setShowSearch] = useState(false);
+  const [showSearch] = useState(false); // در صورت نیاز می‌تونی اینو فعال‌سازی کنی
   const user = initialUser;
   const liveCount = useCartCount();
-  const effectiveCount = liveCount ?? cartCount;
+  const effectiveCount = (liveCount ?? cartCount) || 0;
   const openCart = useCartUI((s) => s.openCart);
+
+  // جلوگیری از اسکرول پشت دراور موبایل
+  useEffect(() => {
+    if (open) document.body.classList.add('no-scroll');
+    else document.body.classList.remove('no-scroll');
+    return () => document.body.classList.remove('no-scroll');
+  }, [open]);
+
+  // بستن دراور با Escape
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [open]);
+
+  const onSearchSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // اینجا می‌تونی ریدایرکت به صفحهٔ جستجو انجام بدی، مثلاً:
+    // const q = new FormData(e.currentTarget).get('q')?.toString().trim();
+    // if (q) router.push(`/shop?q=${encodeURIComponent(q)}`);
+  };
 
   return (
     <header className={`${styles.header} ${open ? styles.headerOpen : ''}`} role="banner">
       <div className={`${styles.inner} container`}>
 
-{/* برند */}
-<Link href="/" className={styles.logo} aria-label="خانه ورچه">
-  <Image
-    src="/publicimages/logo21.png"
-    alt=""
-    width={44}
-    height={44}
-    priority
-    className={styles.logoImg}
-  />
-</Link>
-
-
+        {/* برند */}
+        <Link href="/" className={styles.logo} aria-label="خانه ورچه">
+          <Image
+            src="/publicimages/logo21.png"
+            alt=""           // alt خالی چون لینک دارای aria-label است (پرهیز از تکرار)
+            width={44}
+            height={44}
+            priority
+            className={styles.logoImg}
+          />
+        </Link>
 
         {/* سرچ دسکتاپ */}
-        <div className={`${styles.search} ${showSearch ? styles.searchOpen : ''}`}>
+        <form
+          className={`${styles.search} ${showSearch ? styles.searchOpen : ''}`}
+          role="search"
+          aria-label="جستجو در فروشگاه"
+          dir="rtl"
+          onSubmit={onSearchSubmit}
+        >
           <input
             className={styles.searchInput}
+            name="q"
             placeholder="جستجوی محصول، برند، دسته…"
-            dir="rtl"
-            aria-label="جستجو در فروشگاه"
+            aria-label="جستجو"
+            // از رینگ سفارشی استفاده می‌کنیم؛ outline پیش‌فرض در globals خاموش می‌شود (پایین توضیح دادم)
           />
-          <button className={styles.searchBtn} aria-label="جستجو">
+          <button type="submit" className={styles.searchBtn} aria-label="جستجو">
             {iconSearch}
           </button>
-        </div>
+        </form>
 
         {/* ناوبری دسکتاپ */}
         <nav className={styles.navDesktop} aria-label="ناوبری اصلی">
@@ -81,12 +109,14 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
           >
             {iconCart}
             {effectiveCount > 0 && (
-              <span className={styles.cartBadge} aria-live="polite">{effectiveCount}</span>
+              <span className={styles.cartBadge} aria-live="polite" aria-atomic="true">
+                {effectiveCount}
+              </span>
             )}
           </button>
 
           {/* 🌓 تم */}
-          <ThemeToggle />
+        <ThemeToggle initialTheme={initialTheme} />
 
           {user ? (
             <div className={styles.user}>
@@ -95,9 +125,18 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
             </div>
           ) : (
             <>
-              <button className={styles.authBtn} onClick={() => setLoginOpen(true)}>ورود</button>
+              <button
+                className={styles.authBtn}
+                data-auth="login"
+                type="button"
+                onClick={() => setLoginOpen(true)}
+              >
+                ورود
+              </button>
               <button
                 className={`${styles.authBtn} ${styles.authPrimary}`}
+                data-auth="register"
+                type="button"
                 onClick={() => setRegisterOpen(true)}
               >
                 ثبت‌نام
@@ -105,12 +144,14 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
             </>
           )}
 
+          {/* برگر (موبایل) */}
           <button
             className={styles.burger}
             onClick={() => setOpen((o) => !o)}
-            aria-label="باز/بستن منو"
+            aria-label={open ? 'بستن منو' : 'باز کردن منو'}
             aria-expanded={open}
             aria-controls="mobile-drawer"
+            type="button"
           >
             <span /><span /><span />
           </button>
@@ -121,6 +162,9 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
       <div
         id="mobile-drawer"
         className={`${styles.navMobile} ${open ? styles.navMobileOpen : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="منوی موبایل"
       >
         <div className="container">
           {/* دکمه بستن همیشه قابل مشاهده (sticky) */}
@@ -129,6 +173,7 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
               className={styles.burger}
               aria-label="بستن منو"
               aria-expanded={true}
+              type="button"
               onClick={() => setOpen(false)}
             >
               <span /><span /><span />
@@ -136,15 +181,18 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
           </div>
 
           <div className={styles.mobileTop}>
-            <div className={styles.searchMobile}>
+            <form className={styles.searchMobile} role="search" onSubmit={onSearchSubmit}>
               <input
                 className={styles.searchInput}
+                name="q"
                 placeholder="جستجو…"
-                dir="rtl"
                 aria-label="جستجو"
+                dir="rtl"
               />
-              <button className={styles.searchBtn} aria-label="جستجو">{iconSearch}</button>
-            </div>
+              <button type="submit" className={styles.searchBtn} aria-label="جستجو">
+                {iconSearch}
+              </button>
+            </form>
 
             <div className={styles.quickActions}>
               <Link href="/wishlist" onClick={() => setOpen(false)} className={styles.quickAction}>
@@ -152,7 +200,7 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
               </Link>
               <Link href="/cart" onClick={() => setOpen(false)} className={styles.quickAction}>
                 {iconCart}<span>سبد خرید</span>
-                {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
+                {effectiveCount > 0 && <span className={styles.cartBadge}>{effectiveCount}</span>}
               </Link>
             </div>
           </div>
@@ -171,12 +219,14 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
               <div className={styles.authRow}>
                 <button
                   className={styles.authBtn}
+                  type="button"
                   onClick={() => { setLoginOpen(true); setOpen(false); }}
                 >
                   ورود
                 </button>
                 <button
                   className={`${styles.authBtn} ${styles.authPrimary}`}
+                  type="button"
                   onClick={() => { setRegisterOpen(true); setOpen(false); }}
                 >
                   ثبت‌نام
@@ -187,6 +237,7 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
         </div>
       </div>
 
+      {/* مودال‌ها */}
       <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
       <RegisterModal open={registerOpen} onClose={() => setRegisterOpen(false)} />
       <CartModal />
@@ -194,20 +245,21 @@ export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
   );
 }
 
+/* ===== Icons (decorative) ===== */
 const iconSearch = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
     <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2" />
     <path d="M20 20L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 const iconHeart = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
     <path d="M12 21s-6.5-4.35-9-7.87C1 10.5 2.5 7 6 7c2 0 3 .8 4 2 1-1.2 2-2 4-2 3.5 0 5 3.5 3 6.13C18.5 16.65 12 21 12 21Z"
       stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 const iconCart = (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true" focusable="false">
     <circle cx="9" cy="21" r="1.8" fill="currentColor" />
     <circle cx="18" cy="21" r="1.8" fill="currentColor" />
     <path d="M3 3h2l2.2 11.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L21 7H6.2"

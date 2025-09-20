@@ -65,9 +65,11 @@
 .sorts { display: flex; align-items: center; gap: 8px; }
 
 /* ── Products grid */
+/* ✅ موبایل: دقیقاً هر ردیف یک کارت (مثل اینستاگرام) */
 .prodGrid {
-  display: grid; gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr; /* ⟵ اینجا را از repeat(2, …) به 1fr تغییر دادیم */
 }
 
 /* ── Empty state */
@@ -115,7 +117,7 @@
   /* والد: دو ستون فقط برای سطر بالا */
   .grid {
     grid-template-columns: 1fr 1fr;
-    grid-auto-rows: auto; /* ردیف اول: فیلتر/سورت | ردیف دوم: محتوا تمام‌عرض */
+    grid-auto-rows: auto;
   }
 
   /* ستون اول سطر اول: سایدبار (فیلتر) */
@@ -128,31 +130,23 @@
   .main {
     grid-column: 2 / 3;
     display: grid;
-    grid-template-rows: auto 1fr; /* ردیف ۱: سورت | ردیف ۲: بقیه */
+    grid-template-rows: auto 1fr;
     gap: 16px;
   }
 
-  /* محصولات و بقیه‌ی محتوا، ردیف دوم ولی پهنای کامل زیرِ دو ستون */
+  /* محتوا (گرید محصولات/خالی/صفحه‌بندی) در ردیف دوم، تمام عرض زیر دو ستون */
   .prodGrid,
   .empty,
   .pagination {
-    grid-column: 1 / -1;      /* ⟵ روی parent: تمام عرض */
-    /* چون اینها داخل .main هستند، برای تمام‌عرض شدن نیاز داریم .main هم تمام‌عرض شود: */
+    grid-column: 1 / -1;
   }
 
-  /* ترفند: در این breakpoint، بعد از اینکه ردیف بالا (فیلتر/سورت) چیده شد،
-     .main را در ردیف دوم تمام‌عرض می‌بریم تا prodGrid و ... پهن شوند. */
+  /* .main را در ردیف دوم تمام‌عرض می‌بریم */
   .main {
-    grid-column: 1 / -1;   /* ⟵ .main در ردیف دوم تمام‌عرض */
+    grid-column: 1 / -1;
   }
 
-  /* ولی سورت‌بار همچنان باید کنار فیلتر در ردیف اول باشد:
-     با نقل‌مکان سورت‌بار به «لایه‌ی جدا» با position: sticky هم‌تراز می‌ماند. */
-  .sortbar {
-    position: sticky;
-    top: 0; /* اگر هدر ثابت داری، این را تنظیم کن مثل 76px */
-    z-index: 1;
-  }
+  .sortbar { position: sticky; top: 0; z-index: 1; }
 }
 
 /* ── Desktop (≥768px): چیدمان کلاسیک دو ستونه */
@@ -168,7 +162,7 @@
   .prodGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
 }
 
-/* ── Optional helpers از نسخهٔ قبلی (در صورت استفاده) */
+/* ── Optional helpers (در صورت استفاده) */
 .filterToggle {
   display: inline-flex; align-items: center; justify-content: center;
   width: 100%;

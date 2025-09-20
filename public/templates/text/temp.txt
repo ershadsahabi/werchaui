@@ -1,578 +1,1332 @@
-# نقشهٔ حرفه‌ای پیاده‌سازی «کاتالوگ محصولات + سفارش» (Django + Next.js)
-
-این بسته، هم بک‌اند (اپ‌های `catalog` و `orders`) را اضافه می‌کند هم فرانت (اتصال صفحهٔ شاپ به API واقعی + سبد خرید فرانت + ثبت سفارش با احراز هویت سشن/CSRF).
-
-> نکته: مطابق خواستهٔ شما، «سبد خرید» کاملاً فرانت‌محور (LocalStorage) است و فقط در زمان Checkout سفارش در بک‌اند ایجاد/اعتبارسنجی می‌شود.
-
----
-
-## 1) بک‌اند – اپ `catalog` (محصولات)
-
-**ساختار فایل‌ها**
-
-```
-Werchaback/
- └─ catalog/
-     ├─ __init__.py
-     ├─ admin.py
-     ├─ apps.py
-     ├─ models.py
-     ├─ serializers.py
-     ├─ views.py
-     ├─ urls.py
-     └─ migrations/
-```
-
-### `catalog/apps.py`
-
-```python
-from django.apps import AppConfig
-
-
-class CatalogConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'catalog'
-    verbose_name = 'Catalog'
-```
-
-### `catalog/models.py`
-
-```python
-
-```
-
-### `catalog/admin.py`
-
-```python
-
-```
-
-### `catalog/serializers.py`
-
-```python
-
-```
-
-### `catalog/views.py`
-
-```python
-
-```
-
-### `catalog/urls.py`
-
-```python
-
-```
-
----
-
-## 2) بک‌اند – اپ `orders` (ثبت سفارش)
-
-**ساختار فایل‌ها**
-
-```
-Werchaback/
- └─ orders/
-     ├─ __init__.py
-     ├─ admin.py
-     ├─ apps.py
-     ├─ models.py
-     ├─ serializers.py
-     ├─ views.py
-     ├─ urls.py
-     └─ migrations/
-```
-
-### `orders/apps.py`
-
-```python
-from django.apps import AppConfig
-
-
-class OrdersConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'orders'
-    verbose_name = 'Orders'
-```
-
-### `orders/models.py`
-
-```python
-
-```
-
-### `orders/admin.py`
-
-```python
-
-```
-
-### `orders/serializers.py`
-
-```python
-
-```
-
-### `orders/views.py`
-
-```python
-
-```
-
-### `orders/urls.py`
-
-```python
-
-```
-
----
-
-## 3) به‌روزرسانی تنظیمات و URL روت
-
-### `settings.py`
-
-* اضافه کردن اپ‌ها:
-
-```python
-INSTALLED_APPS = [
-    # ...
-    'accounts',
-    'catalog',
-    'orders',
-    'rest_framework',
-    'corsheaders',
-]
-```
-
-* (اختیاری) اگر فیلترهای DRF را می‌خواهید: `django_filters` را اضافه کنید.
-
-### `werchaapi/urls.py` (root)
-
-```python
-
-```
-
----
-
-## 4) قرارداد API برای صفحهٔ شاپ
-
-`GET /api/catalog/products/?q=&cat=&brand=&min=&max=&sort=&page=&page_size=`
-
-**Response**
-
-```json
-{
-  "items": [
-    {"id": 1, "title": "…", "price": 185000, "image": "https://…", "rating": 4.6, "in_stock": true, "badge": "حراج", "category": "cat", "brand": "Whiskers"}
-  ],
-  "total": 16,
-  "pages": 2,
-  "page": 1,
-  "facets": {
-    "categories": [{"key":"dog","label":"سگ"}, …],
-    "brands": ["Wercha","Whiskers", …]
-  }
-}
-```
-
----
-
-## 5) فرانت – به‌روزرسانی‌ها و فایل‌های جدید
-
-**ساختار پیشنهادی**
-
-```
-werchaui/src/
- ├─ lib/
- │   ├─ api.ts              # + endpoints جدید
- │   ├─ client-csrf.ts
- │   └─ server-api.ts
- ├─ store/
- │   └─ cart.ts             # سبد خرید با Zustand + persist
- ├─ app/
- │   ├─ shop/page.tsx       # اتصال به API واقعی
- │   ├─ cart/page.tsx       # صفحه سبد خرید
- │   └─ checkout/page.tsx   # ثبت سفارش (نیاز به login)
- └─ components/
-     ├─ ProductCard.tsx     # دکمهٔ «افزودن به سبد»
-     └─ Header.tsx          # خواندن شمارش سبد از store
-```
-
-### `lib/api.ts` (به‌روزرسانی)
-
-```ts
-export const API_BASE = (process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000').replace(/\/$/, '');
-export const endpoints = {
-  csrf: `${API_BASE}/api/accounts/csrf/`,
-  register: `${API_BASE}/api/accounts/register/`,
-  login: `${API_BASE}/api/accounts/login/`,
-  logout: `${API_BASE}/api/accounts/logout/`,
-  me: `${API_BASE}/api/accounts/me/`,
-  // جدید
-  products: `${API_BASE}/api/catalog/products/`,
-  orderCreate: `${API_BASE}/api/orders/create/`,
-};
-```
-
-### `store/cart.ts` (Zustand + Persist)
-
-```ts
-'use client';
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-
-export type CartItem = {
-  id: number;
-  title: string;
-  price: number;
-  image?: string | null;
-  qty: number;
+// app/layout.tsx
+import "./globals.css";
+import "./blog/prose.css";
+import "./variables.css";
+import "./tokens.css";
+import "./utilities.css";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { getMe } from "@/lib/server-api";
+import { IBM_Plex_Sans_Arabic, Inter } from "next/font/google";
+
+export const metadata = {
+  title: "Wircino",
+  description: "Petshop",
 };
 
-type CartState = {
-  items: CartItem[];
-  add: (item: Omit<CartItem, 'qty'>, qty?: number) => void;
-  remove: (id: number) => void;
-  setQty: (id: number, qty: number) => void;
-  clear: () => void;
-};
+const plexArabic = IBM_Plex_Sans_Arabic({
+  subsets: ["arabic"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-arabic",
+  display: "swap",
+});
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-latin",
+  display: "swap",
+});
 
-export const useCartStore = create<CartState>()(
-  persist(
-    (set, get) => ({
-      items: [],
-      add: (item, qty = 1) => {
-        const items = [...get().items];
-        const i = items.findIndex((x) => x.id === item.id);
-        if (i >= 0) items[i] = { ...items[i], qty: items[i].qty + qty };
-        else items.push({ ...item, qty });
-        set({ items });
-      },
-      remove: (id) => set({ items: get().items.filter((x) => x.id !== id) }),
-      setQty: (id, qty) => {
-        if (qty <= 0) return set({ items: get().items.filter((x) => x.id !== id) });
-        set({ items: get().items.map((x) => (x.id === id ? { ...x, qty } : x)) });
-      },
-      clear: () => set({ items: [] }),
-    }),
-    { name: 'wercha-cart', storage: createJSONStorage(() => localStorage) }
-  )
-);
-
-export const useCartCount = () =>
-  useCartStore((s) => s.items.reduce((sum, it) => sum + it.qty, 0));
-
-export const useCartTotal = () =>
-  useCartStore((s) => s.items.reduce((sum, it) => sum + it.price * it.qty, 0));
-```
-
-### `components/ProductCard.tsx` (دکمهٔ افزودن به سبد)
-
-```tsx
-'use client';
-import Image from 'next/image';
-import styles from './ProductCard.module.css';
-import { useCartStore } from '@/store/cart';
-
-type Product = {
-  id: number;
-  title: string;
-  price: number;
-  image?: string | null;
-  rating?: number;
-  inStock?: boolean;
-  badge?: string | null;
-  category?: string;
-  brand?: string;
-};
-
-export default function ProductCard({ product }: { product: Product }) {
-  const add = useCartStore((s) => s.add);
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const me = await getMe();
   return (
-    <div className={styles.card}>
-      <a href={`/product/${product.id}`} className={styles.thumb}>
-        <Image src={product.image || '/publicimages/p1.jpg'} alt="" width={300} height={300} />
-      </a>
-      <div className={styles.body}>
-        <div className={styles.title}>{product.title}</div>
-        <div className={styles.price}>{product.price.toLocaleString('fa-IR')} تومان</div>
-        <button
-          className="btn"
-          onClick={() => add({ id: product.id, title: product.title, price: product.price, image: product.image || undefined }, 1)}
-          disabled={product.inStock === false}
-        >
-          افزودن به سبد
-        </button>
-      </div>
-    </div>
+    <html lang="fa" className={`${plexArabic.variable} ${inter.variable}`} data-paw="on">
+      <body style={{ minHeight: "100dvh", display: "flex", flexDirection: "column" }}>
+        <Header initialUser={me} />
+        <main id="content" className="container" style={{ paddingTop: 24, flex: 1 }}>
+          {children}
+        </main>
+        <Footer />
+      </body>
+    </html>
   );
 }
-```
 
-### `components/Header.tsx` (خواندن شمار سبد)
 
-> فقط بخش مربوط به شمارنده؛ بقیهٔ فایل شما دست‌نخورده می‌ماند.
+/* app/globals.css */
+@import "./variables.css";
+@import "./tokens.css";
+@import "./utilities.css";
 
-```tsx
-// بالا:
-import { useCartCount } from '@/store/cart';
 
-export default function Header({ initialUser, cartCount = 0 }: HeaderProps) {
-  const liveCount = useCartCount();
-  const effectiveCount = liveCount ?? cartCount;
-  // ...
-  <Link href="/cart" className={`${styles.iconBtn} ${styles.cartBtn}`} aria-label="سبد خرید">
-    {iconCart}
-    {effectiveCount > 0 && <span className={styles.cartBadge}>{effectiveCount}</span>}
-  </Link>
-  // ...
-}
-```
-
-### `app/shop/page.tsx` (اتصال به API واقعی)
-
-```tsx
-/* صفحه شاپ – فچ از Django API */
-import styles from './Shop.module.css';
-import Link from 'next/link';
-import Image from 'next/image';
-import Filters from '@/components/shop/Filters';
-import SortBar from '@/components/shop/SortBar';
-import ProductCard from '@/components/ProductCard';
-import { endpoints } from '@/lib/api';
-
-const PAGE_SIZE = 12;
-
-async function fetchProducts(params: Record<string, string>) {
-  const usp = new URLSearchParams({ page_size: String(PAGE_SIZE), ...params });
-  const res = await fetch(`${endpoints.products}?${usp.toString()}`, { cache: 'no-store' });
-  if (!res.ok) throw new Error('failed');
-  return res.json();
+/* globals.css یا fonts.css */
+/* Thin (100) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Thin.woff2") format("woff2");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
 }
 
-export default async function ShopPage({ searchParams }: { searchParams: Record<string, string | string[] | undefined>; }) {
-  const s = {
-    q: typeof searchParams.q === 'string' ? searchParams.q : undefined,
-    cat: typeof searchParams.cat === 'string' ? searchParams.cat : undefined,
-    brand: typeof searchParams.brand === 'string' ? searchParams.brand : undefined,
-    min: typeof searchParams.min === 'string' ? searchParams.min : undefined,
-    max: typeof searchParams.max === 'string' ? searchParams.max : undefined,
-    sort: (['latest','price-asc','price-desc','rating'] as const).includes(searchParams.sort as any) ? (searchParams.sort as string) : 'latest',
-    page: typeof searchParams.page === 'string' ? searchParams.page : '1',
-  } as Record<string,string>;
-
-  const { items, pages, page, total, facets } = await fetchProducts(s);
-
-  return (
-    <div className={styles.root} dir="rtl">
-      <section className={styles.hero}>
-        <div className="container">
-          <div className={styles.bc}>
-            <Link href="/" className={styles.bcLink}>خانه</Link>
-            <span className={styles.bcSep}>/</span>
-            <span className={styles.bcHere}>فروشگاه</span>
-          </div>
-          <h1 className={styles.title}>فروشگاه</h1>
-          <p className={styles.subtitle}>{total} کالا؛ هرچی پتت لازم داره همین‌جاست ✨</p>
-        </div>
-      </section>
-
-      <section className="container">
-        <div className={styles.grid}>
-          <aside className={styles.sidebar}>
-            <Filters facets={facets} current={s as any} className={styles.filterCard} />
-          </aside>
-
-          <div className={styles.main}>
-            <SortBar total={total} current={s as any} className={styles.sortbar} />
-            {items.length === 0 ? (
-              <div className={styles.empty}>
-                <Image src="/publicimages/p6.jpg" alt="" width={80} height={80} />
-                <p>نتیجه‌ای پیدا نشد. فیلترها را تغییر بده.</p>
-                <Link href="/shop" className="btn">پاک کردن فیلترها</Link>
-              </div>
-            ) : (
-              <div className={styles.prodGrid}>
-                {items.map((p: any) => (<ProductCard key={p.id} product={p} />))}
-              </div>
-            )}
-
-            <div className={styles.pagination}>
-              {Array.from({ length: pages }, (_, i) => i + 1).map((n) => {
-                const params = new URLSearchParams(Object.entries(s).reduce((acc, [k, v]) => { if (v) acc[k] = String(v); return acc; }, {} as Record<string, string>));
-                params.set('page', String(n));
-                const href = `/shop?${params.toString()}`;
-                const isCurrent = Number(page) === n;
-                return (
-                  <Link key={n} href={href} className={`${styles.pageBtn} ${isCurrent ? styles.pageCurrent : ''}`} aria-current={isCurrent ? 'page' : undefined}>{n}</Link>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
-  );
+/* Light (300) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
 }
-```
 
-### `app/cart/page.tsx`
-
-```tsx
-'use client';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useCartStore, useCartTotal } from '@/store/cart';
-
-export default function CartPage() {
-  const items = useCartStore((s) => s.items);
-  const remove = useCartStore((s) => s.remove);
-  const setQty = useCartStore((s) => s.setQty);
-  const total = useCartTotal();
-
-  return (
-    <div className="container" dir="rtl" style={{ padding: '2rem 0' }}>
-      <h1>سبد خرید</h1>
-      {items.length === 0 ? (
-        <p>سبد شما خالی است. <Link href="/shop">برو به فروشگاه</Link></p>
-      ) : (
-        <>
-          <div className="cart-list">
-            {items.map((it) => (
-              <div key={it.id} className="cart-row">
-                <Image src={it.image || '/publicimages/p1.jpg'} alt="" width={64} height={64} />
-                <div style={{ flex: 1 }}>{it.title}</div>
-                <input
-                  type="number"
-                  min={1}
-                  value={it.qty}
-                  onChange={(e) => setQty(it.id, Number(e.target.value) || 1)}
-                  style={{ width: 64 }}
-                />
-                <div>{(it.price * it.qty).toLocaleString('fa-IR')} تومان</div>
-                <button onClick={() => remove(it.id)}>حذف</button>
-              </div>
-            ))}
-          </div>
-          <div className="cart-summary" style={{ marginTop: 24 }}>
-            <div>جمع کل: {total.toLocaleString('fa-IR')} تومان</div>
-            <Link href="/checkout" className="btn" style={{ marginTop: 12 }}>ادامه ثبت سفارش</Link>
-          </div>
-        </>
-      )}
-    </div>
-  );
+/* Regular (400) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
 }
-```
 
-### `app/checkout/page.tsx`
-
-```tsx
-'use client';
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useCartStore, useCartTotal } from '@/store/cart';
-import { postWithCsrf } from '@/lib/client-csrf';
-import { endpoints } from '@/lib/api';
-import LoginModal from '@/components/LoginModal';
-
-export default function CheckoutPage() {
-  const items = useCartStore((s) => s.items);
-  const clear = useCartStore((s) => s.clear);
-  const total = useCartTotal();
-  const router = useRouter();
-
-  const [me, setMe] = useState<any>(null);
-  const [loginOpen, setLoginOpen] = useState(false);
-  const [form, setForm] = useState({ full_name: '', phone: '', address: '', city: '', postal_code: '' });
-  const [loading, setLoading] = useState(false);
-  const [err, setErr] = useState<string | null>(null);
-
-  useEffect(() => {
-    // تلاش برای خواندن وضعیت ورود
-    fetch(endpoints.me, { credentials: 'include', cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setMe)
-      .catch(() => setMe(null));
-  }, []);
-
-  if (items.length === 0) {
-    return <div className="container" dir="rtl" style={{ padding: '2rem 0' }}><p>سبد خالی است.</p></div>;
-  }
-
-  const placeOrder = async () => {
-    setErr(null);
-    setLoading(true);
-    try {
-      const payload = {
-        items: items.map((it) => ({ product_id: it.id, qty: it.qty })),
-        ...form,
-      };
-      const data = await postWithCsrf(endpoints.orderCreate, payload);
-      clear();
-      router.push(`/cart?success=1`); // یا صفحهٔ تایید اختصاصی
-    } catch (e: any) {
-      setErr(e.message || 'خطا در ثبت سفارش');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="container" dir="rtl" style={{ padding: '2rem 0' }}>
-      <h1>نهایی‌سازی سفارش</h1>
-
-      {!me && (
-        <div className="alert" style={{ background: '#fff3cd', padding: 12, borderRadius: 8, margin: '12px 0' }}>
-          <p>برای ثبت سفارش باید وارد حساب شوید.</p>
-          <button className="btn" onClick={() => setLoginOpen(true)}>ورود</button>
-        </div>
-      )}
-
-      <div style={{ display: 'grid', gap: 16, maxWidth: 520 }}>
-        <input placeholder="نام و نام‌خانوادگی" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
-        <input placeholder="تلفن" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-        <input placeholder="شهر" value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} />
-        <input placeholder="کد پستی" value={form.postal_code} onChange={(e) => setForm({ ...form, postal_code: e.target.value })} />
-        <textarea placeholder="آدرس کامل" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
-      </div>
-
-      <div style={{ marginTop: 16 }}>مبلغ قابل پرداخت: {total.toLocaleString('fa-IR')} تومان</div>
-      {err && <div style={{ color: 'crimson', marginTop: 8 }}>{err}</div>}
-
-      <button className="btn" disabled={!me || loading} onClick={placeOrder} style={{ marginTop: 12 }}>
-        {loading ? 'در حال ارسال…' : 'ثبت سفارش'}
-      </button>
-
-      <LoginModal open={loginOpen} onClose={() => setLoginOpen(false)} />
-    </div>
-  );
+/* Medium (500) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
 }
-```
 
----
+/* Bold (700) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 
-## 6) نکات کلیدی و ارتقای حرفه‌ای
+/* Black (900) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
 
-* **Front-only Cart** مطابق خواستهٔ شماست. برای حرفه‌ای‌تر شدن در آینده:
+/* Variable font (اختیاری، اگر خواستی فقط یک فایل باشه) */
+@font-face {
+  font-family: "VazirVariable";
+  src: url("/fonts/vazir/Vazir-Variable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
 
-  * سینک سبد با سرور برای کاربران لاگین (multi-device)،
-  * رزرو موجودی در زمان Checkout و پرداخت آنلاین.
-* **ولیدیشن قوی بک‌اند**: در `OrderCreateSerializer` موجودی/قیمت از سرور محاسبه می‌شود و هر عدم‌انطباق منجر به خطا می‌شود.
-* **CSRF/Session**: همان الگوی فعلی شما حفظ شده؛ فقط `POST /api/orders/create/` نیاز به `credentials: 'include'` و CSRF دارد (که با `postWithCsrf` انجام شد).
-* **Facets/Sorting/Pagination**: قرارداد API دقیقاً با ساختار UI فعلی شما هم‌خوان است؛ فقط `ShopPage` اکنون از سرور می‌خواند.
-* **Media**: تصاویر محصول از مسیر `MEDIA_URL` سرو می‌شوند. در پنل ادمین آپلود کنید.
 
----
 
-## 7) تست سریع (چک‌لیست)
+/* ===== Reset های پایه ===== */
+*, *::before, *::after { box-sizing: border-box; }
+html, body { height: 100%; }
+body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
+img, picture, video, canvas, svg { display: block; max-width: 100%; }
+button, input, select, textarea { font: inherit; color: inherit; }
+a { color: inherit; text-decoration: none; }
+h1,h2,h3 { font-weight: 700; letter-spacing: -0.01em; }
 
-1. در ادمین: `Category`‌ها (dog/cat/bird/small) و چند `Brand` و `Product` بسازید؛ `in_stock=True` و `stock>0`.
-2. فرانت: `/shop` باید لیست واقعی بدهد؛ فیلتر/مرتب‌سازی/صفحه‌بندی کار کند.
-3. افزودن به سبد: در کارت محصول دکمه را بزنید؛ شمارندهٔ هدر آپدیت شود؛ `/cart` اقلام را نشان دهد.
-4. Checkout: اگر وارد نشده‌اید، پیام ورود ببینید؛ پس از ورود، آدرس را پر کنید و سفارش را ثبت کنید؛ در ادمین «Orders» را ببینید.
+/* جهت نوشتار فارسی */
+html[lang="fa"] { direction: rtl; }
 
----
+/* انتخاب و فوکوس قابل‌دسترسی */
+::selection { background: var(--accent-weak); color: var(--text-strong); }
 
-اگر دوست دارید، مرحلهٔ بعدی را هم برای «جزییات محصول» (صفحهٔ `/product/[slug]`)، پرداخت آنلاین (درگاه)، و «سفارش‌های من» در پروفایل کاربر طراحی و اضافه می‌کنم.
+/* ===== بدنه و تایپو گلوبال ===== */
+html {
+  color-scheme: dark light; /* تم‌ها در variables.css تعریف شده‌اند */
+  background: var(--bg);
+  transition: background-color var(--transition-300), color var(--transition-300);
+  text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-variant-numeric: tabular-nums;
+
+}
+
+/* 🔒 اسکرول‌لاک هنگام باز بودن دراور موبایل */
+body.no-scroll { overflow: hidden; }
+
+/* ===== Container سراسری ===== */
+.container {
+  width: 100%;
+  max-width: var(--container-w);
+  margin-inline: auto;
+  padding-inline: 16px;
+}
+
+/* ===== یوتیلیتی دسترس‌پذیری (سراسری) ===== */
+.visually-hidden {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  white-space: nowrap; border: 0;
+}
+
+/* ===== احترام به کاهش حرکت سیستم ===== */
+@media (prefers-reduced-motion: reduce) {
+  html { transition: none !important; scroll-behavior: auto; }
+}
+
+
+
+/* === Focus & Pointer & Modal Stacking — Safe Patch ===================== */
+
+/* 1) پاک کردن outline پیش‌فرض؛ رینگ فوکوس را به عهدهٔ کامپوننت‌ها می‌گذاریم */
+:focus { outline: none; }
+:focus-visible { outline: none; }
+
+/* (اختیاری) اگر می‌خواهی یک رینگ جهانی داشته باشی، دستی کلاس بده: */
+.focus-ring:focus-visible { box-shadow: 0 0 0 3px var(--focus-ring); }
+
+/* 2) پوینتر یکنواخت روی کنترل‌های کلیکی (anchor ها خودشان pointer دارند) */
+:where(button, [role="button"], [type="button"], [type="submit"], .clickable) {
+  cursor: pointer;
+}
+
+/* 3) مودال همیشه روِ همه (هدر/دراور) — شِیم غیرتهاجمی */
+:root {
+  /* مطمئن می‌شویم این مقادیر وجود دارند: */
+  --z-sticky: 10;
+  --z-drawer: 100;
+  --z-modal: 1000;
+  --z-toast: 1100;
+}
+
+/* اگر مودال‌ها با Portal یا role=dialog رندر می‌شوند: */
+:where([role="dialog"][aria-modal="true"], .modal, .ReactModal__Content) {
+  position: fixed;
+  z-index: var(--z-modal) !important;
+}
+
+/* بک‌دراپ مودال‌ها */
+:where(.backdrop, .ReactModal__Overlay, [data-backdrop]) {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal) - 1) !important;
+}
+
+/* 4) بهبود لمس موبایل */
+@media (hover: none) and (pointer: coarse) {
+  * { -webkit-tap-highlight-color: transparent; }
+}
+
+
+
+
+/* F:\Shahrivar1404\Werch_app\werchaui\src\app\variables.css
+   ==========================================================================
+   Design Tokens for Werch UI — Night (default) & Day (light) themes
+   هدف: خواناییِ مطمئن برای متن و دکمه‌ها در هر دو تم + هارمونی رنگی
+   نکته: تم شب پیش‌فرض است. برای روشن: <html class="light">
+   ========================================================================== */
+
+/* ===== Night (Dark = پیش‌فرض) ================================================= */
+:root {
+  /* ===== Neutrals / Inks ===== */
+  --ink-1000: #05070a;
+  --ink-950:  #070a10;
+  --ink-900:  #0a0f16;  /* bg */
+  --ink-850:  #0c131b;
+  --ink-800:  #101723;  /* surface */
+  --ink-750:  #131c2a;
+  --ink-700:  #172233;  /* surface-2 */
+  --ink-650:  #1a283d;
+
+  --slate-50:  #f6f9fc;
+  --slate-100: #eaf1f8;
+  --slate-200: #dbe6f1;
+  --slate-300: #c8d6e6;
+  --slate-400: #b7c6d8;  /* کمی روشن‌تر برای خوانایی روی سطوح تیره */
+  --slate-500: #95a8bb;
+  --slate-600: #7a8ea3;
+  --slate-700: #5e7084;
+
+  /* ===== Brand Neons ===== */
+  /* Cyan / Aqua (Primary) */
+  --cyan-300:  #67e8f9;
+  --cyan-400:  #22d3ee; /* primary */
+  --cyan-500:  #06b6d4;
+  --cyan-600:  #0891b2; /* primary-press */
+  --cyan-700:  #0e7490;
+  --cyan-800:  #155e75;
+
+  /* Violet / Purple (Secondary) */
+  --violet-300:#c4b5fd;
+  --violet-400:#a78bfa; /* secondary */
+  --violet-500:#8b5cf6;
+  --violet-600:#7c3aed; /* secondary-press */
+  --violet-700:#6d28d9;
+
+  /* Magenta / Pink (Accent) */
+  --magenta-300:#f9a8d4;
+  --magenta-400:#f472b6; /* accent */
+  --magenta-500:#ec4899;
+  --magenta-600:#db2777;
+  --magenta-700:#be185d;
+
+  /* Complementary (برای بنرها/اشاره‌ها) */
+  --teal-400:  #2dd4bf;
+  --teal-600:  #0d9488;
+  --blue-400:  #60a5fa;
+  --blue-600:  #2563eb;
+  --indigo-400:#818cf8;
+  --indigo-600:#4f46e5;
+  --amber-400: #fbbf24;
+  --amber-600: #d97706;
+  --lime-400:  #a3e635;
+  --lime-600:  #65a30d;
+  --rose-400:  #fb7185;
+  --rose-600:  #e11d48;
+
+  /* ===== خطوط و سطوح ===== */
+  --line-700:  #243449;   /* کمی مشخص‌تر */
+  --line-800:  #1a2636;
+  --muted-800: #0f1a24;   /* muted surface */
+
+  /* ===== برند/پت ===== */
+  --brown-600: #8b5e3c;
+  --brown-700: #6f472b;
+  --pet-dog-brown: var(--brown-600);
+  --pet-cat-gray:  #8792a2;
+  --pet-white:     #ffffff;
+  --pet-pink:      #f48fb1;
+
+  /* ===== Semantic — Dark ===== */
+  --bg:            var(--ink-900);
+  --bg-soft:       var(--ink-850);
+  --surface:       var(--ink-800);
+  --surface-2:     var(--ink-700);
+  --surface-3:     var(--ink-650);
+
+  --text:          #e9f2fb;              /* متن عادی */
+  --text-weak:     var(--slate-400);      /* متن ضعیف‌تر ولی خوانا */
+  --text-mute:     var(--slate-500);      /* توضیحات/Placeholder */
+  --text-strong:   #ffffff;               /* تیتر/متن قوی */
+  --text-inverse:  var(--ink-900);        /* متن روی زمینه‌های روشن/نئونی */
+
+  --primary:         var(--cyan-400);
+  --primary-weak:    color-mix(in oklab, var(--cyan-400) 20%, transparent);
+  --primary-press:   var(--cyan-600);
+  --secondary:       var(--violet-400);
+  --secondary-press: var(--violet-600);
+  --accent:          var(--magenta-400);
+  --accent-weak:     color-mix(in oklab, var(--magenta-400) 30%, transparent);
+
+  --muted:         var(--muted-800);
+  --border:        var(--line-700);
+  --border-strong: var(--line-800);
+
+  --link:          var(--primary);
+  --link-hover:    var(--primary-press);
+
+  --focus-ring:    color-mix(in oklab, var(--cyan-400) 72%, white 18%);
+  --shadow-xs:     0 2px 8px rgba(0,0,0,.25);
+  --shadow-sm:     0 6px 18px rgba(0,0,0,.28);
+  --shadow:        0 12px 32px rgba(0,0,0,.30);
+  --shadow-lg:     0 24px 68px rgba(0,0,0,.36);
+
+  /* شیشه‌ای (Glass) */
+  --glass:         rgba(255,255,255,.05);
+  --glass-2:       rgba(255,255,255,.08);
+  --glass-border:  rgba(255,255,255,.12);
+  --backdrop:      blur(10px) saturate(115%);
+
+  /* گرادیان‌ها */
+  --grad-primary:  linear-gradient(135deg, #22d3ee 0%, #60a5fa 45%, #a78bfa 85%, #f472b6 100%);
+  --grad-accent:   linear-gradient(135deg, #f472b6 0%, #fb7185 40%, #f59e0b 70%, #a3e635 100%);
+  --grad-calm:     linear-gradient(135deg, #22d3ee 0%, #2dd4bf 50%, #a7f3d0 100%);
+  --grad-hero:     radial-gradient(1200px 700px at 20% -10%, #22d3ee33 0%, transparent 60%),
+                   radial-gradient(1000px 600px at 80% 110%, #a78bfa33 0%, transparent 60%);
+
+  /* تایپوگرافی/ابعاد/ترنزیشن */
+  --font-sans: "Vazir", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --radius-2xs: 8px;
+  --radius-sm:  10px;
+  --radius:     14px;
+  --radius-lg:  22px;
+  --radius-xl:  30px;
+  --container-w: 1140px;
+  --transition-200: 200ms cubic-bezier(.2,.8,.2,1);
+  --transition-300: 300ms cubic-bezier(.2,.8,.2,1);
+  --transition-500: 500ms cubic-bezier(.2,.8,.2,1);
+
+  /* Opacity Helpers */
+  --alpha-02: .02;
+  --alpha-04: .04;
+  --alpha-08: .08;
+  --alpha-12: .12;
+  --alpha-16: .16;
+  --alpha-24: .24;
+
+  /* وضعیت‌ها */
+  --success:      #10b981;
+  --success-weak: color-mix(in oklab, #10b981 24%, transparent);
+  --warning:      #f59e0b;
+  --warning-weak: color-mix(in oklab, #f59e0b 24%, transparent);
+  --danger:       #ef4444;
+  --danger-weak:  color-mix(in oklab, #ef4444 24%, transparent);
+
+  /* Component Tokens (بهبود خوانایی) */
+  --btn-bg:             var(--primary);
+  --btn-bg-press:       var(--primary-press);
+  --btn-text:           #061017; /* متن تیره روی primary نئونی */
+  --chip-bg:            color-mix(in oklab, var(--primary) 16%, var(--surface));
+  --chip-text:          var(--text);
+  --card-bg:            var(--surface);
+  --card-border:        var(--border);
+  --input-bg:           color-mix(in oklab, white 5%, var(--surface));
+  --input-border:       var(--border);
+  --input-placeholder:  color-mix(in oklab, var(--text) 62%, transparent);
+
+  --badge-info-bg:      color-mix(in oklab, var(--blue-400) 20%, transparent);
+  --badge-info-text:    #dbeafe;
+  --badge-tip-bg:       color-mix(in oklab, var(--lime-400) 22%, transparent);
+  --badge-tip-text:     #ecfdf5;
+
+  /* ← جدید: متن روی رنگ‌ها (برای دکمه/بج/نوار وضعیت) */
+  --on-primary:   #061017;
+  --on-secondary: #0a0f16;
+  --on-accent:    #09121a;
+  --on-muted:     var(--text);
+  --on-success:   #04120e;
+  --on-warning:   #141005;
+  --on-danger:    #140707;
+}
+
+/* ===== Day (Light) — خوانایی تقویت‌شده ============================== */
+html.light {
+  /* زمینه‌ها */
+  --paper-000: #fafcfe;
+  --paper-025: #f3f7fb;
+  --paper-050: #ecf2f8;
+  --paper-100: #e1e9f2;
+
+  /* Inks روشن (متن) */
+  --ink-1000: #101822;   /* strong text */
+  --ink-900l: #182331;
+  --ink-800l: #1f2a39;
+  --ink-700l: #2a3747;
+  --ink-600l: #3f4e60;
+
+  /* طیف‌های تعاملی روشن (کمی کم‌اشباع‌تر برای هارمونی) */
+  --cyan-400l:   #1ebad1;
+  --cyan-500l:   #10a8bf; /* primary */
+  --cyan-600l:   #0a95ab; /* press */
+  --cyan-700l:   #0c6e86;
+
+  --violet-400l: #957ff0;
+  --violet-500l: #7b5bed; /* secondary */
+  --violet-600l: #6f41e1;
+  --violet-700l: #5e2acb;
+
+  --magenta-400l:#e661a4;
+  --magenta-500l:#d6388d; /* accent */
+  --magenta-600l:#c12a77;
+
+  /* مکمل‌ها */
+  --blue-500l:   #346fe3;
+  --indigo-500l: #5a5eee;
+  --teal-500l:   #129e91;
+  --amber-500l:  #e1920a;
+  --lime-500l:   #76b815;
+  --rose-500l:   #e23d5a;
+
+  /* Semantic — Light */
+  --bg:            var(--paper-050);
+  --bg-soft:       var(--paper-025);
+  --surface:       var(--paper-000);
+  --surface-2:     #d9e3ee;   /* کمی تیره‌تر برای تمایز */
+  --surface-3:     #cdd9e7;
+
+  --text:          var(--ink-800l);
+  --text-weak:     #4a5a6e;   /* خواناتر از نسخهٔ قبلی */
+  --text-mute:     #5d6f83;   /* Placeholder تیره‌تر */
+  --text-strong:   var(--ink-1000);
+  --text-inverse:  #ffffff;
+
+  --primary:         var(--cyan-500l);
+  --primary-weak:    color-mix(in oklab, var(--cyan-500l) 22%, transparent);
+  --primary-press:   var(--cyan-600l);
+  --secondary:       var(--violet-500l);
+  --secondary-press: var(--violet-700l);
+  --accent:          var(--magenta-500l);
+  --accent-weak:     color-mix(in oklab, var(--magenta-500l) 24%, transparent);
+
+  --muted:         #e9eef5;
+  --border:        #c3cfde;   /* مرز مشخص‌تر */
+  --border-strong: #b3c2d6;
+
+  --link:          var(--primary);
+  --link-hover:    var(--primary-press);
+
+  --focus-ring:  color-mix(in oklab, var(--cyan-500l) 58%, black 12%);
+  --shadow-xs:   0 1px 4px rgba(16, 24, 40, .10);
+  --shadow-sm:   0 4px 16px rgba(16, 24, 40, .12);
+  --shadow:      0 10px 28px rgba(16, 24, 40, .14);
+  --shadow-lg:   0 20px 56px rgba(16, 24, 40, .16);
+
+  /* شیشه‌ای روشن */
+  --glass:        rgba(9,12,18,.08);
+  --glass-2:      rgba(9,12,18,.10);
+  --glass-border: rgba(9,12,18,.14);
+  --backdrop:     blur(8px) saturate(118%);
+
+  /* گرادیان‌ها */
+  --grad-primary: linear-gradient(135deg, #1ebad1 0%, #4b8ef0 45%, #957ff0 85%, #d6388d 100%);
+  --grad-accent:  linear-gradient(135deg, #e661a4 0%, #ea9c2a 45%, #76b815 100%);
+  --grad-calm:    linear-gradient(135deg, #86d8c8 0%, #5fd1c0 40%, #9fc7ea 100%);
+
+  /* Component — Light */
+  --btn-bg:             var(--primary);
+  --btn-bg-press:       var(--primary-press);
+  --btn-text:           #06222a; /* متن تیره روی رنگ روشن */
+  --chip-bg:            color-mix(in oklab, var(--primary) 12%, var(--surface));
+  --chip-text:          var(--text);
+  --card-bg:            var(--surface);
+  --card-border:        var(--border);
+  --input-bg:           #eef4fa; /* کمی تیره‌تر برای کنتراست */
+  --input-border:       var(--border);
+  --input-placeholder:  var(--text-mute);
+
+  --success:      #0fa77a;
+  --success-weak: color-mix(in oklab, #0fa77a 20%, transparent);
+  --warning:      #e2950a;
+  --warning-weak: color-mix(in oklab, #e2950a 20%, transparent);
+  --danger:       #e23d3d;
+  --danger-weak:  color-mix(in oklab, #e23d3d 20%, transparent);
+
+  /* متن روی رنگ‌ها */
+  --on-primary:   #06222a;
+  --on-secondary: #0f1b2c;
+  --on-accent:    #111626;
+  --on-muted:     var(--text);
+  --on-success:   #05231a;
+  --on-warning:   #261904;
+  --on-danger:    #260a0a;
+}
+
+
+
+
+
+/* app/utilities.css
+   ==========================================================================
+   Global Utilities & Base Components — Werch UI (Petshop)
+   - روی tokens.css بنا شده.
+   - شامل «Auto Paw» برای چک‌باکس‌ها با html[data-paw="on"].
+   ========================================================================== */
+
+/* ===== Focus reset (یکدست و بدون outline بدشکل) ======================= */
+:where(a, button, [role="button"], input, textarea, select):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--focus-ring) 60%, transparent);
+}
+
+/* ===== ICONS ============================================================ */
+.icon {
+  inline-size: var(--icon-size);
+  block-size:  var(--icon-size);
+  color: var(--icon-color);
+  display: inline-flex; align-items: center; justify-content: center; flex: 0 0 auto;
+}
+.icon svg { width: 100%; height: 100%; }
+.icon--2xs { inline-size: var(--size-2xs); block-size: var(--size-2xs); }
+.icon--xs  { inline-size: var(--size-xs);  block-size: var(--size-xs); }
+.icon--sm  { inline-size: var(--size-sm);  block-size: var(--size-sm); }
+.icon--md  { inline-size: var(--size-md);  block-size: var(--size-md); }
+.icon--lg  { inline-size: var(--size-lg);  block-size: var(--size-lg); }
+.icon--xl  { inline-size: var(--size-xl);  block-size: var(--size-xl); }
+.icon--2xl { inline-size: var(--size-2xl); block-size: var(--size-2xl); }
+.icon--weak { color: var(--icon-weak); }
+.icon--mute { color: var(--icon-mute); }
+.icon--primary { color: var(--icon-primary); }
+.icon--success { color: var(--icon-success); }
+.icon--warning { color: var(--icon-warning); }
+.icon--danger  { color: var(--icon-danger); }
+
+/* ===== LINKS ============================================================ */
+.link {
+  --_text: var(--lo-text);
+  --_text-h: var(--lo-text-h);
+  --_bg: var(--lo-bg);
+  --_bg-h: var(--lo-bg-h);
+  --_border: var(--lo-border);
+  color: var(--_text);
+  text-decoration: var(--lo-deco);
+  border-bottom: 1px solid transparent;
+  background: var(--_bg);
+  transition: color var(--dur-200), background-color var(--dur-200), border-color var(--dur-200);
+}
+.link:hover { color: var(--_text-h); background: var(--_bg-h); border-color: var(--_border); }
+.link--subtle { text-decoration: none; border: 0; }
+
+/* ===== BUTTONS ========================================================== */
+.btn {
+  --_h:  var(--btn-h-md); --_px: var(--btn-px-md); --_gap: var(--btn-gap-md); --_fz: var(--btn-fz-md);
+  display: inline-flex; gap: var(--_gap); align-items: center; justify-content: center;
+  height: var(--_h); padding-inline: var(--_px);
+  font-size: var(--_fz); font-weight: 700; border-radius: var(--btn-radius);
+  border: 1px solid var(--btn-solid-border);
+  color: var(--btn-solid-text); background: var(--btn-solid-bg);
+  box-shadow: var(--btn-shadow);
+  transition: transform var(--dur-150), background-color var(--dur-150), box-shadow var(--dur-150);
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(1px) scale(.98); background: var(--btn-solid-bg-press); }
+.btn--sm { --_h: var(--btn-h-sm); --_px: var(--btn-px-sm); --_gap: var(--btn-gap-sm); --_fz: var(--btn-fz-sm); }
+.btn--lg { --_h: var(--btn-h-lg); --_px: var(--btn-px-lg); --_gap: var(--btn-gap-lg); --_fz: var(--btn-fz-lg); }
+.btn--pill { border-radius: var(--r-pill); }
+.btn--square { width: var(--_h); aspect-ratio: 1/1; padding: 0; }
+.btn--secondary{ --btn-solid-bg: var(--btn-secondary-bg); --btn-solid-bg-press: var(--btn-secondary-press); --btn-solid-text: var(--btn-secondary-text); --btn-solid-border: transparent; }
+.btn--ghost   { --btn-solid-bg: var(--btn-ghost-bg); --btn-solid-text: var(--btn-ghost-text); --btn-solid-border: var(--btn-ghost-border); }
+.btn--outline { --btn-solid-bg: var(--btn-outline-bg); --btn-solid-text: var(--btn-outline-text); --btn-solid-border: var(--btn-outline-border); }
+.btn--danger  { --btn-solid-bg: var(--btn-danger-bg);  --btn-solid-bg-press: var(--btn-danger-press); --btn-solid-text: var(--btn-danger-text); --btn-solid-border: transparent; }
+.btn.is-loading { position: relative; pointer-events: none; opacity: .85; }
+.btn.is-loading::after{
+  content: ""; inline-size: 1em; block-size: 1em;
+  border: 2px solid currentColor; border-inline-start-color: transparent;
+  border-radius: 50%; animation: spin 800ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg) } }
+
+/* ===== BADGE / TAG ====================================================== */
+.badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  height: var(--badge-h); padding-inline: var(--badge-px);
+  border-radius: var(--badge-radius); font-size: var(--badge-fz); line-height: 1; white-space: nowrap;
+}
+.badge--info { background: var(--badge-info-bg); color: var(--badge-info-text); }
+.badge--tip  { background: var(--badge-tip-bg);  color: var(--badge-tip-text);  }
+.badge--sale { background: var(--badge-sale-bg); color: var(--badge-sale-text); }
+.badge--new  { background: var(--badge-new-bg);  color: var(--badge-new-text); }
+.badge--hot  { background: var(--badge-hot-bg);  color: var(--badge-hot-text); }
+
+.tag {
+  display: inline-flex; align-items: center; gap: var(--tag-gap);
+  padding-inline: 10px; padding-block: 6px;
+  background: var(--tag-bg); color: var(--tag-text);
+  border: 1px solid var(--tag-border); border-radius: var(--tag-radius);
+  font-size: .8125rem;
+}
+.tag__remove { display: inline-grid; place-items: center; inline-size: 1.25em; block-size: 1.25em; border-radius: 50%; }
+
+/* ===== CARD / SURFACES ================================================== */
+.card {
+  background: var(--card-bg); color: var(--text);
+  border: 1px solid var(--card-border); border-radius: var(--card-radius);
+  padding: var(--card-pad); box-shadow: var(--card-shadow);
+}
+.card--hover:hover { transform: translateY(-2px); box-shadow: var(--elev-md); transition: box-shadow var(--dur-200), transform var(--dur-200); }
+.card__title { font-size: var(--card-title-fz); font-weight: 800; }
+
+/* ===== FORMS (base) ===================================================== */
+.field { display: grid; gap: var(--field-gap); }
+.field__label { font-size: var(--field-label-fz); color: var(--text-weak); }
+.field__help  { font-size: var(--field-help-fz); color: var(--text-mute); }
+.field__err   { font-size: var(--field-help-fz); color: var(--danger); }
+
+.input, .textarea, .select {
+  width: 100%; color: var(--input-text);
+  background: var(--input-bg); border: 1px solid var(--input-border);
+  border-radius: var(--input-radius); padding-inline: var(--input-pad-x);
+  transition: border-color var(--dur-150), background-color var(--dur-150), box-shadow var(--dur-150);
+}
+.input { height: var(--input-h-md); padding-block: 0; }
+.input--sm { height: var(--input-h-sm); }
+.input--lg { height: var(--input-h-lg); }
+.textarea { padding-block: var(--input-pad-y); min-height: 120px; resize: vertical; }
+.input::placeholder, .textarea::placeholder { color: var(--input-ph); }
+.input:focus, .textarea:focus, .select:focus { outline: none; box-shadow: var(--input-ring); }
+
+/* Invalid */
+:where(.input, .textarea, .select)[aria-invalid="true"] { border-color: var(--ctrl-danger); }
+:where(.input, .textarea, .select)[aria-invalid="true"]:focus { box-shadow: 0 0 0 3px color-mix(in oklab, var(--danger) 40%, transparent); }
+
+/* Select indicator */
+.select { appearance: none; height: var(--input-h-md); padding-block: 0; padding-inline-end: calc(var(--select-pad-r) + var(--input-pad-x)); background-image: none; position: relative; }
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: var(--select-indicator); position: absolute; inset-inline-end: 10px; inset-block: 0;
+  display: grid; place-items: center; pointer-events: none; color: var(--text-mute);
+}
+
+/* ===== Native fallback checkbox/radio ================================== */
+.checkbox, .radio { inline-size: 1.125rem; block-size: 1.125rem; accent-color: var(--ctrl-accent); }
+.checkbox:disabled, .radio:disabled { opacity: .6; cursor: not-allowed; }
+
+/* ===== Petshop Paw Checkbox — Class-based =============================== */
+/* استفاده: <input type="checkbox" class="u-check"> */
+.u-check {
+  inline-size: var(--chk-size); block-size: var(--chk-size);
+  appearance: none; -webkit-appearance: none;
+  border-radius: var(--chk-radius);
+  border: 1px solid var(--chk-border);
+  background: var(--chk-bg);
+  display: inline-grid; place-items: center;
+  cursor: pointer;
+  transition: background-color var(--dur-200), border-color var(--dur-200), box-shadow var(--dur-200), transform var(--dur-200);
+}
+.u-check:hover { border-color: color-mix(in oklab, var(--primary) 38%, var(--chk-border)); box-shadow: var(--chk-ring); }
+.u-check:focus-visible { outline: none; box-shadow: var(--chk-ring); }
+.u-check:active { transform: scale(.98); }
+.u-check::after {
+  content: ""; inline-size: calc(var(--chk-size) * .62); block-size: calc(var(--chk-size) * .62);
+  opacity: 0; transform: scale(.7); transition: opacity var(--dur-200), transform var(--dur-200);
+  background: var(--chk-icon-color);
+  -webkit-mask-image: var(--chk-icon); mask-image: var(--chk-icon);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-size: contain; mask-size: contain;
+}
+.u-check:checked { background: var(--chk-accent); border-color: color-mix(in oklab, var(--chk-accent) 60%, black 10%); }
+.u-check:checked::after { opacity: 1; transform: scale(1); }
+.u-check:disabled { opacity: .6; cursor: not-allowed; }
+.u-check--sm { --chk-size: 18px; }
+.u-check--lg { --chk-size: 24px; }
+.u-check--primary { --chk-accent: var(--primary); }
+.u-check--accent  { --chk-accent: var(--accent); }
+.u-check--danger  { --chk-accent: var(--danger); }
+
+/* ===== Auto Paw — Global opt-in ======================================== */
+/* با قراردادن data-paw="on" روی <html>، همهٔ چک‌باکس‌های بومی پنجه‌ای می‌شوند. */
+html[data-paw="on"] input[type="checkbox"] {
+  inline-size: var(--chk-size); block-size: var(--chk-size);
+  appearance: none; -webkit-appearance: none;
+  border-radius: var(--chk-radius);
+  border: 1px solid var(--chk-border);
+  background: var(--chk-bg);
+  display: inline-grid; place-items: center; cursor: pointer;
+  transition: background-color var(--dur-200), border-color var(--dur-200), box-shadow var(--dur-200), transform var(--dur-200);
+}
+html[data-paw="on"] input[type="checkbox"]:hover { border-color: color-mix(in oklab, var(--primary) 38%, var(--chk-border)); box-shadow: var(--chk-ring); }
+html[data-paw="on"] input[type="checkbox"]:focus-visible { outline: none; box-shadow: var(--chk-ring); }
+html[data-paw="on"] input[type="checkbox"]:active { transform: scale(.98); }
+html[data-paw="on"] input[type="checkbox"]::after {
+  content: ""; inline-size: calc(var(--chk-size) * .62); block-size: calc(var(--chk-size) * .62);
+  opacity: 0; transform: scale(.7); transition: opacity var(--dur-200), transform var(--dur-200);
+  background: var(--chk-icon-color);
+  -webkit-mask-image: var(--chk-icon); mask-image: var(--chk-icon);
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-size: contain; mask-size: contain;
+}
+html[data-paw="on"] input[type="checkbox"]:checked {
+  background: var(--chk-accent);
+  border-color: color-mix(in oklab, var(--chk-accent) 60%, black 10%);
+}
+html[data-paw="on"] input[type="checkbox"]:checked::after { opacity: 1; transform: scale(1); }
+
+/* ===== Switch =========================================================== */
+.switch {
+  inline-size: var(--sw-w); block-size: var(--sw-h);
+  background: var(--sw-track-off); border-radius: var(--r-pill);
+  position: relative; transition: background var(--dur-150);
+}
+.switch__thumb {
+  position: absolute; inset-block-start: var(--sw-pad); inset-inline-start: var(--sw-pad);
+  inline-size: calc(var(--sw-h) - var(--sw-pad)*2); block-size: calc(var(--sw-h) - var(--sw-pad)*2);
+  background: var(--sw-thumb); border-radius: 50%; transition: transform var(--dur-150);
+  box-shadow: 0 2px 6px rgba(0,0,0,.25);
+}
+.switch[aria-checked="true"] { background: var(--sw-track-on); }
+.switch[aria-checked="true"] .switch__thumb { transform: translateX(calc(var(--sw-w) - var(--sw-h))); }
+
+/* ===== Input with leading icon ========================================= */
+.input--with-icon { padding-inline-start: calc(var(--input-pad-x) + 28px); }
+.input-wrap { position: relative; }
+.input-wrap .input-icon {
+  position: absolute; inset-inline-start: 10px; inset-block: 0; display: grid; place-items: center; color: var(--text-mute);
+}
+
+/* ===== TABLE ============================================================ */
+.table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  background: var(--table-bg); border: 1px solid var(--table-border);
+  border-radius: var(--table-radius); overflow: hidden;
+}
+.table th, .table td { padding: var(--table-pad-y) var(--table-pad-x); border-bottom: 1px solid var(--table-border); }
+.table th { text-align: start; font-size: var(--table-head-fz); color: var(--text-weak); background: color-mix(in oklab, var(--text) 4%, transparent); }
+.table tr:last-child td { border-bottom: none; }
+.table--stripe tbody tr:nth-child(even) { background: var(--table-stripe); }
+
+/* ===== NAV / BREADCRUMB / PAGINATION / TABS ============================ */
+.navbar {
+  min-height: var(--nav-h); background: var(--nav-bg);
+  border: 1px solid var(--nav-border); border-radius: var(--nav-radius);
+  display: flex; align-items: center; padding-inline: var(--sp-4); gap: var(--sp-4);
+}
+.navbar a { color: var(--nav-link); }
+.navbar a[aria-current="page"] { color: var(--nav-link-active); font-weight: 800; }
+
+.breadcrumb { display: inline-flex; align-items: center; gap: var(--crumb-gap); }
+.breadcrumb__sep::before { content: var(--crumb-sep); color: var(--text-mute); }
+
+.pagination { display: inline-flex; gap: var(--page-gap); align-items: center; }
+.page {
+  display: grid; place-items: center; min-inline-size: 36px; height: 36px;
+  border-radius: var(--r-lg); border: 1px solid var(--border); background: transparent;
+  transition: background var(--dur-150), border-color var(--dur-150);
+}
+.page[aria-current="page"] {
+  background: color-mix(in oklab, var(--primary) 18%, transparent);
+  border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
+}
+
+.tabs { display: flex; gap: var(--tab-gap); }
+.tab {
+  padding: 8px 12px; border-radius: var(--tab-radius);
+  background: var(--tab-bg); color: var(--tab-text); border: 1px solid transparent;
+  transition: background var(--dur-150), color var(--dur-150), border-color var(--dur-150);
+}
+.tab[aria-selected="true"] {
+  background: var(--tab-bg-act); color: var(--tab-text-act);
+  border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+}
+
+/* ===== TOOLTIP / POPOVER =============================================== */
+[data-tooltip] { position: relative; }
+[data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute; inset-inline-start: 50%; transform: translateX(-50%) translateY(-8px);
+  inset-block-end: 100%; white-space: nowrap;
+  background: var(--tip-bg); color: var(--tip-text);
+  padding: var(--tip-pad); border-radius: var(--tip-radius); box-shadow: var(--tip-shadow);
+  opacity: 0; pointer-events: none; transition: opacity var(--dur-150);
+}
+[data-tooltip]:hover::after { opacity: 1; }
+.popover {
+  background: var(--popover-bg); color: var(--popover-text);
+  border: 1px solid var(--card-border); border-radius: var(--popover-radius);
+  padding: var(--popover-pad); box-shadow: var(--popover-shadow);
+}
+
+/* ===== MODAL / DRAWER =================================================== */
+.backdrop {
+  position: fixed; inset: 0; background: var(--backdrop-bg);
+  animation: fade-in var(--dur-300);
+  z-index: var(--z-modal);
+}
+.modal {
+  position: fixed; inset: 0; display: grid; place-items: center; padding: var(--sp-4);
+  z-index: calc(var(--z-modal) + 1);
+}
+.modal__panel {
+  background: var(--modal-bg); color: var(--modal-text); padding: var(--modal-pad);
+  border-radius: var(--modal-radius); box-shadow: var(--modal-shadow);
+  animation: scale-pop var(--dur-300);
+  max-inline-size: min(92vw, 720px);
+}
+.drawer {
+  position: fixed; inset-block: 0; inset-inline-end: 0; inline-size: var(--drawer-w);
+  background: var(--drawer-bg); color: var(--drawer-text);
+  box-shadow: var(--elev-lg); transform: translateX(100%); transition: transform var(--dur-300);
+  z-index: var(--z-drawer);
+}
+.drawer.is-open { transform: translateX(0); }
+
+/* ===== ALERTS / TOASTS ================================================== */
+.alert {
+  display: grid; grid-template-columns: auto 1fr; align-items: start; gap: var(--sp-3);
+  border-radius: var(--alert-radius); padding: var(--alert-pad); border: 1px solid var(--border);
+}
+.alert--info    { background: color-mix(in oklab, var(--blue-400) 12%, transparent); }
+.alert--success { background: color-mix(in oklab, var(--success) 12%, transparent); }
+.alert--warning { background: color-mix(in oklab, var(--warning) 12%, transparent); }
+.alert--danger  { background: color-mix(in oklab, var(--danger) 12%, transparent); }
+
+.toast-wrap {
+  position: fixed; inset-inline-end: var(--toast-pos-i); inset-block-end: var(--toast-pos-b);
+  display: grid; gap: var(--toast-gap); z-index: var(--z-toast);
+}
+.toast {
+  display: grid; grid-template-columns: auto 1fr auto; gap: var(--sp-3); align-items: center;
+  background: var(--surface); color: var(--text); border: 1px solid var(--border);
+  padding: var(--toast-pad); border-radius: var(--toast-radius); box-shadow: var(--toast-shadow);
+  animation: slide-up var(--dur-300), fade-in var(--dur-300);
+}
+
+/* ===== FEEDBACK: Skeleton / Progress / Rating ========================== */
+.skeleton {
+  background: var(--skel-bg);
+  border-radius: var(--skel-radius);
+  background-image: var(--skel-shimmer);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s linear infinite;
+}
+.progress {
+  inline-size: 100%; block-size: var(--progress-h); background: var(--progress-bg);
+  border-radius: var(--r-pill); overflow: hidden;
+}
+.progress__bar { inline-size: 0%; block-size: 100%; background: var(--progress-fill); transition: inline-size var(--dur-300); }
+.rating { display: inline-flex; gap: var(--rating-gap); }
+.rating__icon { inline-size: var(--rating-size); block-size: var(--rating-size); color: var(--rating-off); }
+.rating__icon.is-on { color: var(--rating-on); }
+
+/* ===== PRICE / STOCK ==================================================== */
+.price {
+  display: inline-flex; align-items: baseline; gap: var(--sp-2); color: var(--price-color);
+}
+.price__current { font-size: var(--price-strong-fz); font-weight: 800; }
+.price__old { font-size: var(--price-off-fz); color: var(--price-off-color); text-decoration: line-through; }
+.price__discount { background: var(--price-discount-bg); color: var(--price-discount-text); border-radius: var(--r-sm); padding: 2px 6px; }
+
+.stock { display: inline-flex; align-items: center; gap: 6px; }
+.stock--ok    { color: var(--stock-ok); }
+.stock--low   { color: var(--stock-low); }
+.stock--out   { color: var(--stock-out); }
+
+/* ===== PRODUCT CARD / MEDIA ============================================ */
+.product-card {
+  background: var(--card-bg); border: 1px solid var(--product-border);
+  border-radius: var(--product-radius); padding: var(--product-pad);
+  box-shadow: var(--product-shadow);
+}
+.product-media {
+  aspect-ratio: var(--product-img-ratio); overflow: hidden; border-radius: calc(var(--product-radius) - 6px);
+  background: var(--muted);
+}
+.product-media > img { inline-size: 100%; block-size: 100%; object-fit: cover; }
+
+/* ===== AVATAR =========================================================== */
+.avatar {
+  inline-size: var(--avatar-size); block-size: var(--avatar-size);
+  border-radius: var(--avatar-radius); overflow: hidden; position: relative;
+}
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar--ring { box-shadow: var(--avatar-ring); }
+
+/* ===== LAYOUT UTILITIES ================================================= */
+.stack { display: grid; gap: var(--sp-3); }
+.stack--sm { gap: var(--sp-2); }
+.stack--lg { gap: var(--sp-6); }
+
+.cluster { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+.center { display: grid; place-items: center; }
+
+.grid { display: grid; gap: var(--sp-4); }
+.grid--2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+.grid--3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+.grid--4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+@media (max-width: 1024px){ .grid--4 { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (max-width: 768px){ .grid--3, .grid--4 { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 480px){ .grid--2, .grid--3, .grid--4 { grid-template-columns: 1fr; } }
+
+/* Spacing (logical) */
+.pad-2 { padding: var(--sp-2); } .pad-4 { padding: var(--sp-4); } .pad-6 { padding: var(--sp-6); }
+.gap-2 { gap: var(--sp-2); } .gap-4 { gap: var(--sp-4); } .gap-6 { gap: var(--sp-6); }
+.mbs-4 { margin-block-start: var(--sp-4); } .mbe-4 { margin-block-end: var(--sp-4); }
+.mis-4 { margin-inline-start: var(--sp-4); } .mie-4 { margin-inline-end: var(--sp-4); }
+
+/* Display / Visibility */
+.hidden { display: none !important; }
+
+/* Text utilities */
+.t-center { text-align: center; }
+.t-weak   { color: var(--text-weak); }
+.t-mute   { color: var(--text-mute); }
+.t-strong { color: var(--text-strong); }
+.ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.clamp-2  { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* Shadows / Radius / Border */
+.shadow     { box-shadow: var(--elev-md); }
+.shadow-sm  { box-shadow: var(--elev-sm); }
+.shadow-lg  { box-shadow: var(--elev-lg); }
+.rounded    { border-radius: var(--r-md); }
+.rounded-lg { border-radius: var(--r-lg); }
+.rounded-xl { border-radius: var(--r-xl); }
+.rounded-full { border-radius: 999px; }
+.border { border: 1px solid var(--border); }
+.border-strong { border: 1px solid var(--border-strong); }
+
+/* Color helpers (limited, مبتنی بر توکن‌ها) */
+.bg-surface { background: var(--surface); }
+.bg-muted   { background: var(--muted); }
+.text-primary { color: var(--primary); }
+.bg-primary   { background: var(--primary); color: var(--on-primary); }
+
+/* Ring helpers */
+.ring { box-shadow: 0 0 0 3px color-mix(in oklab, var(--focus-ring) 55%, transparent); }
+.ring-inset { box-shadow: inset 0 0 0 3px color-mix(in oklab, var(--focus-ring) 55%, transparent); }
+
+/* ===== REDUCED MOTION =================================================== */
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+}
+
+/* app/tokens.css
+   ==========================================================================
+   Component Design Tokens for Werch UI (Petshop)
+   - تکیه بر variables.css برای رنگ‌ها، سایه‌ها، ترنزیشن‌ها و تایپو
+   - همه‌ی توکن‌ها قابل Override محلی داخل CSS ماژول هر کامپوننت هستند.
+   - از Logical Properties برای RTL/LTR خودکار استفاده شده.
+   ========================================================================== */
+
+/* ===== Breakpoints (Logical) ============================================ */
+:root {
+  --bp-xs: 360px;
+  --bp-sm: 480px;
+  --bp-md: 768px;
+  --bp-lg: 1024px;
+  --bp-xl: 1280px;
+  --bp-2xl: 1536px;
+}
+
+/* ===== Size & Radius Scales ============================================= */
+:root {
+  /* Icon / Avatar sizes */
+  --size-2xs: 12px;
+  --size-xs:  14px;
+  --size-sm:  16px;
+  --size-md:  20px;
+  --size-lg:  24px;
+  --size-xl:  32px;
+  --size-2xl: 40px;
+  --size-3xl: 56px;
+
+  /* Radius (alias به variables.css) */
+  --r-2xs: var(--radius-2xs);
+  --r-sm:  var(--radius-sm);
+  --r-md:  var(--radius);
+  --r-lg:  var(--radius-lg);
+  --r-xl:  var(--radius-xl);
+  --r-pill: 999px;
+}
+
+/* ===== Spacing Scale (alias) ============================================ */
+:root {
+  --sp-0: 0;
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 20px;
+  --sp-6: 24px;
+  --sp-7: 28px;
+  --sp-8: 32px;
+  --sp-10:40px;
+  --sp-12:48px;
+  --sp-16:64px;
+}
+
+/* ===== Elevation / Motion (alias) ======================================= */
+:root {
+  --elev-xs: var(--shadow-xs);
+  --elev-sm: var(--shadow-sm);
+  --elev-md: var(--shadow);
+  --elev-lg: var(--shadow-lg);
+
+  --dur-150: 150ms cubic-bezier(.2,.8,.2,1);
+  --dur-200: var(--transition-200);
+  --dur-300: var(--transition-300);
+  --dur-500: var(--transition-500);
+}
+
+/* ===== Z-Index (لایه‌بندی سازگار با هدر/دراور/مودال) =================== */
+:root {
+  --z-base: 1;
+  --z-header: 50;
+  --z-drawer: 40;
+  --z-dropdown: 60;
+  --z-tooltip: 70;
+  --z-modal: 1000;
+  --z-toast: 1100;
+}
+
+/* ===== Icons ============================================================ */
+:root {
+  --icon-size:    var(--size-md);
+  --icon-color:   var(--text);
+  --icon-weak:    var(--text-weak);
+  --icon-mute:    var(--text-mute);
+  --icon-primary: var(--primary);
+  --icon-success: var(--success);
+  --icon-warning: var(--warning);
+  --icon-danger:  var(--danger);
+  --icon-stroke:  1.75; /* برای آیکون‌های خطی */
+}
+
+
+/* ===== Links (LO = Link Object tokens) ================================= */
+:root {
+  --lo-text:   var(--link);
+  --lo-text-h: var(--link-hover);
+  --lo-bg:     transparent;
+  --lo-bg-h:   color-mix(in oklab, var(--primary) 12%, transparent);
+  --lo-border: color-mix(in oklab, var(--primary) 26%, var(--border));
+  --lo-deco:   underline 0.08em;
+}
+
+/* ===== Buttons ========================================================== */
+:root {
+  /* Size */
+  --btn-h-sm: 34px;   --btn-px-sm: 12px;  --btn-gap-sm: 8px;  --btn-fz-sm: .875rem;
+  --btn-h-md: 40px;   --btn-px-md: 16px;  --btn-gap-md: 10px; --btn-fz-md: .9375rem;
+  --btn-h-lg: 48px;   --btn-px-lg: 20px;  --btn-gap-lg: 12px; --btn-fz-lg: 1rem;
+
+  --btn-radius:  var(--r-lg);
+  --btn-shadow:  var(--elev-xs);
+  --btn-ring:    0 0 0 3px color-mix(in oklab, var(--focus-ring) 60%, transparent);
+
+  /* Variants (defaults via variables.css) */
+  --btn-solid-bg:        var(--btn-bg);
+  --btn-solid-bg-press:  var(--btn-bg-press);
+  --btn-solid-text:      var(--btn-text);
+  --btn-solid-border:    transparent;
+
+  --btn-secondary-bg:       var(--secondary);
+  --btn-secondary-press:    var(--secondary-press);
+  --btn-secondary-text:     var(--on-secondary);
+
+  --btn-ghost-bg:           transparent;
+  --btn-ghost-text:         var(--text);
+  --btn-ghost-border:       var(--border);
+
+  --btn-outline-bg:         transparent;
+  --btn-outline-text:       var(--text);
+  --btn-outline-border:     var(--border);
+
+  --btn-danger-bg:          var(--danger);
+  --btn-danger-press:       color-mix(in oklab, var(--danger) 84%, black 16%);
+  --btn-danger-text:        var(--on-danger);
+}
+
+/* ===== Badges / Chips / Tags =========================================== */
+:root {
+  --badge-h:        26px;
+  --badge-px:       10px;
+  --badge-radius:   var(--r-md);
+  --badge-fz:       .75rem;
+
+  --badge-info-bg:   var(--badge-info-bg);
+  --badge-info-text: var(--badge-info-text);
+  --badge-tip-bg:    var(--badge-tip-bg);
+  --badge-tip-text:  var(--badge-tip-text);
+
+  /* Petshop Specific */
+  --badge-sale-bg:   color-mix(in oklab, var(--rose-400) 25%, transparent);
+  --badge-sale-text: #ffeef1;
+  --badge-new-bg:    color-mix(in oklab, var(--lime-400) 22%, transparent);
+  --badge-new-text:  #f1ffe8;
+  --badge-hot-bg:    color-mix(in oklab, var(--amber-400) 24%, transparent);
+  --badge-hot-text:  #fff8e7;
+
+  /* Tag / Chip */
+  --tag-bg:         var(--chip-bg);
+  --tag-text:       var(--chip-text);
+  --tag-border:     var(--card-border);
+  --tag-radius:     var(--r-lg);
+  --tag-gap:        8px;
+}
+
+/* ===== Cards / Surfaces ================================================= */
+:root {
+  --card-bg:      var(--card-bg);
+  --card-border:  var(--card-border);
+  --card-radius:  var(--r-xl);
+  --card-pad:     var(--sp-4);
+  --card-shadow:  var(--elev-sm);
+  --card-gap:     var(--sp-4);
+  --card-title-fz: 1.0625rem;
+}
+
+/* ===== Forms ============================================================ */
+:root {
+  --field-gap:      var(--sp-2);
+  --field-label-fz: .875rem;
+  --field-help-fz:  .75rem;
+
+  --input-h-sm: 38px;
+  --input-h-md: 44px;
+  --input-h-lg: 52px;
+
+  --input-bg:     var(--input-bg);
+  --input-text:   var(--text);
+  --input-ph:     var(--input-placeholder);
+  --input-border: var(--input-border);
+  --input-radius: var(--r-md);
+  --input-pad-x:  12px;
+  --input-pad-y:  10px;
+  --input-ring:   0 0 0 3px color-mix(in oklab, var(--focus-ring) 50%, transparent);
+
+  --ctrl-accent:  var(--primary);
+  --ctrl-danger:  var(--danger);
+  --ctrl-success: var(--success);
+  --ctrl-warning: var(--warning);
+
+  /* Select / Dropdown */
+  --select-indicator: "▾";
+  --select-pad-r: 28px;
+
+  /* Switch */
+  --sw-w: 42px; --sw-h: 24px; --sw-pad: 3px;
+  --sw-track-off: color-mix(in oklab, var(--text) 14%, transparent);
+  --sw-track-on:  color-mix(in oklab, var(--primary) 30%, transparent);
+  --sw-thumb:     #fff;
+
+  /* Checkbox (Petshop Paw) */
+  --chk-size:   20px;
+  --chk-radius: 6px;
+  --chk-bg:     color-mix(in oklab, var(--surface) 86%, transparent);
+  --chk-border: color-mix(in oklab, var(--text) 24%, var(--card-border) 76%);
+  --chk-accent: var(--primary);
+  --chk-ring:   0 0 0 3px color-mix(in oklab, var(--focus-ring) 35%, transparent);
+  --chk-icon:   var(--icon-paw); /* از بالا */
+}
+
+/* ===== Table ============================================================ */
+:root {
+  --table-bg:       var(--surface);
+  --table-border:   var(--border);
+  --table-radius:   var(--r-lg);
+  --table-pad-y:    12px;
+  --table-pad-x:    14px;
+  --table-head-fz:  .8125rem;
+  --table-row-h:    48px;
+  --table-stripe:   color-mix(in oklab, var(--text) 3%, transparent);
+}
+
+/* ===== Navigation ======================================================= */
+:root {
+  --nav-h:          64px;
+  --nav-bg:         var(--surface);
+  --nav-border:     var(--border);
+  --nav-link:       var(--text);
+  --nav-link-active:var(--primary);
+  --nav-radius:     var(--r-lg);
+}
+
+/* ===== Breadcrumb / Pagination / Tabs ================================== */
+:root {
+  --crumb-gap: 6px;
+  --crumb-sep: "›";
+  --page-gap:  6px;
+  --tab-gap:   8px;
+
+  --tab-bg:     color-mix(in oklab, var(--text) 6%, transparent);
+  --tab-bg-act: color-mix(in oklab, var(--primary) 16%, transparent);
+  --tab-text:   var(--text);
+  --tab-text-act: var(--text-strong);
+  --tab-radius: var(--r-lg);
+}
+
+/* ===== Tooltip / Popover / Modal / Drawer ============================== */
+:root {
+  --tip-bg:       var(--ink-800, #101723);
+  --tip-text:     #eaf1f8;
+  --tip-pad:      8px 10px;
+  --tip-radius:   var(--r-sm);
+  --tip-shadow:   var(--elev-xs);
+
+  --popover-bg:     var(--surface);
+  --popover-text:   var(--text);
+  --popover-pad:    12px;
+  --popover-radius: var(--r-lg);
+  --popover-shadow: var(--elev-sm);
+
+  --modal-bg:     var(--surface);
+  --modal-text:   var(--text);
+  --modal-pad:    20px;
+  --modal-radius: var(--r-xl);
+  --modal-shadow: var(--elev-lg);
+  --backdrop-bg:  rgba(0,0,0,.45);
+
+  --drawer-w:     min(92vw, 420px);
+  --drawer-bg:    var(--surface);
+  --drawer-text:  var(--text);
+}
+
+/* ===== Alerts / Toasts ================================================= */
+:root {
+  --alert-radius: var(--r-lg);
+  --alert-pad:    12px 14px;
+
+  --toast-radius: var(--r-lg);
+  --toast-pad:    12px 14px;
+  --toast-gap:    8px;
+  --toast-shadow: var(--elev-sm);
+  --toast-pos-i:  16px; /* inline-start */
+  --toast-pos-b:  16px; /* block-end */
+}
+
+/* ===== Feedback: Skeleton / Progress / Rating ========================== */
+:root {
+  --skel-radius:  var(--r-md);
+  --skel-shimmer: linear-gradient(90deg,
+                        color-mix(in oklab, var(--text) 6%, transparent) 0%,
+                        color-mix(in oklab, var(--text) 10%, transparent) 40%,
+                        color-mix(in oklab, var(--text) 6%, transparent) 80%);
+  --skel-bg:      color-mix(in oklab, var(--text) 6%, transparent);
+
+  --progress-h:   8px;
+  --progress-bg:  color-mix(in oklab, var(--text) 10%, transparent);
+  --progress-fill:var(--primary);
+
+  --rating-size:  18px;
+  --rating-gap:   6px;
+  --rating-on:    var(--amber-400);
+  --rating-off:   var(--text-mute);
+}
+
+/* ===== Price / Commerce ================================================= */
+:root {
+  --price-fz:         1.125rem;  /* 18px */
+  --price-strong-fz:  1.375rem;  /* 22px */
+  --price-color:      var(--text-strong);
+  --price-off-fz:     .875rem;
+  --price-off-color:  var(--text-mute);
+  --price-discount-bg:   color-mix(in oklab, var(--success) 22%, transparent);
+  --price-discount-text: #eafff7;
+
+  --stock-ok:   var(--success);
+  --stock-low:  var(--warning);
+  --stock-out:  var(--danger);
+}
+
+/* ===== Product Card / Gallery (Petshop) ================================= */
+:root {
+  --product-img-ratio: 4/3; /* می‌تونی 1/1 یا 3/4 کنی */
+  --product-gap:       var(--sp-4);
+  --product-pad:       var(--sp-4);
+  --product-radius:    var(--r-xl);
+  --product-shadow:    var(--elev-sm);
+  --product-border:    var(--card-border);
+}
+
+/* ===== Avatars / Media ================================================== */
+:root {
+  --avatar-size:   var(--size-2xl);
+  --avatar-radius: var(--r-pill);
+  --avatar-ring:   0 0 0 3px color-mix(in oklab, var(--primary) 40%, transparent);
+}
+
+/* ===== Keyframes ======================================================== */
+@keyframes fade-in      { from { opacity: 0 } to { opacity: 1 } }
+@keyframes scale-pop    { 0% { transform: scale(.98); opacity: 0 } 100% { transform: scale(1); opacity: 1 } }
+@keyframes slide-up     { 0% { transform: translateY(10px); opacity: 0 } 100% { transform: translateY(0); opacity: 1 } }
+@keyframes shimmer      { 0% { background-position: -200% 0 } 100% { background-position: 200% 0 } }
+
+/* ===== Light Theme Adjustments (Optional fine-tune) ===================== */
+html.light {
+  --table-border:  color-mix(in oklab, var(--ink-800l) 18%, transparent);
+  --sw-track-off:  color-mix(in oklab, var(--ink-700l) 14%, transparent);
+
+  /* چک‌باکس روشن کمی تقویت شود */
+  --chk-bg:     #eef4fa;
+  --chk-border: #c3cfde;
+}
+
+
+
+
+
+
+کامپوننت ها رو ماژولار استایلش رو میزنم.
+منتظر پیام بعدی باش و جوابی نمیخوام الان و فقط متوجه فرانت نکست باش

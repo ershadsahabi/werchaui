@@ -1,0 +1,29 @@
+/* sharebar.module.css
+   ========================================================================
+   ShareBar styles — inline row of buttons/links with responsive wrapping
+   ======================================================================== */
+
+.wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-block: var(--sp-4);
+}
+
+.wrap .btn {
+  flex: 0 0 auto;
+  min-inline-size: 110px;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .wrap {
+    justify-content: center;
+  }
+  .wrap .btn {
+    min-inline-size: auto;
+    flex: 1 1 calc(50% - var(--sp-2));
+  }
+}

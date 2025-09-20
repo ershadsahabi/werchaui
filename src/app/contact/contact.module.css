@@ -1,0 +1,61 @@
+.page { padding-block: 16px 40px; }
+
+/* ── Hero / Breadcrumb */
+.hero {
+  padding-block: 22px 18px;
+  border-bottom: 1px solid var(--border);
+  background:
+    radial-gradient(880px 420px at 12% -10%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%),
+    radial-gradient(880px 420px at 86% -8%, color-mix(in oklab, var(--secondary) 14%, transparent), transparent 60%),
+    var(--bg);
+  position: relative;
+  isolation: isolate;
+}
+.bc { display: flex; align-items: center; gap: 8px; color: var(--text-weak); font-size: 13px; }
+.bcLink { color: var(--link); }
+.bcLink:hover { text-decoration: underline; text-underline-offset: 3px; }
+.bcSep { opacity: .6; }
+.bcHere { color: var(--text); opacity: .9; }
+.title { margin: 6px 0 0; font-size: 26px; letter-spacing: -.01em; }
+.subtitle { margin: 4px 0 0; color: var(--text-weak); }
+
+
+/* فاصلهٔ شروع گرید بعد از هیرو */
+.gridAfterHero{
+  margin-top: clamp(16px, 3.5vw, 36px); /* ← این دقیقاً گرید رو کمی پایین‌تر می‌آره */
+}
+
+/* Grid layout */
+.grid{ display:grid; gap:14px; }
+@media (min-width:1024px){
+  .grid{ grid-template-columns: repeat(12,1fr); align-items:start; }
+  .mediaCard{ grid-column: span 6; }
+  .rightCol{ grid-column: span 6; display:grid; gap:14px; }
+}
+
+/* Card */
+.card{ background:var(--card-bg); border:1px solid var(--card-border); border-radius:var(--r-xl); box-shadow:var(--elev-sm); padding:14px; }
+.h2{ font-size:1.05rem; font-weight:900; margin-bottom:8px; }
+
+/* Media */
+.mediaCard{ display:flex; justify-content:center; align-items:center; background:var(--surface); }
+.mediaImg{ width:100%; height:auto; object-fit:contain; border-radius:var(--r-lg); }
+
+/* Contact buttons */
+.rowBtn{ display:flex; gap:10px; padding:12px; margin-top:8px; border:1px solid var(--border); border-radius:var(--r-md); background:var(--surface-2); text-decoration:none; }
+.rowBtn strong{ font-size:.95rem; }
+.rowBtn span{ font-size:.86rem; color:var(--text-weak); }
+.metaRow{ margin-top:10px; padding-top:8px; border-top:1px dashed var(--border); display:flex; gap:6px; }
+.address{ margin-top:8px; display:grid; gap:4px; }
+.linksRow{ margin-top:10px; display:flex; gap:8px; }
+.linksRow a{ color:var(--link); }
+
+/* Map & Socials */
+.mapPlaceholder{ height:200px; display:grid; place-items:center; border:1px dashed var(--border); border-radius:var(--r-lg); color:var(--text-mute); }
+.socials{ display:grid; gap:8px; grid-template-columns:repeat(2,1fr); margin-top:12px; }
+@media (min-width:540px){ .socials{ grid-template-columns:repeat(4,1fr); } }
+.socialBtn{ padding:10px; border:1px solid var(--border); border-radius:var(--r-md); display:flex; gap:6px; justify-content:center; text-decoration:none; color:var(--text); }
+.perks{ margin-top:12px; display:grid; gap:6px; list-style:none; padding:0; }
+
+/* LTR helper for email */
+.ltr{ direction:ltr; unicode-bidi:plaintext; }

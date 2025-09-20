@@ -1,3 +1,5 @@
+// Werch_app\werchaui\src\lib\client-csrf.ts
+
 import { endpoints } from './api';
 
 export async function ensureCsrf() {

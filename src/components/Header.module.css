@@ -1,277 +1,285 @@
-/* موبایل-اول، استفاده از توکن‌های app/variables.css
-   هدر کامل + رفتار صحیح موبایل (عدم اسکرول افقی) + مخفی‌سازی ورود/ثبت‌نام در هدرِ موبایل
-   و نمایش آن‌ها داخل دراور موبایل
+/* components/Header.module.css
+   ==========================================================================
+   Header (RTL-first, Mobile-first)
+   - بر پایهٔ tokens.css و variables.css
+   - Sticky + شیشه‌ای + Drawer موبایل
+   - شامل اصلاح: حذف رینگ/حاشیهٔ فوکِس از نوارهای جستجو در هدر
+   ==========================================================================
 */
 
-/* ===== نوار هدر ===== */
+/* ===== Root component tokens (scoped) ================================== */
 .header {
-  position: sticky;
-  top: 0;
-  inset-inline: 0;
-  z-index: 50;
-  background: color-mix(in oklab, var(--surface) 88%, transparent);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: saturate(140%) blur(10px);
-  -webkit-backdrop-filter: saturate(140%) blur(10px);
-  transition: background var(--transition-300), border-color var(--transition-300), box-shadow var(--transition-300);
-}
-.headerOpen { box-shadow: 0 12px 24px rgba(0,0,0,.25); }
+  /* محلی: فقط برای هدر */
+  --hdr-blur: var(--backdrop, blur(10px) saturate(115%));
+  --hdr-bg: color-mix(in oklab, var(--surface) 88%, transparent);
+  --hdr-border: var(--border);
+  --hdr-shadow-open: var(--elev-sm);
 
+  position: sticky;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: var(--z-sticky);
+  background: var(--hdr-bg);
+  border-bottom: 1px solid var(--hdr-border);
+  backdrop-filter: var(--hdr-blur);
+  -webkit-backdrop-filter: var(--hdr-blur);
+  transition: background var(--dur-300), border-color var(--dur-300), box-shadow var(--dur-300);
+}
+.headerOpen { box-shadow: var(--hdr-shadow-open); }
+
+/* ورودی‌های داخل هدر: بدون رینگ/Outline هنگام فوکِس */
+.header :where(input, textarea, select):focus {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* ===== Inner bar ======================================================== */
 .inner {
   display: flex;
   align-items: center;
-  gap: 10px;
-  min-height: 64px;
-  flex-wrap: nowrap;         /* جلوگیری از شکست عناصر */
-  overflow-x: clip;          /* پیشگیری از اسکرول افقی */
+  gap: var(--sp-2);
+  min-block-size: var(--nav-h);
+  flex-wrap: nowrap;
+  overflow-x: clip; /* پیشگیری از اسکرول افقی */
 }
 
-/* ===== لوگو: اندازهٔ ثابت و بدون فشرده‌شدن ===== */
+/* ===== Brand / Logo ===================================================== */
 .logo {
   --logo-size: 44px;
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--logo-size);
-  height: var(--logo-size);
+  inline-size: var(--logo-size);
+  block-size: var(--logo-size);
   flex: 0 0 var(--logo-size);
-  min-width: var(--logo-size);
-  max-width: var(--logo-size);
-  border-radius: calc(var(--radius-sm) + 4px);
+  min-inline-size: var(--logo-size);
+  max-inline-size: var(--logo-size);
+  border-radius: calc(var(--r-sm) + 4px);
   overflow: hidden;
   background: var(--glass);
   border: 1px solid var(--glass-border);
   backdrop-filter: var(--backdrop);
   -webkit-backdrop-filter: var(--backdrop);
-  box-shadow: var(--shadow-xs);
+  box-shadow: var(--elev-xs);
   transition:
-    transform var(--transition-300),
-    box-shadow var(--transition-300),
-    border-color var(--transition-300),
-    background var(--transition-300),
-    filter var(--transition-300);
+    transform var(--dur-300),
+    box-shadow var(--dur-300),
+    border-color var(--dur-300),
+    background var(--dur-300),
+    filter var(--dur-300);
 }
-
-/* تصویر لوگو هم اندازهٔ باکس بمونه */
 .logoImg {
-  width: 100%;
-  height: 100%;
+  inline-size: 100%;
+  block-size: 100%;
   object-fit: contain;
   padding: 4%;
   pointer-events: none;
 }
 
-/* ===== ناحیهٔ جستجو: اول جمع می‌شود، نه لوگو ===== */
+/* ===== Search (بدون رینگ فوکِس) ======================================= */
 .search {
-  min-width: 0;             /* اجازهٔ جمع‌شدن محتوا */
+  min-inline-size: 0;      /* اجازهٔ جمع‌شدن محتوا */
   flex: 1 1 200px;
-  display: none;            /* موبایل: داخل دراور است */
+  display: none;           /* موبایل: داخل دراور */
   align-items: center;
   gap: 6px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 999px;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--r-pill);
   padding: 4px 6px 4px 8px;
-  transition: border-color var(--transition-300), background var(--transition-300), box-shadow var(--transition-300);
+  transition: border-color var(--dur-300), background var(--dur-300), box-shadow var(--dur-300);
 }
+/* هنگام فوکِس داخل، هیچ رینگ/برجستگی اضافه‌ای نده */
 .search:focus-within {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 24%, transparent);
+  border-color: var(--input-border);
+  box-shadow: none;
 }
-.searchOpen {
-  display: flex;
-  min-width: 0;
-  flex: 1 1 180px;
-}
+.searchOpen { display: flex; min-inline-size: 0; flex: 1 1 180px; }
+
 .searchInput {
+  -webkit-appearance: none;
+  appearance: none;
   background: transparent;
   border: none;
-  color: var(--text);
-  width: 100%;
-  min-height: 40px;
+  color: var(--input-text);
+  inline-size: 100%;
+  min-block-size: var(--input-h-md);
   padding: 0 8px;
+  outline: none;
+  box-shadow: none; /* لغو هر رینگ سراسری */
 }
-.searchInput::placeholder { color: var(--text-weak); }
+.searchInput::placeholder { color: var(--input-ph); }
+
 .searchBtn {
-  width: 36px; height: 36px;
-  border-radius: 999px;
+  inline-size: 36px; block-size: 36px;
+  border-radius: var(--r-pill);
   display: inline-flex;
   align-items: center; justify-content: center;
-  color: var(--text-weak);
-  transition: background var(--transition-300), color var(--transition-300);
+  color: var(--icon-weak);
+  transition: background var(--dur-300), color var(--dur-300);
+  cursor: pointer;
 }
-.searchBtn:hover { background: var(--surface-2); color: var(--text); }
+.searchBtn:hover { background: var(--surface-2); color: var(--icon-color); }
+.searchBtn:focus-visible { box-shadow: none; outline: none; }
 
-/* ===== ناوبری دسکتاپ ===== */
+/* ===== Desktop Nav ====================================================== */
 .navDesktop {
   display: none;
   align-items: center;
-  gap: 10px;
+  gap: var(--sp-2);
   margin-inline-start: 6px;
 }
 .navDesktop a {
   color: var(--text-weak);
   padding: 8px 10px;
-  border-radius: var(--radius-sm);
-  transition: background var(--transition-300), color var(--transition-300);
+  border-radius: var(--r-sm);
+  transition: background var(--dur-300), color var(--dur-300);
 }
-.navDesktop a:hover {
-  color: var(--text-strong);
-  background: var(--surface-2);
-}
+.navDesktop a:hover { color: var(--text-strong); background: var(--surface-2); }
 
-/* ===== اکشن‌ها ===== */
+/* ===== Actions ========================================================== */
 .actions {
   margin-inline-start: auto;
   display: flex;
   align-items: center;
   gap: 8px;
-  flex: 0 0 auto;         /* از جمع‌شدن ناخواسته جلوگیری می‌کند */
+  flex: 0 0 auto; /* از جمع‌شدن ناخواسته جلوگیری می‌کند */
 }
 
-/* آیکن‌باتن عمومی */
+/* Icon Button (square) */
 .iconBtn {
   position: relative;
-  width: 40px; height: 40px;
-  display: inline-flex;
-  align-items: center; justify-content: center;
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  transition: background var(--transition-300), border-color var(--transition-300), transform var(--transition-300);
+  inline-size: 40px; block-size: 40px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm);
+  background: var(--btn-outline-bg);
+  border: 1px solid var(--btn-outline-border);
+  color: var(--icon-color);
+  transition: background var(--dur-300), border-color var(--dur-300), transform var(--dur-150);
+  cursor: pointer;
 }
 .iconBtn:hover { background: var(--surface-2); }
 .iconBtn:active { transform: translateY(1px) scale(.98); }
 
-/* بیج سبد */
+/* Cart badge */
 .cartBtn { }
 .cartBadge {
   position: absolute;
-  top: -4px;
+  inset-block-start: -4px;
   inset-inline-end: -4px;
-  min-width: 18px; height: 18px;
+  min-inline-size: 18px; block-size: 18px;
   padding-inline: 5px;
   border-radius: 999px;
   background: var(--accent);
-  color: var(--pet-white);
+  color: var(--on-accent);
   font-size: 11px; font-weight: 800;
   display: inline-flex; align-items: center; justify-content: center;
   border: 1px solid color-mix(in oklab, black 16%, transparent);
   box-shadow: 0 2px 6px rgba(0,0,0,.25);
 }
 
-/* کاربر/احراز هویت (نسخهٔ هدر/دسکتاپ) */
+/* ===== User / Auth (desktop header version) ============================= */
 .user { display: none; align-items: center; gap: 8px; }
 .email {
   color: var(--text-weak);
-  max-width: 16ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  max-inline-size: 16ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   font-size: .9rem;
 }
 .authBtn {
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface);
+  inline-size: auto;
+  block-size: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding-inline: 12px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--btn-outline-border);
+  background: var(--btn-outline-bg);
   color: var(--text);
-  transition: background var(--transition-300), border-color var(--transition-300);
-  height: 36px;
-  line-height: 1;
-  font-weight: 800;
+  line-height: 1; font-weight: 800;
+  transition: background var(--dur-300), border-color var(--dur-300);
+  cursor: pointer;
 }
 .authBtn:hover { background: var(--surface-2); }
 .authPrimary {
+  block-size: 36px;
+  line-height: 1; font-weight: 900;
   border-color: transparent;
   background: linear-gradient(180deg, color-mix(in oklab, var(--primary) 92%, transparent), var(--primary));
-  color: var(--pet-white);
-  height: 36px;
-  line-height: 1;
-  font-weight: 900;
+  color: var(--on-primary);
 }
 .authPrimary:hover { background: var(--primary-press); }
 
-/* ===== برگر ===== */
+/* ===== Burger =========================================================== */
 .burger {
   display: inline-flex;
-  width: 40px; height: 40px;
+  inline-size: 40px; block-size: 40px;
   align-items: center; justify-content: center;
   flex-direction: column; gap: 4px;
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  transition: background var(--transition-300), border-color var(--transition-300);
+  border-radius: var(--r-sm);
+  background: var(--btn-outline-bg);
+  border: 1px solid var(--btn-outline-border);
+  transition: background var(--dur-300), border-color var(--dur-300);
+  cursor: pointer;
 }
 .burger:hover { background: var(--surface-2); }
 .burger span {
-  width: 18px; height: 2px; background: var(--text);
+  inline-size: 18px; block-size: 2px; background: var(--text);
   border-radius: 2px;
-  transition: transform var(--transition-300), opacity var(--transition-300);
+  transition: transform var(--dur-300), opacity var(--dur-300);
   transform-origin: 50% 50%;
 }
 .burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
 .burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
 
-/* ===== دراور موبایل ===== */
+/* ===== Mobile Drawer ==================================================== */
 .navMobile {
   position: fixed;
   inset: 0;
-  z-index: 40;
+  z-index: var(--z-drawer); /* بالاتر از هدر، پایین‌تر از مودال */
   background: color-mix(in oklab, var(--bg) 78%, black 10%);
   transform: translateY(-100%);
-  transition: transform var(--transition-300);
+  transition: transform var(--dur-300);
   padding: 16px 0 24px;
   overflow-y: auto;
   pointer-events: none;
 }
-.navMobileOpen {
-  transform: translateY(0);
-  pointer-events: auto;
-}
+.navMobileOpen { transform: translateY(0); pointer-events: auto; }
 
-/* دکمهٔ بستن که همیشه دیده می‌شود (در RTL چپ) */
 .drawerClose {
   position: sticky;
-  top: calc(env(safe-area-inset-top) + 8px);
+  inset-block-start: calc(env(safe-area-inset-top) + 8px);
   z-index: 5;
   display: flex;
-  justify-content: flex-end; /* RTL = چپ */
-  margin-bottom: 8px;
+  justify-content: flex-end; /* RTL: چپ بصری */
+  margin-block-end: 8px;
 }
-.drawerClose .burger {
-  box-shadow: 0 6px 16px rgba(0,0,0,.25);
-}
+.drawerClose .burger { box-shadow: 0 6px 16px rgba(0,0,0,.25); }
 
-/* بدنهٔ منو */
 .mobileTop {
   display: grid;
   gap: 12px;
   padding-block: 8px 16px;
   border-bottom: 1px solid var(--border);
 }
-
-/* سرچ داخل دراور */
 .searchMobile { display: flex; gap: 8px; }
 
-/* اکشن‌های سریع */
 .quickActions { display: flex; gap: 8px; }
 .quickAction {
   flex: 1 1 0;
-  display: inline-flex;
-  align-items: center; justify-content: center;
+  display: inline-flex; align-items: center; justify-content: center;
   gap: 8px;
   padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--card-border);
   background: var(--surface);
   color: var(--text);
   position: relative;
-  transition: background var(--transition-300), border-color var(--transition-300);
+  transition: background var(--dur-300), border-color var(--dur-300);
+  cursor: pointer;
 }
 .quickAction:hover { background: var(--surface-2); }
 
-/* لیست منوی موبایل */
 .navList {
   display: grid;
   gap: 8px;
@@ -279,26 +287,25 @@
 }
 .navList a {
   padding: 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--card-border);
   background: var(--surface);
   color: var(--text);
   font-weight: 700;
-  transition: background var(--transition-300), border-color var(--transition-300);
+  transition: background var(--dur-300), border-color var(--dur-300);
 }
 .navList a:hover { background: var(--surface-2); }
 
-/* یوزر/احراز در موبایل (داخل دراور) */
 .userMobile {
   display: flex; align-items: center; justify-content: space-between; gap: 8px;
   padding: 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--card-border);
   background: var(--surface);
 }
 .authRow { display: flex; gap: 8px; }
 
-/* ===== Logout (بدون تغییر JSX) ===== */
+/* ===== Logout styling (re-usable LO tokens) ============================ */
 .user > button,
 .user > a {
   --lo-border: color-mix(in oklab, var(--danger) 26%, var(--border));
@@ -306,43 +313,22 @@
   --lo-bg:     transparent;
   --lo-bg-h:   color-mix(in oklab, var(--danger) 10%, var(--surface));
   --lo-bg-a:   color-mix(in oklab, var(--danger) 14%, var(--surface-2));
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  height: 36px;
-  padding: 0 12px;
-  border-radius: var(--radius-sm);
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  block-size: 36px; padding-inline: 12px;
+  border-radius: var(--r-sm);
   border: 1px solid var(--lo-border);
   background: var(--lo-bg);
   color: var(--lo-text);
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
-  transition: background var(--transition-300),
-              border-color var(--transition-300),
-              color var(--transition-300),
-              transform var(--transition-300),
-              box-shadow var(--transition-300);
+  font-weight: 700; line-height: 1; cursor: pointer;
+  transition: background var(--dur-300), border-color var(--dur-300), color var(--dur-300), transform var(--dur-300), box-shadow var(--dur-300);
 }
 .user > button:hover,
-.user > a:hover {
-  background: var(--lo-bg-h);
-  border-color: color-mix(in oklab, var(--danger) 40%, var(--border));
-  color: color-mix(in oklab, var(--danger) 92%, var(--text));
-}
+.user > a:hover { background: var(--lo-bg-h); border-color: color-mix(in oklab, var(--danger) 40%, var(--border)); color: color-mix(in oklab, var(--danger) 92%, var(--text)); }
 .user > button:active,
-.user > a:active {
-  transform: translateY(1px);
-  background: var(--lo-bg-a);
-}
+.user > a:active { transform: translateY(1px); background: var(--lo-bg-a); }
 .user > button:focus-visible,
-.user > a:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px var(--focus-ring);
-}
+.user > a:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--focus-ring); }
 
-/* تم روشن برای Logout */
 html.light .user > button,
 html.light .user > a {
   --lo-border: color-mix(in oklab, var(--danger) 32%, var(--border));
@@ -351,7 +337,6 @@ html.light .user > a {
   --lo-bg-a:   color-mix(in oklab, var(--danger) 12%, var(--surface-2));
 }
 
-/* موبایل: Logout داخل .userMobile لمس‌پذیرتر */
 .userMobile > button,
 .userMobile > a {
   --lo-border: color-mix(in oklab, var(--danger) 34%, var(--border));
@@ -359,24 +344,13 @@ html.light .user > a {
   --lo-bg:     color-mix(in oklab, var(--danger) 82%, transparent);
   --lo-bg-h:   color-mix(in oklab, var(--danger) 88%, transparent);
   --lo-bg-a:   color-mix(in oklab, var(--danger) 72%, var(--surface-2));
-  height: 40px;
-  padding: 0 14px;
-  border-radius: var(--radius);
-  color: var(--lo-text);
-  background: var(--lo-bg);
-  border: 1px solid var(--lo-border);
-  font-weight: 800;
+  block-size: 40px; padding-inline: 14px; border-radius: var(--r-md);
+  color: var(--lo-text); background: var(--lo-bg); border: 1px solid var(--lo-border); font-weight: 800;
 }
 .userMobile > button:hover,
-.userMobile > a:hover {
-  background: var(--lo-bg-h);
-  border-color: color-mix(in oklab, var(--danger) 52%, var(--border));
-}
+.userMobile > a:hover { background: var(--lo-bg-h); border-color: color-mix(in oklab, var(--danger) 52%, var(--border)); }
 .userMobile > button:active,
-.userMobile > a:active {
-  transform: translateY(1px);
-  background: var(--lo-bg-a);
-}
+.userMobile > a:active { transform: translateY(1px); background: var(--lo-bg-a); }
 html.light .userMobile > button,
 html.light .userMobile > a {
   --lo-text: #fff;
@@ -385,49 +359,42 @@ html.light .userMobile > a {
   --lo-bg-a: color-mix(in oklab, var(--danger) 84%, var(--surface-2));
 }
 
-/* فاصله کنار ایمیل */
 .user > button,
 .user > a { margin-inline-start: 6px; }
 .userMobile > button,
 .userMobile > a { margin-inline-start: 8px; }
 
-/* ===== قوانین خاص موبایل: مخفی‌سازی ورود/ثبت‌نام در هدر ===== */
+/* ===== Mobile rules: hide auth buttons in header ======================= */
 @media (max-width: 1023.98px) {
-  /* دکمه‌های ورود/ثبت‌نام در هدر دیده نشوند */
   .header .actions :where(.authBtn, .authPrimary),
   .header .actions [data-auth="login"],
   .header .actions [data-auth="register"] {
     display: none !important;
   }
-
-  /* نسخهٔ داخل دراور موبایل نمایش داده شود */
   .navMobile :where(.authBtn, .authPrimary),
   .navMobile [data-auth="login"],
   .navMobile [data-auth="register"] {
     display: inline-flex !important;
   }
-
-  /* جمع‌وجور کردن آیکن‌ها برای جلوگیری از اسکرول افقی */
-  .iconBtn { width: 36px; height: 36px; }
-  .inner { gap: 8px; }
+  .iconBtn { inline-size: 36px; block-size: 36px; }
+  .inner { gap: var(--sp-2); }
 }
 
-/* ===== ریسپانسیو ===== */
+/* ===== Responsive ======================================================= */
 @media (min-width: 768px) {
-  .inner { min-height: 72px; gap: 14px; }
-  .user { display: flex; }                /* در تبلت به بعد: بلوک کاربر نمایان */
+  .inner { min-blocksize: calc(var(--nav-h) + 8px); gap: var(--sp-3); } /* typo-safe: block-size below */
+  .inner { min-block-size: calc(var(--nav-h) + 8px); }
+  .user { display: flex; }
 }
-
 @media (min-width: 1024px) {
-  .search { display: flex; }              /* دسکتاپ: سرچ در هدر */
+  .search { display: flex; }
   .navDesktop { display: flex; }
   .burger { display: none; }
   .navMobile { display: none; }
 
-  /* کمی جمع‌تر در دسکتاپ بزرگ */
   .user > button,
   .user > a {
-    height: 34px;
-    padding: 0 10px;
+    block-size: 34px;
+    padding-inline: 10px;
   }
 }

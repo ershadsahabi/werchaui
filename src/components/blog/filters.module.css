@@ -1,0 +1,130 @@
+/*  F:\Shahrivar1404\Werch_app\werchaui\src\components\blog\filters.module.css */
+/* ===================== Layout ===================== */
+.wrap {
+  display: grid;
+  /* جستجو بزرگ‌تر از مرتب‌سازی */
+  grid-template-columns: 3fr 1fr;
+  gap: var(--sp-3);
+  align-items: end;
+}
+@media (max-width: 1200px) {
+  .wrap { grid-template-columns: 2fr 1fr; }
+}
+@media (max-width: 900px) {
+  .wrap { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .wrap { grid-template-columns: 1fr; align-items: stretch; }
+}
+
+.field { display: grid; gap: var(--sp-2); }
+.fieldGrow { grid-column: span 1; }
+
+.label { font-size: .9rem; color: var(--text-weak); }
+
+/* ===================== Card Chrome ===================== */
+/* بدون بوردر؛ فقط پس‌زمینه‌ی لطیف و سایه‌ی ملایم */
+.cardChrome {
+  position: relative;
+  overflow: hidden;
+  border: none !important;
+  background: var(--glass-2);
+  box-shadow: var(--elev-xs);
+  backdrop-filter: var(--backdrop);
+  padding: var(--sp-4);
+}
+
+/* ===================== Controls (unified sizing) ===================== */
+.control {
+  height: 48px; /* بزرگ‌تر و لمس‌پسند */
+  border: none; /* ⟵ بدون بوردر */
+  border-radius: var(--r-lg);
+  padding-inline: var(--input-pad-x);
+  outline: none;
+  transition: background-color var(--dur-150), box-shadow var(--dur-150), transform var(--dur-150);
+}
+@media (max-width: 640px) {
+  .control { height: 52px; }
+}
+
+.input {
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+  color: var(--text);
+  border: none;
+}
+.input::placeholder { color: var(--input-ph); }
+.input:focus { box-shadow: var(--input-ring); transform: translateY(-1px); }
+.inputIcon { color: var(--text-mute); }
+
+/* Select (فقط برای مرتب‌سازی) — بدون بوردر */
+.selectWrap { position: relative; }
+.select {
+  appearance: none; -webkit-appearance: none;
+  background: color-mix(in oklab, var(--surface) 92%, transparent);
+  color: var(--text);
+  padding-inline-end: calc(var(--select-pad-r) + var(--input-pad-x));
+  box-shadow: none;
+}
+.select:focus { box-shadow: var(--input-ring); transform: translateY(-1px); }
+/* فلش سفارشی */
+.selectWrap::after {
+  content: "▾";
+  position: absolute;
+  inset-inline-end: 12px; inset-block: 0;
+  display: grid; place-items: center;
+  color: var(--text-mute);
+  pointer-events: none;
+}
+/* خوانایی گزینه‌ها در منوی باز */
+.select option { background: var(--surface); color: var(--text); }
+html.light .select option { background: var(--surface); color: var(--text); }
+
+/* ===================== Chips (بدون بوردر) ===================== */
+.chipsRow {
+  display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+  margin-block: var(--sp-3) var(--sp-2);
+}
+@media (max-width: 768px) {
+  .chipsRow {
+    flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px;
+    -ms-overflow-style: none; scrollbar-width: none;
+  }
+  .chipsRow::-webkit-scrollbar { display: none; }
+}
+
+.chip {
+  border: none; /* ⟵ بدون بوردر */
+  background: color-mix(in oklab, var(--primary) 12%, var(--surface));
+  color: var(--text);
+  padding: 8px 12px;
+  border-radius: var(--r-pill);
+  font-size: .9rem;
+  line-height: 1;
+  white-space: nowrap;
+  transition: background var(--dur-150), transform var(--dur-150), box-shadow var(--dur-150);
+  box-shadow: var(--elev-xs);
+}
+.chip:hover { transform: translateY(-1px); }
+.chipActive {
+  background: color-mix(in oklab, var(--primary) 26%, var(--surface));
+  color: var(--text-strong);
+  box-shadow: var(--elev-sm);
+}
+
+/* ===================== Footer / Actions ===================== */
+.footerRow {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: var(--sp-2);
+}
+.actions { display: flex; gap: 8px; }
+.clearBtn {
+  border: none; /* ⟵ بدون بوردر */
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+}
+.clearBtn:hover { background: color-mix(in oklab, var(--text) 10%, transparent); }
+
+/* ===== Focus reset (یکدست؛ ولی بدون اعمال روی فرم‌ها) ================== */
+:where(a, button, [role="button"]):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--focus-ring) 60%, transparent);
+}

@@ -1,114 +1,184 @@
-/* موبایل‌اول، وابسته به توکن‌های app/variables.css */
-
-/* ===== پوستهٔ فوتر ===== */
+/* پوسته */
 .footer {
   position: relative;
   background: var(--surface);
   color: var(--text);
   border-top: 1px solid var(--border);
-  padding-bottom: max(16px, env(safe-area-inset-bottom));
 }
-
-/* نوار اَکسن بالا */
-.footer::before {
-  content: "";
-  position: absolute;
-  inset-inline: 0;
-  top: 0;
+/* گرادیان ظریف بالا */
+.topLine {
   height: 2px;
-  background: linear-gradient(90deg, var(--primary), var(--accent));
+  background: var(--grad-primary);
   opacity: .9;
 }
-
-/* فضای داخلی */
-.footerInner {
-  padding-block: 20px 16px; /* بالا/پایین */
-}
-
-/* ===== ستون‌ها (قابل توسعه) ===== */
-.footerCols {
+.inner {
+  padding-block: 12px 14px;
   display: grid;
-  gap: 16px;
+  gap: var(--sp-6);
 }
 
-/* در صورت افزودن هدینگ/لیست در آینده */
-.footerCols h3 {
-  font-size: 1rem;
-  font-weight: 800;
-  color: var(--text-strong);
-  margin-bottom: 8px;
+/* نوار مزایا (افزوده) */
+.benefits {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--sp-3);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--primary) 35%, var(--border));
+  border-radius: var(--r-xl);
+  padding: var(--sp-4);
+  box-shadow: var(--elev-sm);
 }
-.footerCols ul { list-style: none; padding: 0; margin: 0; }
-.footerCols li + li { margin-top: 6px; }
-.footerCols a {
+@media (min-width: 768px) {
+  .benefits { grid-template-columns: repeat(3, minmax(0,1fr)); }
+}
+.benefit {
+  display: flex; align-items: center; gap: 10px;
+  background: color-mix(in oklab, var(--text) 6%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 10px 12px;
+}
+.benefitIcon { font-size: 1.15rem; }
+.benefitText { font-weight: 800; color: var(--text-strong); }
+
+/* ردیف عنوان + لینک‌ها (افقی با wrap) */
+.row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 8px 12px;
+  padding-block: 6px;
+}
+.rowTitle {
+  color: var(--text-strong);
+  font-weight: 900;
+  font-size: .92rem;
+  letter-spacing: -.01em;
+  white-space: nowrap;
+}
+.listRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.listRow a {
+  position: relative;
+  display: inline-block;
+  padding: 4px 6px;             /* قابل لمس روی موبایل */
   color: var(--text-weak);
-  border-radius: var(--radius-sm);
-  padding: 4px 6px;
-  transition: color var(--transition-300), background var(--transition-300);
+  border-radius: 10px;
+  transition: color var(--dur-200), transform var(--dur-200), background-color var(--dur-200), border-color var(--dur-200);
 }
-.footerCols a:hover {
-  color: var(--text-strong);
-  background: var(--surface-2);
+.listRow a:hover {
+  color: var(--text);
+  background: color-mix(in oklab, var(--primary) 14%, transparent);
+  transform: translateY(-1px);
+  border: 1px solid color-mix(in oklab, var(--primary) 40%, transparent);
 }
 
-/* ===== پایین فوتر ===== */
-.footerBottom {
+/* ردیف بج‌ها/نمادها (افزوده) */
+.badgeRow {
+  display: grid; place-items: center;
+  padding-top: var(--sp-2);
+}
+.badgeWrap {
+  display: inline-flex; gap: var(--sp-3); flex-wrap: wrap; align-items: center; justify-content: center;
+}
+.badgeWrap img {
+  height: 32px; width: auto;
+  background: color-mix(in oklab, var(--text) 4%, transparent);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 6px 8px;
+  box-shadow: var(--elev-xs);
+}
+
+/* پایین فوتر */
+.bottom {
   display: grid;
-  gap: 10px;
-  padding-top: 16px;
-  margin-top: 12px;
+  grid-template-columns: 1fr auto; /* کپی راست، سوشال چپ در RTL */
+  gap: 8px;
+  align-items: center;
+  padding-top: 8px;
+  margin-top: 8px;
   border-top: 1px solid var(--border);
 }
-
 .copy {
   color: var(--text-weak);
-  font-size: .925rem;
+  font-size: .9rem;
 }
 
-/* لینک‌های پایین */
-.footerBottomLinks {
+/* شبکه‌های اجتماعی فشرده و پرمیوم */
+.social {
   display: inline-flex;
+  gap: 8px;
+}
+
+.social a {
+  position: relative; /* برای تولتیپ لازم داریم */
+  display: inline-flex;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-.footerBottomLinks a {
-  color: var(--link);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  transition: color var(--transition-300);
-}
-.footerBottomLinks a:hover { color: var(--link-hover); }
-.dot { color: var(--text-weak); }
-
-/* ===== ریسپانسیو ===== */
-@media (min-width: 640px) {
-  .footerInner { padding-block: 28px 20px; }
-  .footerCols {
-    grid-template-columns: repeat(2, minmax(0,1fr));
-    gap: 18px 16px;
-  }
+  justify-content: center;
+  background: linear-gradient(180deg, var(--surface-2), var(--surface));
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset,
+              0 1px 6px rgba(0, 0, 0, .08);
+  color: var(--text);
+  transition: transform var(--dur-150),
+              box-shadow var(--dur-150),
+              background var(--dur-150),
+              border-color var(--dur-150);
 }
 
-@media (min-width: 1024px) {
-  .footerInner { padding-block: 36px 20px; }
-  .footerCols {
-    grid-template-columns: repeat(4, minmax(0,1fr));
-    gap: 22px 18px;
-  }
-  .footerBottom {
-    grid-template-columns: 1fr auto;
-    align-items: center;
-    gap: 12px;
-  }
-  .footerBottomLinks { justify-content: flex-end; }
+.social a:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .08) inset,
+              0 4px 12px rgba(0, 0, 0, .12);
+  background: linear-gradient(180deg, var(--surface-3), var(--surface-2));
+  border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
 }
 
-/* احترام به کاهش حرکت */
+/* ===== Tooltip با data-label ===== */
+.social a span::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: .75rem;
+  font-weight: 600;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 2px 6px;
+  box-shadow: var(--elev-xs);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-150), transform var(--dur-150);
+  z-index: 10;
+}
+
+.social a:hover span::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-2px);
+}
+
+
+/* ریسپانسیو لطیف */
+@media (max-width: 480px) {
+  .row { grid-template-columns: 1fr; } /* عنوان بالا، لینک‌ها زیرش */
+}
+
+/* کاهش حرکت */
 @media (prefers-reduced-motion: reduce) {
-  .footerCols a,
-  .footerBottomLinks a {
-    transition: none;
-  }
+  .listRow a, .social a { transition: none; }
 }

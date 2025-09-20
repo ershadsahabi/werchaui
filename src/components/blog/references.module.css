@@ -1,0 +1,51 @@
+.wrap { display: grid; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-xl); padding: 14px; }
+.head { display: inline-flex; align-items: center; gap: 8px; }
+.title { font-size: 1rem; font-weight: 900; color: var(--text-strong); }
+.count {
+  inline-size: 26px; block-size: 26px; display: grid; place-items: center;
+  border-radius: 999px; background: var(--chip-bg); color: var(--chip-text); font-weight: 800; font-size: .85rem;
+}
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 10px; border-radius: var(--r-lg);
+  background: var(--chip-bg); color: var(--chip-text);
+  border: 1px solid var(--card-border);
+  transition: transform var(--dur-150), background var(--dur-150), border-color var(--dur-150);
+}
+.chip:hover { transform: translateY(-1px); background: color-mix(in oklab, var(--primary) 10%, var(--chip-bg)); }
+.dot { inline-size: 6px; block-size: 6px; background: var(--primary); border-radius: 999px; }
+.chipText { font-size: .88rem; max-inline-size: 36ch; }
+
+.backdrop { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: var(--z-modal); }
+.modal { position: fixed; inset: 0; display: grid; place-items: center; padding: 16px; z-index: calc(var(--z-modal) + 1); }
+.modalBody {
+  background: var(--surface); color: var(--text); border: 1px solid var(--border); border-radius: var(--r-xl);
+  inline-size: min(92vw, 560px); padding: 16px; box-shadow: var(--elev-lg); animation: scale-pop var(--dur-300);
+}
+.modalHead { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.modalTitle { font-weight: 900; color: var(--text-strong); }
+.close { background: transparent; border: 1px solid var(--border); border-radius: var(--r-lg); inline-size: 32px; block-size: 32px; }
+.close:hover { background: var(--surface-2); }
+
+.meta { display: grid; gap: 6px; margin: 10px 0; }
+.meta dt { font-size: .8rem; color: var(--text-mute); }
+.meta dd { margin: 0; }
+
+.out {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 40px; padding: 0 14px;
+  border-radius: var(--r-lg); border: 1px solid var(--btn-outline-border);
+  background: var(--btn-outline-bg); color: var(--text); font-weight: 800;
+}
+.out:hover { background: var(--surface-2); }
+
+/* بهبود جزئی حالت شب برای همین پنل، بدون تغییر تم سراسری */
+@media (prefers-color-scheme: dark) {
+  .wrap, .modalBody {
+    background: color-mix(in oklab, var(--surface) 92%, white 8%);
+    border-color: color-mix(in oklab, var(--border) 80%, white 20%);
+  }
+  .chip { border-color: color-mix(in oklab, var(--card-border) 80%, white 20%); }
+}

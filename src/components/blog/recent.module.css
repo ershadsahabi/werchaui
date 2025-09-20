@@ -1,0 +1,96 @@
+/* F:\Shahrivar1404\Werch_app\werchaui\src\components\blog\recent.module.css */
+/* ظرف کلی کاروسل: فلش‌ها دو طرف، محتوای اسکرولی وسط */
+.wrap {
+  position: relative;
+  display: grid;
+  align-items: center;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  margin-block: var(--sp-4);
+}
+
+/* دکمه‌های ناوبری */
+.nav {
+  inline-size: 36px;
+  block-size: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--r-lg);
+  border: 1px solid var(--card-border);
+  background: var(--surface);
+  color: var(--text);
+  font-weight: 900;
+  transition:
+    background var(--dur-150),
+    border-color var(--dur-150),
+    transform var(--dur-150),
+    opacity var(--dur-150);
+  user-select: none;
+}
+.nav:hover { background: var(--surface-2); transform: translateY(-1px); }
+.navPrev { order: 1; }
+.navNext { order: 3; }
+
+/* ماسک محو شونده در دو لبهٔ ریل اسکرول */
+.scrollerMask {
+  order: 2;
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+          mask-image: linear-gradient(90deg, transparent 0, black 24px, black calc(100% - 24px), transparent 100%);
+}
+
+/* ریل اسکرول افقی با snap */
+.scroller {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 240px; /* عرض هر آیتم */
+  gap: 12px;
+  overflow-x: auto;
+  padding-block: 4px;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 10px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* کارت/آیتم */
+.item {
+  scroll-snap-align: start;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 10px;
+  border: 1px solid var(--card-border);
+  border-radius: var(--r-lg);
+  padding: 8px;
+  background: var(--surface);
+  transition:
+    transform var(--dur-150),
+    box-shadow var(--dur-150),
+    background var(--dur-150);
+}
+.item:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--elev-sm);
+  background: color-mix(in oklab, var(--surface) 95%, white 5%);
+}
+
+/* مدیا */
+.media {
+  aspect-ratio: 16/10;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--muted);
+}
+.media img { width: 100%; height: 100%; object-fit: cover; }
+
+/* متن/متا */
+.meta { display: grid; gap: 6px; min-width: 0; }
+.titleSmall { font-size: .95rem; font-weight: 800; color: var(--text); }
+.badges { display: inline-flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+
+/* موبایل: هر آیتم تقریباً تمام عرض + استک عمودی */
+@media (max-width: 640px) {
+  .scroller { grid-auto-columns: 86vw; }
+  .item { grid-template-columns: 1fr; }
+  .media { aspect-ratio: 16/9; }
+}

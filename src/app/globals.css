@@ -1,5 +1,74 @@
 /* app/globals.css */
 @import "./variables.css";
+@import "./tokens.css";
+@import "./utilities.css";
+
+
+/* globals.css یا fonts.css */
+/* Thin (100) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Thin.woff2") format("woff2");
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Light (300) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Regular (400) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Medium (500) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Bold (700) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Black (900) */
+@font-face {
+  font-family: "Vazir";
+  src: url("/fonts/vazir/Vazir-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Variable font (اختیاری، اگر خواستی فقط یک فایل باشه) */
+@font-face {
+  font-family: "VazirVariable";
+  src: url("/fonts/vazir/Vazir-Variable.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+
 
 /* ===== Reset های پایه ===== */
 *, *::before, *::after { box-sizing: border-box; }
@@ -8,12 +77,12 @@ body, h1, h2, h3, h4, h5, h6, p, figure { margin: 0; }
 img, picture, video, canvas, svg { display: block; max-width: 100%; }
 button, input, select, textarea { font: inherit; color: inherit; }
 a { color: inherit; text-decoration: none; }
+h1,h2,h3 { font-weight: 700; letter-spacing: -0.01em; }
 
 /* جهت نوشتار فارسی */
 html[lang="fa"] { direction: rtl; }
 
 /* انتخاب و فوکوس قابل‌دسترسی */
-:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 2px; }
 ::selection { background: var(--accent-weak); color: var(--text-strong); }
 
 /* ===== بدنه و تایپو گلوبال ===== */
@@ -21,6 +90,7 @@ html {
   color-scheme: dark light; /* تم‌ها در variables.css تعریف شده‌اند */
   background: var(--bg);
   transition: background-color var(--transition-300), color var(--transition-300);
+  text-size-adjust: 100%;
 }
 
 body {
@@ -31,6 +101,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  font-variant-numeric: tabular-nums;
+
 }
 
 /* 🔒 اسکرول‌لاک هنگام باز بودن دراور موبایل */
@@ -56,4 +128,47 @@ body.no-scroll { overflow: hidden; }
 /* ===== احترام به کاهش حرکت سیستم ===== */
 @media (prefers-reduced-motion: reduce) {
   html { transition: none !important; scroll-behavior: auto; }
+}
+
+
+
+/* === Focus & Pointer & Modal Stacking — Safe Patch ===================== */
+
+/* 1) پاک کردن outline پیش‌فرض؛ رینگ فوکوس را به عهدهٔ کامپوننت‌ها می‌گذاریم */
+:focus { outline: none; }
+:focus-visible { outline: none; }
+
+/* (اختیاری) اگر می‌خواهی یک رینگ جهانی داشته باشی، دستی کلاس بده: */
+.focus-ring:focus-visible { box-shadow: 0 0 0 3px var(--focus-ring); }
+
+/* 2) پوینتر یکنواخت روی کنترل‌های کلیکی (anchor ها خودشان pointer دارند) */
+:where(button, [role="button"], [type="button"], [type="submit"], .clickable) {
+  cursor: pointer;
+}
+
+/* 3) مودال همیشه روِ همه (هدر/دراور) — شِیم غیرتهاجمی */
+:root {
+  /* مطمئن می‌شویم این مقادیر وجود دارند: */
+  --z-sticky: 10;
+  --z-drawer: 100;
+  --z-modal: 1000;
+  --z-toast: 1100;
+}
+
+/* اگر مودال‌ها با Portal یا role=dialog رندر می‌شوند: */
+:where([role="dialog"][aria-modal="true"], .modal, .ReactModal__Content) {
+  position: fixed;
+  z-index: var(--z-modal) !important;
+}
+
+/* بک‌دراپ مودال‌ها */
+:where(.backdrop, .ReactModal__Overlay, [data-backdrop]) {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-modal) - 1) !important;
+}
+
+/* 4) بهبود لمس موبایل */
+@media (hover: none) and (pointer: coarse) {
+  * { -webkit-tap-highlight-color: transparent; }
 }
