@@ -1,4 +1,4 @@
-// Werch_app\werchaui\src\lib\client-csrf.ts
+// src\lib\client-csrf.ts
 
 import { endpoints } from './api';
 

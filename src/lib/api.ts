@@ -1,3 +1,5 @@
+// src\lib\api.ts
+
 // Detect server vs client
 const isServer = typeof window === 'undefined';
 

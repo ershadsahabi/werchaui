@@ -1,6 +1,17 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import s from "./page.module.css";
+
+import FeatureAuthenticity from "@/components/features/FeatureAuthenticity";
+import FeatureFastShipping from "@/components/features/FeatureFastShipping";
+import FeatureCareGuides from "@/components/features/FeatureCareGuides";
+import FeatureSupport from "@/components/features/FeatureSupport";
+import FeatureEasyReturns from "@/components/features/FeatureEasyReturns";
+import PawParade from "@/components/brand/PawParade";
+
+
 
 export default function HomePage() {
   const categories = [
@@ -16,79 +27,119 @@ export default function HomePage() {
 
   return (
     <div dir="rtl" className={s.homeRoot}>
-      {/* HERO */}
-      <section className={`${s.hero} ${s.heroModernSplit}`} aria-labelledby="hero-title">
-        <div className={`${s.heroContent} container`}>
-          <span className={s.badgeHero}>🐾 به‌زودی</span>
+{/* HERO */}
+<section className={`${s.hero} ${s.heroModernSplit}`} aria-labelledby="hero-title">
+  <div className={`${s.heroContent} container`}>
 
-          <h1 id="hero-title" className={s.heroTitle}>
-            ورچینو — به‌زودی با قفسه‌های پر ✨
-          </h1>
+    {/* Header row: badge + mini tagline */}
+    <div className={s.heroHeader}>
+      <span className={s.badgeHero} aria-label="اعلان راه‌اندازی">🐾 به‌زودی</span>
+      <span className={s.heroTagline} aria-hidden="true">پت‌شاپ آنلاین با تمرکز روی کیفیت</span>
+    </div>
 
-          <p className={s.heroSubtitle}>
-            در حال آماده‌سازی موجودی هستیم. دسته‌بندی‌های اصلی‌مون آماده‌ست و خیلی زود
-            انتخاب‌های باکیفیت می‌چینیم.
-          </p>
+    {/* Title */}
+    <h1 id="hero-title" className={s.heroTitle}>
+      ورچینو — فروشگاه تخصصی پت‌شاپ
+       <br />
+      ✨
+    </h1>
 
-          <ul className={s.heroKpis} aria-label="مزیت‌های فروشگاه">
-            <li>✅ تضمین اصالت کالا</li>
-            <li>🚚 ارسال سریع در سنندج</li>
-            <li>↩️ مرجوعی تا ۷ روز</li>
-          </ul>
+    {/* Sub + Shipping notice (clarified) */}
+    <p className={s.heroSubtitle}>
+      از غذای خشک و تر تا لوازم بهداشتی و سرگرمی؛ انتخاب‌های کیفی برای پت شما.
+      
+    </p>
 
-          <div className={s.heroActions}>
-            <a href="#cats" className="btn">مشاهده دسته‌بندی‌ها</a>
-            <Link href="/contact" className="btn btn--ghost">تماس با ما</Link>
-          </div>
+    {/* Shipping strip — واضح: سنندج سریع + سراسر ایران */}
+    <div className={s.shipStrip} role="note" aria-label="اطلاعات ارسال">
+      <span className={s.shipItem}>🚚 ارسال سریع در سنندج</span>
+      <span className={s.shipItem}>📦 ارسال به سراسر ایران ۲–۴ روز کاری</span>
+    </div>
 
-          <aside className={s.heroCoupon} aria-label="کد تخفیف اولین خرید">
-            <span>هدیه شروع: ۱۰٪ اولین خرید</span>
-            <code className={s.couponCode}>wircino</code>
-          </aside>
-        </div>
+    {/* KPIs */}
+    <ul className={s.heroKpis} aria-label="مزیت‌های فروشگاه">
+      <li><span aria-hidden>✅</span> تضمین اصالت کالا</li>
+      <li><span aria-hidden>↩️</span> مرجوعی تا ۷ روز</li>
+      <li><span aria-hidden>💬</span> پشتیبانی واتس‌اپ</li>
+    </ul>
 
-        <div className={s.heroImageWrap} aria-hidden="true">
-          <Image
-            src="/publicimages/hero38.png"
-            alt=""
-            fill
-            priority
-            sizes="(min-width:1024px) 50vw, 100vw"
-            className={s.heroImage}
-          />
-        </div>
-      </section>
+    {/* Actions */}
+    <div className={s.heroActions}>
+      <a href="#cats" className={`btn ${s.btnGlow}`}>
+        <span className={s.btnGlowDot} aria-hidden>●</span>
+        مشاهده دسته‌بندی‌ها
+      </a>
+
+    </div>
+
+    {/* Coupon row */}
+    <aside className={s.heroCouponRow} aria-label="پیشنهاد آغاز">
+      <div className={s.heroCoupon}>
+        <span>هدیه شروع: ۱۰٪ اولین خرید</span>
+        <code className={s.couponCode} aria-label="کد تخفیف">wircino</code>
+      </div>
+
+    </aside>
+
+    
+  </div>
+
+  <div className={s.heroImageWrap} aria-hidden="true">
+    <Image
+      src="/publicimages/hero38.png"
+      alt=""
+      fill
+      priority
+      sizes="(min-width:1024px) 50vw, 100vw"
+      className={s.heroImage}
+    />
+  </div>
+</section>
+
+
+
+
+
 
       {/* دسته‌بندی‌ها */}
-      <section id="cats" className={`container ${s.section}`} aria-labelledby="cats-title">
-        <div className={s.sectionHeader}>
-          <h2 id="cats-title" className={s.sectionTitle}>چه چیزهایی راه می‌افتد؟</h2>
-          <span className={s.badgeSoft}>لانچ اولیه</span>
+<section id="cats" className={`container ${s.section}`} aria-labelledby="cats-title">
+  <div className={s.sectionHeader}>
+    <h2 id="cats-title" className={s.sectionTitle}>چه چیزهایی راه می‌افتد؟</h2>
+    <span className={s.badgeSoft}>لانچ اولیه</span>
+  </div>
+
+  {/* کارت با قاب دوتایی و هاور نرم */}
+  <div className={s.catGridFancy}>
+    {categories.map((c) => (
+      <Link key={c.title} href={c.href} className={s.catFancy} aria-label={c.title}>
+        {/* قاب بیرونی لطیف */}
+        <span aria-hidden className={s.catFrameOuter} />
+        {/* قاب درونی ظریف */}
+        <span aria-hidden className={s.catFrameInner} />
+
+        <div className={s.catFancyMedia}>
+          <Image
+            src={c.img}
+            alt=""
+            fill
+            className={s.catFancyImg}
+            sizes="(min-width:1024px) 20vw, (min-width:640px) 33vw, 50vw"
+          />
         </div>
 
-        <div className={`${s.catGrid}`}>
-          {categories.map((c) => (
-            <Link key={c.title} href={c.href} className={`card card--hover ${s.catCard}`} aria-label={c.title}>
-              <div className={s.catMedia}>
-                <Image
-                  src={c.img}
-                  alt=""
-                  fill
-                  className={s.catImg}
-                  sizes="(min-width:1024px) 20vw, (min-width:640px) 33vw, 50vw"
-                  priority={false}
-                />
-              </div>
-              <div className={s.catBody}>
-                <h3 className={s.catTitle}>{c.title}</h3>
-                <span className={s.catCta}>به‌زودی <span aria-hidden>↗</span></span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+        {/* نوار بالا خیلی کم‌رنگ، حفظ هویت ولی بی‌زرق‌وبرق */}
+        <div className={s.catFancyBar} aria-hidden="true" />
 
-      {/* اطلاع‌رسانی موجودی */}
+        <div className={s.catFancyBody}>
+          <h3 className={s.catFancyTitle}>{c.title}</h3>
+          <span className={s.catFancyCta}>به‌زودی <span aria-hidden>↗</span></span>
+        </div>
+      </Link>
+    ))}
+  </div>
+</section>
+
+      {/* اطلاع‌رسانی موجودی (بدون تغییر رفتاری) */}
       <section className={`container ${s.section}`} aria-labelledby="empty-title">
         <div className={`card ${s.empty}`}>
           <div className={s.emptyIcon} aria-hidden="true">🧺</div>
@@ -107,7 +158,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* بنر CTA */}
+      {/* بنر CTA (بدون تغییر رفتاری) */}
       <section className={s.cta} aria-labelledby="cta-title">
         <Image src="/publicimages/banner/banner1.png" alt="" fill className={s.ctaImg} sizes="100vw" />
         <div className={s.ctaOverlay} />
@@ -116,6 +167,20 @@ export default function HomePage() {
           <p className={s.ctaText}>
             کد: <strong>wircino</strong> — به‌محض فعال‌شدن فروشگاه
           </p>
+        </div>
+      </section>
+
+
+
+      {/* ویژگی‌های فروشگاه: ۵ کامپوننت مستقل */}
+      <section className={`container ${s.section}`} aria-labelledby="features-title">
+        <h2 id="features-title" className={s.sectionTitle}>چرا ورچینو؟</h2>
+        <div className={s.featuresGrid}>
+          <FeatureAuthenticity />
+          <FeatureFastShipping />
+          <FeatureCareGuides />
+          <FeatureSupport />
+          <FeatureEasyReturns />
         </div>
       </section>
     </div>

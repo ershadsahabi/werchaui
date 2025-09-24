@@ -8,7 +8,7 @@ export const metadata = {
   description: "راه‌های ارتباط با Wircino",
 };
 
-const CONTACT_MEDIA_SRC = "/publicimages/contact/contact1.png";
+const CONTACT_MEDIA_SRC = "/publicimages/contact/contact2.png";
 
 export default function ContactPage() {
   const c = CONTACT;

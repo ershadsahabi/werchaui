@@ -1,0 +1,153 @@
+/* ===== Wrapper / Card ===== */
+.wrap {
+  --parade-gap: 12px;
+  --sticker-pad-y: 10px;
+  --sticker-pad-x: 14px;
+
+  --sticker-bg: color-mix(in oklab, var(--surface) 86%, transparent);
+  --sticker-border: color-mix(in oklab, var(--text) 12%, var(--card-border));
+  --sticker-shadow: 0 8px 20px color-mix(in oklab, var(--text) 12%, transparent);
+
+  --frame-grad: conic-gradient(
+    from 180deg,
+    color-mix(in oklab, var(--primary) 56%, transparent),
+    color-mix(in oklab, var(--accent) 56%, transparent),
+    color-mix(in oklab, var(--secondary) 56%, transparent),
+    color-mix(in oklab, var(--primary) 56%, transparent)
+  );
+
+  position: relative;
+  display: grid;
+  gap: var(--sp-3);
+  padding: clamp(12px, 3vw, 18px);
+  border-radius: var(--r-xl);
+  border: 1px solid var(--card-border);
+  background: var(--card-bg);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* پس‌زمینه لطیف */
+.bg {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(40% 30% at 15% 20%, color-mix(in oklab, var(--primary) 16%, transparent), transparent 70%),
+    radial-gradient(30% 25% at 85% 75%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 70%),
+    var(--grad-hero);
+  opacity: .35;
+  filter: blur(22px) saturate(110%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Heading */
+.head { position: relative; z-index: 1; display: grid; gap: 6px; }
+.title {
+  font-weight: 900;
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  letter-spacing: -.01em;
+  background: var(--grad-primary);
+  -webkit-background-clip: text;
+          background-clip: text;
+  color: transparent;
+}
+.sub { color: var(--text-weak); font-size: .95rem; }
+
+/* ===== Track & Row ===== */
+.track {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: contain;
+  border-radius: var(--r-xl);
+}
+
+.row {
+  display: inline-flex;
+  will-change: transform;
+  transform: translate3d(0,0,0);
+  user-select: none;
+  -webkit-user-select: none;
+  pointer-events: none;  /* محتوای صرفاً نمایشی */
+  contain: content;
+}
+
+/* یک لوپ واحد؛ چند بار تکرار می‌شود */
+.group {
+  display: inline-flex;
+  gap: var(--parade-gap);
+  align-items: center;
+  width: max-content;
+  padding-block: 8px;
+}
+
+/* ===== Sticker ===== */
+.sticker {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--sticker-pad-y) var(--sticker-pad-x);
+  border-radius: var(--r-xl);
+  background: var(--sticker-bg);
+  border: 1px solid var(--sticker-border);
+  box-shadow: var(--sticker-shadow);
+  backdrop-filter: saturate(115%);
+  transition:
+    transform var(--dur-150),
+    box-shadow var(--dur-150),
+    background-color var(--dur-150),
+    border-color var(--dur-150);
+  transform-style: preserve-3d;
+}
+
+.sticker::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  padding: 1px;
+  border-radius: inherit;
+  background: var(--frame-grad);
+  opacity: .42;
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  pointer-events: none;
+  transition: opacity var(--dur-150);
+}
+
+.sticker::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border-radius: inherit;
+  background: radial-gradient(120% 100% at 10% 0%, rgba(255,255,255,.08), transparent 55%);
+  pointer-events: none;
+}
+
+.emoji { font-size: 1.12rem; line-height: 1; transform: translateZ(6px); }
+.label { font-size: .95rem; color: var(--text); font-weight: 800; letter-spacing: .01em; white-space: nowrap; }
+
+/* ===== Hover polish (بدون توقف) ===== */
+@media (hover: hover) and (pointer: fine) {
+  .track:hover .sticker {
+    box-shadow: 0 10px 24px color-mix(in oklab, var(--text) 14%, transparent);
+  }
+}
+
+/* ===== Responsive ===== */
+@media (min-width: 768px) {
+  .wrap { --parade-gap: 14px; --sticker-pad-y: 12px; --sticker-pad-x: 16px; }
+  .emoji { font-size: 1.25rem; }
+  .label { font-size: 1rem; }
+}
+@media (min-width: 1280px) {
+  .wrap { --parade-gap: 16px; }
+}
+
+/* ===== Reduced Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .row { will-change: auto; }
+}

@@ -16,10 +16,24 @@
 
 .heroContent {
   display: grid;
-  gap: 14px;
+  gap: 12px;
   align-content: start;
   padding-block: 8px 0;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    "header"
+    "title"
+    "subtitle"
+    "ship"
+    "kpis"
+    "actions"
+    "coupon";
 }
+.heroHeader { 
+  grid-area: header; 
+  display:flex; align-items:center; gap: 10px; 
+}
+.heroTagline { color: var(--text-mute); font-weight:700; font-size:.9rem; }
 
 .badgeHero {
   display: inline-flex;
@@ -34,46 +48,41 @@
   width: fit-content;
 }
 
-.heroTitle {
-  font-size: clamp(1.5rem, 3.8vw, 2.2rem);
-  font-weight: 900;
-  color: var(--text-strong);
-}
-.heroSubtitle {
-  color: var(--text-weak);
-  max-width: 60ch;
-}
+.heroTitle { grid-area: title; }
+
+.heroSubtitle { grid-area: subtitle; }
+
 
 /* KPI ها */
 .heroKpis {
   display: grid;
+  grid-area: kpis;
   grid-template-columns: 1fr 1fr;
   gap: 6px 12px;
   list-style: none;
-  padding: 0;
-  margin: 8px 0 0;
+  padding: 0; margin: 0;
   color: var(--text);
 }
-.heroKpis li { white-space: nowrap; }
+.heroKpis li { display:flex; align-items:center; gap: 6px; }
 
 /* اکشن‌های هیرو */
 .heroActions {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 4px;
+  grid-area: actions;
+  display: flex; gap: 10px; flex-wrap: wrap;
 }
 
-/* کوپن */
+/* ردیف کوپن، چسبیده به چپ/راست با RTL منظم */
+.heroCouponRow {
+  grid-area: coupon;
+  display: flex; align-items: center; justify-content: start;
+}
 .heroCoupon {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  display:flex; align-items:center; gap: 10px;
   padding: 10px 12px;
-  border-radius: var(--radius);
+  border-radius: var(--r-lg);
   background: color-mix(in oklab, var(--surface) 80%, transparent);
   border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+  box-shadow: var(--shadow-xs);
   width: fit-content;
 }
 .couponCode {
@@ -127,21 +136,16 @@
   color: var(--text-weak);
 }
 
-/* ===== دسته‌بندی‌ها: یکپارچه و یکنواخت ===== */
+/* ===== دسته‌بندی‌ها: نسخه قدیمی (حفظ شده برای سازگاری) ===== */
 .catGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0,1fr));
   gap: 10px;
 }
-
-/* کارت از کلاس card سراسری ارث می‌برد؛ فقط layout محلی */
 .catCard {
   display: flex;
   flex-direction: column;
-  /* card و card--hover از utilities.css رفتار مرز/سایه/هاور را می‌دهند */
 }
-
-/* مدیای ثابت با نسبت یکنواخت (از توکن سراسری) */
 .catMedia {
   position: relative;
   aspect-ratio: var(--product-img-ratio); /* 4/3 به‌طور پیش‌فرض */
@@ -149,17 +153,12 @@
   border-radius: calc(var(--card-radius) - 6px);
   overflow: hidden;
 }
-
-/* تصویر یکدست: contain برای نریختن تناسب؛ padding برای نفس تصویر */
 .catImg {
   object-fit: contain;
   object-position: center;
   padding: 10px;
-  /* کمی بهبود رندر روی تصاویر شفاف/PNG */
   image-rendering: -webkit-optimize-contrast;
 }
-
-/* بدنه‌ی کارت با فاصله‌ی ثابت */
 .catBody {
   display: grid;
   gap: 6px;
@@ -176,6 +175,122 @@
   color: var(--link);
 }
 
+/* ===== دسته‌بندی‌ها: نسخه جدید فانتزی (قاب واحد و جذاب) ===== */
+/* گرید */
+.catGridFancy {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: 12px;
+}
+@media (min-width: 640px){ .catGridFancy { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (min-width:1024px){ .catGridFancy { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; } }
+
+/* کارت با تمرکز روی قاب‌ها */
+.catFancy {
+  position: relative;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--surface);
+  border-radius: var(--r-xl);
+  overflow: hidden;
+  /* حاشیهٔ اصلی خیلی خنثی */
+  border: 1px solid var(--card-border);
+  /* سایهٔ بسیار ملایم برای جدایی از بک‌گراند */
+  box-shadow: 0 4px 14px color-mix(in oklab, var(--text) 8%, transparent);
+  transition: transform var(--dur-200), box-shadow var(--dur-200), border-color var(--dur-200);
+  isolation: isolate;
+}
+.catFancy:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px color-mix(in oklab, var(--text) 12%, transparent);
+  border-color: color-mix(in oklab, var(--text) 16%, var(--card-border));
+}
+
+/* قاب بیرونی: استروک لطیف با گرادیان خیلی کم‌رنگ (بدون تغییر محسوس رنگ کلی) */
+.catFrameOuter {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(
+    180deg,
+    color-mix(in oklab, var(--text) 8%, transparent),
+    transparent 60%
+  );
+  opacity: .35;
+  /* فقط دور کارت دیده شود */
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  padding: 1px;
+}
+
+/* قاب درونی: خط نازک داخل کارت برای حس عمق */
+.catFrameInner {
+  position: absolute;
+  inset: 6px;
+  pointer-events: none;
+  border-radius: calc(var(--r-xl) - 6px);
+  border: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+  box-shadow:
+    0 1px 0 color-mix(in oklab, var(--text) 10%, transparent) inset,
+    0 -1px 0 color-mix(in oklab, var(--bg) 8%, transparent) inset;
+  opacity: .6;
+}
+
+/* مدیا با پس‌زمینهٔ خنثی و کمی بافت نور */
+.catFancyMedia {
+  position: relative;
+  aspect-ratio: var(--product-img-ratio);
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--text) 5%, transparent), transparent),
+    var(--muted);
+  border-bottom: 1px solid var(--card-border);
+}
+.catFancyImg {
+  object-fit: contain;
+  object-position: center;
+  padding: 12px;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* نوار بالای کارت — بسیار کم‌رنگ برای هویت بصری */
+.catFancyBar {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  height: 3px;
+  opacity: .35;
+  background: linear-gradient(
+    90deg,
+    color-mix(in oklab, var(--primary) 28%, transparent),
+    color-mix(in oklab, var(--accent) 18%, transparent)
+  );
+}
+
+/* بدنه */
+.catFancyBody { display: grid; gap: 6px; padding: var(--card-pad); }
+.catFancyTitle {
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--text-strong);
+  letter-spacing: -.01em;
+}
+.catFancyCta {
+  font-size: .875rem;
+  color: var(--text-weak);
+  border: 1px solid color-mix(in oklab, var(--text) 12%, var(--card-border));
+  background: color-mix(in oklab, var(--text) 4%, transparent);
+  border-radius: var(--r-lg);
+  padding: 4px 8px;
+  width: fit-content;
+  transition: border-color var(--dur-150), background-color var(--dur-150);
+}
+.catFancy:hover .catFancyCta {
+  border-color: color-mix(in oklab, var(--primary) 28%, var(--card-border));
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+
 /* ===== Empty (اطلاع موجودی) ===== */
 .empty {
   display: grid;
@@ -188,7 +303,7 @@
 .emptyText { color: var(--text-weak); max-width: 60ch; margin-inline: auto; }
 .emptyActions { display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
 
-/* ===== CTA Banner ===== */
+/* ===== CTA Banner (Dark/Light optimized) ===== */
 .cta {
   position: relative;
   overflow: hidden;
@@ -200,32 +315,40 @@
   box-shadow: var(--shadow);
   transform: translateZ(0);
 }
+
+/* Base image */
 .ctaImg {
   object-fit: cover;
   object-position: center;
-  filter: contrast(108%) saturate(108%) brightness(1);
+  filter: none;
   transition: transform var(--transition-300), filter var(--transition-300);
   will-change: transform;
 }
+
+/* Overlay (dark default) */
 .ctaOverlay {
   position: absolute;
   inset: 0;
   z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(120% 90% at 10% 85%, transparent 0%, color-mix(in oklab, var(--bg) 12%, transparent) 55%, color-mix(in oklab, var(--bg) 32%, transparent) 100%),
-    radial-gradient(120% 90% at 90% 15%, transparent 0%, color-mix(in oklab, var(--bg) 12%, transparent) 55%, color-mix(in oklab, var(--bg) 32%, transparent) 100%),
-    linear-gradient(180deg, color-mix(in oklab, var(--bg) 24%, transparent), transparent 60%),
-    linear-gradient(0deg, color-mix(in oklab, var(--bg) 10%, transparent), transparent 60%);
+    radial-gradient(120% 90% at 80% 10%, transparent 0%, rgba(0,0,0,.35) 60%, rgba(0,0,0,.55) 100%),
+    radial-gradient(120% 90% at 20% 90%, transparent 0%, rgba(0,0,0,.25) 55%, rgba(0,0,0,.45) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.35), transparent 55%),
+    linear-gradient(0deg, rgba(0,0,0,.25), transparent 55%);
+  opacity: .85;
+  mix-blend-mode: screen; /* Dark: نرم و درخشان */
 }
+
+/* Decorative border glow */
 .cta::after {
   content: "";
   position: absolute; inset: -1px; border-radius: inherit; z-index: 2;
   background:
     linear-gradient(135deg,
-      color-mix(in oklab, var(--primary) 18%, transparent),
+      color-mix(in oklab, var(--primary) 24%, transparent),
       transparent 35%,
-      color-mix(in oklab, var(--accent) 18%, transparent) 70%,
+      color-mix(in oklab, var(--accent) 24%, transparent) 70%,
       transparent
     );
   opacity: .35;
@@ -234,27 +357,68 @@
   padding: 1px;
   pointer-events: none;
 }
+
+/* Content */
+/* ===== CTA Content — Light Ink (theme-agnostic) ===== */
+.cta {
+  /* رنگ‌های ثابت روشن برای متن CTA */
+  --cta-ink-light: #ffffff;  /* سفید روشن برای تیتر */
+  --cta-ink-soft:  #eef6ff;  /* سفید مایل به آبی برای متن */
+}
+
 .ctaContent {
-  position: relative; z-index: 3;
-  display: grid; align-content: end; gap: 10px;
+  position: relative;
+  z-index: 3; /* بالاتر از overlay و پلیت */
+  display: grid;
+  align-content: end;
+  gap: 10px;
   padding: clamp(16px, 4vw, 28px) clamp(16px, 5vw, 36px);
-  min-height: inherit; color: var(--text);
-  text-shadow: 0 2px 18px color-mix(in oklab, var(--bg) 45%, transparent);
+  min-height: inherit;
+
+  /* متن روشنِ ثابت در شب و روز */
+  color: var(--cta-ink-soft);
+
+  /* سایه‌ی تیره‌ی ملایم برای خوانایی روی تصویر */
+  text-shadow:
+    0 1px 2px rgba(0,0,0,.35),
+    0 4px 16px rgba(0,0,0,.45);
 }
+
 .ctaTitle {
-  font-weight: 900; color: var(--text-strong); letter-spacing: -.015em;
-  font-size: clamp(1.25rem, 2.6vw, 2rem); line-height: 1.2;
+  font-weight: 900;
+  color: var(--cta-ink-light);   /* سفید خالص برای تیتر */
+  letter-spacing: -.015em;
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  line-height: 1.2;
 }
-.ctaText { font-size: clamp(.95rem, 1.4vw, 1.05rem); color: var(--text); }
+
+.ctaText {
+  font-size: clamp(.95rem, 1.4vw, 1.05rem);
+  color: var(--cta-ink-soft);    /* متنِ کمی ملایم‌تر از تیتر */
+}
+
 .ctaText strong {
-  display: inline-block; padding: .25rem .6rem; border-radius: var(--radius-sm);
-  background: var(--glass); border: 1px solid var(--glass-border);
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 20%, transparent);
-  font-weight: 800; letter-spacing: .02em;
+  display: inline-block;
+  padding: .25rem .6rem;
+  border-radius: var(--radius-sm);
+
+  /* پس‌زمینه‌ی شیشه‌ای تیره‌ی خیلی لطیف برای برجسته شدن کد */
+  background: rgba(0,0,0,.32);
+  border: 1px solid rgba(255,255,255,.20);
+
+  /* هاله‌ی رنگی مطابق accent ولی خیلی ظریف */
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 24%, transparent);
+
+  font-weight: 800;
+  letter-spacing: .02em;
+  color: var(--cta-ink-light);   /* متن روشن داخل strong */
 }
-.cta:hover .ctaImg { transform: scale(1.03); filter: contrast(110%) saturate(112%); }
+
+/* Hover */
+.cta:hover .ctaImg { transform: scale(1.03); filter: saturate(108%) contrast(108%); }
 .cta:hover::after { opacity: .5; }
 
+/* Layout */
 @media (min-width: 720px) {
   .ctaContent {
     align-content: center;
@@ -263,24 +427,64 @@
   }
 }
 
-html.light .ctaText,
-html.light .ctaTitle { text-shadow: 0 1px 10px color-mix(in oklab, var(--ink-800l) 15%, transparent); }
-html.light .cta::after { opacity: .25; }
+/* ===== THEME TUNING ===== */
+
+/* Light: تصویر کمی تیره‌تر برای جداسازی */
+html.light .ctaImg {
+  filter: brightness(.94) contrast(1.05) saturate(1.06);
+}
+
+/* Light: overlay حالت Multiply برای افزایش کنتراست متن */
+html.light .ctaOverlay {
+  background:
+    radial-gradient(120% 90% at 80% 10%, rgba(0,0,0,.25) 0%, rgba(0,0,0,.55) 65%, rgba(0,0,0,.75) 100%),
+    radial-gradient(120% 90% at 20% 90%, rgba(0,0,0,.20) 0%, rgba(0,0,0,.50) 60%, rgba(0,0,0,.70) 100%),
+    linear-gradient(180deg, rgba(0,0,0,.35), transparent 55%),
+    linear-gradient(0deg, rgba(0,0,0,.22), transparent 55%);
+  opacity: .88;
+  mix-blend-mode: multiply; /* Light: تیره‌سازی نرم تصویر */
+}
+
+
+
+/* ===== A11y & Motion ===== */
+@media (prefers-reduced-motion: reduce) {
+  .ctaImg { transition: none; }
+  .cta:hover .ctaImg { transform: none; }
+}
+
+
+/* --- Features Grid --- */
+.featuresGrid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+}
+@media (min-width: 640px){ .featuresGrid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (min-width:1024px){ .featuresGrid { grid-template-columns: repeat(5, minmax(0,1fr)); } }
 
 /* ===== ریسپانسیو ===== */
 @media (min-width: 640px) {
   .homeRoot { gap: 36px; }
   .heroImageWrap { min-height: 300px; }
   .catGrid { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
+  .catGridFancy { grid-template-columns: repeat(3, minmax(0,1fr)); }
 }
 
 @media (min-width: 1024px) {
-  .hero { grid-template-columns: 1fr 1fr; align-items: center; gap: 20px; }
+  .hero { grid-template-columns: 1fr 1fr; align-items: center; gap: 24px; }
   .heroImageWrap { min-height: 420px; }
-  .heroKpis { grid-template-columns: auto auto auto; }
-  .section { gap: 20px; }
+  .heroContent {
+    gap: 14px;
+    grid-template-columns: 1fr;
+  }
+
+  .heroKpis { grid-template-columns: auto auto auto; }  .section { gap: 20px; }
+
   .catGrid { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
   .catMedia { aspect-ratio: 4 / 3; } /* افقی‌تر در دسکتاپ */
+
+  .catGridFancy { grid-template-columns: repeat(4, minmax(0,1fr)); gap: 16px; }
 }
 
 /* احترام به کاهش حرکت */
@@ -288,3 +492,39 @@ html.light .cta::after { opacity: .25; }
   .ctaImg { transition: none; }
   .cta:hover .ctaImg { transform: none; }
 }
+
+
+
+
+/* نوار اطلاع‌رسانی ارسال: تاکید بر سنندج + سراسری */
+.shipStrip {
+  grid-area: ship;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px;
+  padding: 8px 10px;
+  border-radius: var(--r-lg);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  border: 1px solid color-mix(in oklab, var(--primary) 30%, var(--card-border));
+  color: var(--text);
+}
+.shipItem { white-space: nowrap; font-weight: 700; }
+.shipSep { opacity: .6; }
+
+
+
+
+
+
+
+/* دسترس‌پذیری و کاهش حرکت */
+@media (prefers-reduced-motion: reduce) {
+  .shipStrip { transition: none; }
+}
+
+/* (اختیاری) اگر btnGlow قبلاً نداری: یک درخشش لطیف */
+.btnGlow {
+  position: relative;
+  box-shadow: 0 0 0 0 color-mix(in oklab, var(--primary) 30%, transparent);
+  transition: box-shadow var(--dur-200), transform var(--dur-150);
+}
+.btnGlow:hover { transform: translateY(-1px); box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary) 14%, transparent); }
+.btnGlowDot { margin-inline-start: .25em; font-size: 1.1em; line-height: 1; }

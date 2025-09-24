@@ -1,244 +1,190 @@
-/* ───────────── WERCHA • Shop (Modern) ───────────── */
-/* موبایل‌فرست • شیشه‌ای (glass) • هماهنگ با :root و html.light در variables.css */
+/* ───────── WERCHA • Shop (Aurora • Soft) ───────── */
 
-/* ── Hero / Breadcrumb */
-.hero {
-  padding-block: 22px 18px;
-  border-bottom: 1px solid var(--border);
+.root {}
+
+/* Hero */
+.hero{
+  padding-block:22px 18px;
+  border-bottom:1px solid var(--border);
   background:
-    radial-gradient(880px 420px at 12% -10%, color-mix(in oklab, var(--primary) 14%, transparent), transparent 60%),
-    radial-gradient(880px 420px at 86% -8%, color-mix(in oklab, var(--secondary) 14%, transparent), transparent 60%),
+    radial-gradient(900px 420px at 14% -12%, color-mix(in oklab, var(--primary) 10%, transparent), transparent 66%),
+    radial-gradient(880px 420px at 86% -10%, color-mix(in oklab, var(--secondary) 9%, transparent), transparent 66%),
     var(--bg);
-  position: relative;
-  isolation: isolate;
+  isolation:isolate;
 }
-.bc { display: flex; align-items: center; gap: 8px; color: var(--text-weak); font-size: 13px; }
-.bcLink { color: var(--link); }
-.bcLink:hover { text-decoration: underline; text-underline-offset: 3px; }
-.bcSep { opacity: .6; }
-.bcHere { color: var(--text); opacity: .9; }
-.title { margin: 6px 0 0; font-size: 26px; letter-spacing: -.01em; }
-.subtitle { margin: 4px 0 0; color: var(--text-weak); }
+.bc{display:flex;align-items:center;gap:8px;color:var(--text-weak);font-size:13px}
+.bcLink{color:var(--link)}
+.bcLink:hover{text-decoration:underline;text-underline-offset:3px}
+.bcSep{opacity:.6}
+.bcHere{color:var(--text);opacity:.92}
+.title{margin:6px 0 0;font-size:26px;letter-spacing:-.01em;color:var(--text-strong)}
+.subtitle{margin:4px 0 0;color:var(--text-weak)}
 
-/* ── Layout (Parent grid) */
-.grid {
-  display: grid;
-  grid-template-columns: 1fr; /* موبایل تک‌ستونه */
-  gap: 16px;
-  padding-block: 16px 22px;
-}
+/* Layout */
+.grid{display:grid;grid-template-columns:1fr;gap:16px;padding-block:16px 22px}
+.sidebar{order:0}
+.main{order:1;display:grid;gap:16px}
 
-/* ترتیب موبایل: فیلتر بالاتر از سورت و محصولات */
-.sidebar { order: 0; }  /* ⟵ مهم: فیلتر بالا بیاد */
-.main { order: 1; display: grid; gap: 16px; }
-
-/* کارت فیلتر */
-.filterCard {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--surface) 88%, transparent 12%),
-    var(--surface)
-  );
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px;
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(10px);
+/* Filter card */
+.filterCard{
+  --_bg1:color-mix(in oklab, var(--surface) 95%, transparent 5%);
+  --_bg2:color-mix(in oklab, var(--surface-2) 92%, transparent 8%);
+  background:linear-gradient(180deg,var(--_bg1),var(--_bg2));
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:12px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(10px) saturate(110%);
 }
 
-/* ── نوار سورت */
-.sortbar {
-  background: linear-gradient(
-    180deg,
-    color-mix(in oklab, var(--surface) 90%, transparent 10%),
-    var(--surface)
-  );
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 10px 12px;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 12px;
-  box-shadow: var(--shadow);
-  backdrop-filter: blur(8px);
+/* Sort bar */
+.sortbar{
+  --_bg1:color-mix(in oklab, var(--surface) 96%, transparent 4%);
+  --_bg2:color-mix(in oklab, var(--surface-2) 92%, transparent 8%);
+  background:linear-gradient(180deg,var(--_bg1),var(--_bg2));
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:10px 12px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(8px);
 }
-.count { color: var(--text-weak); }
-.sorts { display: flex; align-items: center; gap: 8px; }
+.count{color:var(--text-weak)}
+.sorts{display:flex;align-items:center;gap:8px}
 
-/* ── Products grid */
-/* ✅ موبایل: دقیقاً هر ردیف یک کارت (مثل اینستاگرام) */
-.prodGrid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: 1fr; /* ⟵ اینجا را از repeat(2, …) به 1fr تغییر دادیم */
-}
+/* Products grid */
+.prodGrid{display:grid;gap:12px;grid-template-columns:1fr}
 
-/* ── Empty state */
-.empty {
-  display: grid; place-items: center; gap: 8px;
-  background: linear-gradient(
-    180deg,
-    var(--surface),
-    color-mix(in oklab, var(--surface) 82%, var(--accent-weak) 18%)
-  );
-  border: 1px solid var(--border);
-  border-radius: 14px; padding: 24px;
-  text-align: center;
-  box-shadow: var(--shadow);
+/* Empty */
+.empty{
+  display:grid;place-items:center;gap:8px;
+  background:linear-gradient(180deg,var(--surface),
+    color-mix(in oklab, var(--surface) 88%, var(--accent-weak) 12%));
+  border:1px solid var(--border);
+  border-radius:14px;padding:24px;text-align:center;box-shadow:var(--shadow);
 }
 
-/* ── Pagination */
-.pagination {
-  display: flex; gap: 8px; justify-content: center; padding: 14px 0 4px;
-  flex-wrap: wrap;
+/* Pagination */
+.pagination{display:flex;gap:8px;justify-content:center;padding:14px 0 4px;flex-wrap:wrap}
+.pageBtn{
+  display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:38px;padding:0 14px;
+  background:color-mix(in oklab, var(--surface-2) 92%, transparent 8%);
+  border:1px solid var(--border);
+  border-radius:12px;color:var(--text);
+  transition:transform .15s ease,filter .15s ease,border-color .15s ease,background .15s ease,box-shadow .15s ease
 }
-.pageBtn {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-width: 38px; height: 38px; padding: 0 14px;
-  background: color-mix(in oklab, var(--surface-2) 90%, transparent 10%);
-  border: 1px solid var(--border);
-  border-radius: 12px; color: var(--text);
-  transition: transform .15s ease, filter .15s ease, border-color .15s ease, background .15s ease, box-shadow .15s ease;
+.pageBtn:hover{
+  transform:translateY(-1px);
+  filter:brightness(1.04);
+  border-color:color-mix(in oklab, var(--border) 60%, var(--text) 40%);
+  box-shadow:var(--shadow)
 }
-.pageBtn:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-  border-color: color-mix(in oklab, var(--border) 60%, var(--text) 40%);
-  box-shadow: var(--shadow);
-}
-.pageCurrent {
-  background: var(--primary);
-  color: var(--text-strong);
-  border-color: transparent; font-weight: 800;
-  box-shadow: 0 10px 26px color-mix(in oklab, var(--primary) 40%, transparent);
+.pageCurrent{
+  /* نرم‌تر از قبل */
+  background:color-mix(in oklab, var(--primary) 82%, var(--surface) 18%);
+  color:var(--on-primary);
+  border-color:transparent;font-weight:800;
+  box-shadow:0 10px 22px color-mix(in oklab, var(--primary) 28%, transparent)
 }
 
-/* ── Small screens (≥640px تا <768px): فیلتر و سورت کنار هم در سطر اول */
-@media (min-width: 640px) and (max-width: 767.98px) {
-  /* والد: دو ستون فقط برای سطر بالا */
-  .grid {
-    grid-template-columns: 1fr 1fr;
-    grid-auto-rows: auto;
-  }
-
-  /* ستون اول سطر اول: سایدبار (فیلتر) */
-  .sidebar {
-    grid-column: 1 / 2;
-    align-self: start;
-  }
-
-  /* ستون دوم سطر اول: فقط سورت‌بار (اولین فرزند .main) */
-  .main {
-    grid-column: 2 / 3;
-    display: grid;
-    grid-template-rows: auto 1fr;
-    gap: 16px;
-  }
-
-  /* محتوا (گرید محصولات/خالی/صفحه‌بندی) در ردیف دوم، تمام عرض زیر دو ستون */
-  .prodGrid,
-  .empty,
-  .pagination {
-    grid-column: 1 / -1;
-  }
-
-  /* .main را در ردیف دوم تمام‌عرض می‌بریم */
-  .main {
-    grid-column: 1 / -1;
-  }
-
-  .sortbar { position: sticky; top: 0; z-index: 1; }
+/* Helpers */
+.filterToggle{
+  display:inline-flex;align-items:center;justify-content:center;width:100%;
+  background:color-mix(in oklab, var(--surface-2) 84%, transparent 16%);
+  border:1px solid var(--border);
+  border-radius:var(--radius-sm);padding:10px;margin-bottom:10px;color:var(--text);
+  transition:filter .2s ease,transform .2s ease,border-color .2s ease
 }
+.filterToggle:hover{filter:brightness(1.05);transform:translateY(-1px);border-color:color-mix(in oklab, var(--border) 70%, var(--text) 30%)}
+.filterPanel{display:none}
+.filterPanel.open{display:block}
 
-/* ── Desktop (≥768px): چیدمان کلاسیک دو ستونه */
-@media (min-width: 768px) {
-  .grid { grid-template-columns: 280px 1fr; align-items: start; }
-  .sidebar { position: sticky; top: 76px; height: fit-content; }
-  .prodGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .title { font-size: 28px; }
-}
+/* Blocks */
+.filterBlock{display:grid;gap:8px;padding:12px 0;border-top:1px solid var(--border)}
+.filterBlock:first-child{border-top:0}
+.blockTitle{font-weight:800;font-size:14px;letter-spacing:.01em}
+.row{display:grid;gap:8px;grid-template-columns:1fr}
 
-/* ── Large (≥1024px) */
-@media (min-width: 1024px) {
-  .prodGrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-}
+/* Inputs (عمومی) */
+/* === داخل Shop.module.css (Aurora • Soft) جایگزین کن === */
 
-/* ── Optional helpers (در صورت استفاده) */
-.filterToggle {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 100%;
-  background: color-mix(in oklab, var(--surface-2) 80%, transparent 20%);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm); padding: 10px; margin-bottom: 10px;
-  color: var(--text);
-  transition: filter .2s ease, transform .2s ease, border-color .2s ease;
-}
-.filterToggle:hover {
-  filter: brightness(1.06);
-  transform: translateY(-1px);
-  border-color: color-mix(in oklab, var(--border) 70%, var(--text) 30%);
-}
-
-.filterPanel { display: none; }
-.filterPanel.open { display: block; }
-
-.filterBlock {
-  display: grid; gap: 8px;
-  padding: 12px 0;
-  border-top: 1px solid var(--border);
-}
-.filterBlock:first-child { border-top: 0; }
-
-.blockTitle { font-weight: 800; font-size: 14px; letter-spacing: .01em; }
-.row { display: grid; gap: 8px; grid-template-columns: 1fr; }
-
+/* ورودی‌های فیلتر (search/price/brand) */
 .select {
   appearance: none;
-  background: color-mix(in oklab, var(--surface-2) 88%, transparent 12%);
-  border: 1px solid var(--border);
+  border: none !important;                 /* ✅ بدون بوردِر */
+  background: var(--field-bg);
   color: var(--text);
-  border-radius: 10px; padding: 10px 12px;
-  transition: border-color .2s ease, box-shadow .2s ease, filter .2s ease;
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: inset 0 0 0 1px var(--field-line);       /* ✅ خط ثابت */
+  transition: background-color .2s ease, filter .2s ease, box-shadow .2s ease;
 }
-.select:hover { filter: brightness(1.04); }
+.select:hover { filter: brightness(1.02); }
 .select:focus-visible {
-  border-color: var(--focus-ring);
-  box-shadow: 0 0 0 3px var(--focus-ring);
+  outline: none;
+  background: var(--field-bg-focus);
+  box-shadow: inset 0 0 0 1px var(--field-line-focus); /* ✅ همان خط */
 }
 
-.chips { display: flex; flex-wrap: wrap; gap: 8px; }
-.chip {
-  padding: 8px 12px; border-radius: 999px;
-  background: var(--glass); color: var(--text);
-  border: 1px solid var(--glass-border);
-  transition: transform .15s ease, filter .15s ease, border-color .15s ease, background .15s ease;
+/* فقط ورودی جستجو اگر ID داری */
+#q-input {
+  border: none !important;                 /* ✅ بدون بوردِر */
+  background: color-mix(in oklab, var(--surface) 96%, transparent 4%);
+  border-radius: 12px;
+  padding: 10px 12px;
+  box-shadow: inset 0 0 0 1px var(--field-line);       /* ✅ خط ثابت */
+  transition: background-color .2s ease, filter .2s ease, box-shadow .2s ease;
 }
-.chip:hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-  border-color: color-mix(in oklab, var(--glass-border) 50%, var(--text) 50%);
-}
-.chipOn {
-  background: var(--primary);
-  color: var(--text-strong);
-  border-color: transparent;
+#q-input:hover { filter: brightness(1.02); }
+#q-input:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--field-line);       /* ✅ هیچ حلقه/بوردری اضافه نشود */
 }
 
-.selected { margin-top: 6px; }
-.selTitle { font-size: 12px; color: var(--text-weak); margin-bottom: 6px; }
-.selChips { display: flex; flex-wrap: wrap; gap: 8px; }
-.selChip {
-  display: inline-flex; align-items: center; gap: 6px;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  border-radius: 999px; padding: 6px 10px; font-size: 13px;
+
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  padding:8px 12px;border-radius:999px;background:var(--glass);color:var(--text);
+  border:1px solid var(--glass-border);
+  transition:transform .15s ease,filter .15s ease,border-color .15s ease,background .15s ease
 }
-.selChip button {
-  background: transparent; border: none; color: var(--text-weak);
-  cursor: pointer; padding: 0 2px;
+.chip:hover{transform:translateY(-1px);filter:brightness(1.04);border-color:color-mix(in oklab, var(--glass-border) 52%, var(--text) 48%)}
+.chipOn{
+  background:color-mix(in oklab, var(--secondary) 70%, var(--surface) 30%);
+  color:var(--on-secondary);border-color:transparent
 }
-.selChip button:hover { color: var(--text); }
-.clearAll {
-  background: transparent; border: none; color: var(--link);
-  cursor: pointer; padding: 0 4px;
+
+/* Selected */
+.selected{margin-top:6px}
+.selTitle{font-size:12px;color:var(--text-weak);margin-bottom:6px}
+.selChips{display:flex;flex-wrap:wrap;gap:8px}
+.selChip{
+  display:inline-flex;align-items:center;gap:6px;background:var(--glass);
+  border:1px solid var(--glass-border);border-radius:999px;padding:6px 10px;font-size:13px
 }
-.clearAll:hover { text-decoration: underline; }
+.selChip button{background:transparent;border:none;color:var(--text-weak);cursor:pointer;padding:0 2px}
+.selChip button:hover{color:var(--text)}
+.clearAll{background:transparent;border:none;color:var(--link);cursor:pointer;padding:0 4px}
+.clearAll:hover{text-decoration:underline}
+
+/* Responsive */
+@media (min-width:640px) and (max-width:767.98px){
+  .grid{grid-template-columns:1fr 1fr;grid-auto-rows:auto}
+  .sidebar{grid-column:1 / 2;align-self:start}
+  .main{grid-column:2 / 3;display:grid;grid-template-rows:auto 1fr;gap:16px}
+  .prodGrid,.empty,.pagination{grid-column:1 / -1}
+  .main{grid-column:1 / -1}
+  .sortbar{position:sticky;top:0;z-index:1}
+}
+
+/* Desktop: فیلتر پیش‌فرض باز */
+@media (min-width:768px){
+  .grid{grid-template-columns:280px 1fr;align-items:start}
+  .sidebar{position:sticky;top:76px;height:fit-content}
+  .filterPanel{display:block !important}
+  .filterToggle{display:none !important}
+  .prodGrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .title{font-size:28px}
+}
+@media (min-width:1024px){.prodGrid{grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}}

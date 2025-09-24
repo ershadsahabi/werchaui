@@ -95,7 +95,7 @@ export default function LoginForm({ onSuccess }: { onSuccess?: () => void }) {
         <a className={s.link} href="/forgot">فراموشی رمز؟</a>
       </div>
 
-      {hasError && <p id={errId} className={s.error} role="alert">{error}</p>}
+      {hasError && <p id={errId} className={s.error} role="alert" aria-live="polite">{error}</p>}
 
       <div className={s.actions}>
         <button

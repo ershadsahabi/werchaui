@@ -1,0 +1,240 @@
+/* components/search/SearchBox.module.css */
+
+.wrap {
+  position: relative;
+  min-inline-size: 0;
+}
+
+.form {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.input {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: var(--input-text);
+  inline-size: 100%;
+  min-block-size: var(--input-h-md);
+  padding: 0 8px;
+  outline: none;
+  box-shadow: none;
+}
+
+.input::placeholder {
+  color: var(--input-ph);
+}
+
+.btn {
+  inline-size: 36px;
+  block-size: 36px;
+  border-radius: var(--r-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--icon-weak);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background var(--dur-200), color var(--dur-200);
+}
+
+.btn:hover {
+  background: var(--surface-2);
+  color: var(--icon-color);
+}
+
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+/* ===== لیست پیشنهادها ===== */
+.list {
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: calc(100% + 6px);
+  z-index: var(--z-popover, 60);
+  background: var(--surface);
+  border: 1px solid var(--card-border);
+  border-radius: var(--r-md);
+  box-shadow: var(--elev-md);
+  padding: 6px;
+  display: grid;
+  gap: 4px;
+  max-block-size: min(60vh, 520px);
+  overflow: auto;
+}
+
+.groupTitle {
+  padding: 6px 8px;
+  font-size: .85rem;
+  color: var(--text-weak);
+}
+
+.separator {
+  block-size: 1px;
+  background: var(--border);
+  margin: 4px 0;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 40px 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid transparent;
+  transition: background var(--dur-200), border-color var(--dur-200);
+}
+
+.item:hover {
+  background: var(--surface-2);
+}
+
+.itemActive {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 30%, transparent);
+}
+
+.thumb {
+  inline-size: 40px;
+  block-size: 40px;
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--surface-2);
+  display: grid;
+  place-items: center;
+}
+
+.meta {
+  min-inline-size: 0;
+}
+
+.title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-weight: 700;
+}
+
+.sub {
+  font-size: .85rem;
+  color: var(--text-weak);
+}
+
+.stock {
+  color: var(--success, #3ab65c);
+}
+
+.viewAll {
+  text-align: center;
+  font-weight: 800;
+  grid-template-columns: 1fr;
+}
+
+
+
+
+/* === Recent searches (chips/rows) ===================================== */
+.recentRow {
+  /* در recent نیازی به ستون تصویر نداریم → دو ستون: آیکن + متن/اکشن */
+  grid-template-columns: 20px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+}
+
+.recentIcon {
+  inline-size: 20px;
+  block-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--icon-weak);
+}
+
+.recentTerm {
+  appearance: none;
+  background: transparent;
+  border: 1px dashed transparent;
+  color: var(--text);
+  text-align: start;
+  inline-size: 100%;
+  padding: 6px 8px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background var(--dur-150), color var(--dur-150), border-color var(--dur-150);
+}
+.recentTerm:hover {
+  background: var(--surface-2);
+  color: var(--text-strong, var(--text));
+}
+.recentTerm:focus-visible {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--primary) 30%, transparent);
+}
+
+.recentRemove {
+  inline-size: 26px;
+  block-size: 26px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--icon-weak);
+  cursor: pointer;
+  transition: background var(--dur-150), border-color var(--dur-150), color var(--dur-150), transform var(--dur-100);
+}
+.recentRemove:hover {
+  background: var(--surface-2);
+  color: var(--danger, #e05a5a);
+  border-color: color-mix(in oklab, var(--danger) 30%, transparent);
+}
+.recentRemove:active { transform: translateY(1px) scale(.98); }
+.recentRemove:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}
+
+/* ردیف اکشن گروهی (clear all) */
+.recentActions {
+  display: flex;
+  justify-content: flex-end; /* RTL-aware: سمت چپ بصری */
+  padding: 2px 6px 4px;
+}
+
+.clearAllBtn {
+  appearance: none;
+  background: var(--btn-outline-bg);
+  border: 1px solid var(--btn-outline-border);
+  color: var(--text-weak);
+  font-weight: 800;
+  border-radius: var(--r-pill);
+  padding: 6px 10px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--dur-150), border-color var(--dur-150), color var(--dur-150), transform var(--dur-100);
+}
+.clearAllBtn:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.clearAllBtn:active { transform: translateY(1px) scale(.98); }
+.clearAllBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--focus-ring);
+}

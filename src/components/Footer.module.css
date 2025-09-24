@@ -1,184 +1,170 @@
-/* پوسته */
+/* ===== Footer (Minimal / Mobile-first) ================================== */
+
+/* پوسته تخت و کم‌کنتراست */
 .footer {
-  position: relative;
   background: var(--surface);
   color: var(--text);
-  border-top: 1px solid var(--border);
+  border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
 }
-/* گرادیان ظریف بالا */
+
+/* خط خیلی ظریف بالای فوتر */
 .topLine {
-  height: 2px;
-  background: var(--grad-primary);
-  opacity: .9;
+  inline-size: 100%;
+  block-size: 1px;
+  background: color-mix(in oklab, var(--text) 10%, transparent);
 }
+
+/* کانتینر داخلی با فاصله‌های واکنشی */
 .inner {
-  padding-block: 12px 14px;
+  padding-block: clamp(12px, 2.5vw, 18px);
   display: grid;
-  gap: var(--sp-6);
+  gap: clamp(8px, 2vw, 16px);
 }
 
-/* نوار مزایا (افزوده) */
+/* ===== نوار مزایا — موبایل: اسکرول افقی، دسکتاپ: پنج‌ستونه ============== */
+
+/* ظرف مزایا: در موبایل افقی و اسکرولی */
 .benefits {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--sp-3);
-  background: color-mix(in oklab, var(--primary) 10%, transparent);
-  border: 1px solid color-mix(in oklab, var(--primary) 35%, var(--border));
-  border-radius: var(--r-xl);
-  padding: var(--sp-4);
-  box-shadow: var(--elev-sm);
-}
-@media (min-width: 768px) {
-  .benefits { grid-template-columns: repeat(3, minmax(0,1fr)); }
-}
-.benefit {
-  display: flex; align-items: center; gap: 10px;
-  background: color-mix(in oklab, var(--text) 6%, transparent);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  padding: 10px 12px;
-}
-.benefitIcon { font-size: 1.15rem; }
-.benefitText { font-weight: 800; color: var(--text-strong); }
-
-/* ردیف عنوان + لینک‌ها (افقی با wrap) */
-.row {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: center;
-  gap: 8px 12px;
-  padding-block: 6px;
-}
-.rowTitle {
-  color: var(--text-strong);
-  font-weight: 900;
-  font-size: .92rem;
-  letter-spacing: -.01em;
-  white-space: nowrap;
-}
-.listRow {
   display: flex;
-  flex-wrap: wrap;
-  gap: 6px 12px;
-  align-items: center;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.listRow a {
-  position: relative;
-  display: inline-block;
-  padding: 4px 6px;             /* قابل لمس روی موبایل */
-  color: var(--text-weak);
-  border-radius: 10px;
-  transition: color var(--dur-200), transform var(--dur-200), background-color var(--dur-200), border-color var(--dur-200);
-}
-.listRow a:hover {
-  color: var(--text);
-  background: color-mix(in oklab, var(--primary) 14%, transparent);
-  transform: translateY(-1px);
-  border: 1px solid color-mix(in oklab, var(--primary) 40%, transparent);
-}
-
-/* ردیف بج‌ها/نمادها (افزوده) */
-.badgeRow {
-  display: grid; place-items: center;
-  padding-top: var(--sp-2);
-}
-.badgeWrap {
-  display: inline-flex; gap: var(--sp-3); flex-wrap: wrap; align-items: center; justify-content: center;
-}
-.badgeWrap img {
-  height: 32px; width: auto;
-  background: color-mix(in oklab, var(--text) 4%, transparent);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 6px 8px;
-  box-shadow: var(--elev-xs);
-}
-
-/* پایین فوتر */
-.bottom {
-  display: grid;
-  grid-template-columns: 1fr auto; /* کپی راست، سوشال چپ در RTL */
   gap: 8px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px 0;
+}
+
+/* هر کارت مزیت: چیپ تخت با مرز لطیف و هیت‌تارگت مناسب */
+.benefit {
+  scroll-snap-align: start;
+  display: inline-flex;
   align-items: center;
-  padding-top: 8px;
-  margin-top: 8px;
-  border-top: 1px solid var(--border);
-}
-.copy {
-  color: var(--text-weak);
-  font-size: .9rem;
-}
-
-/* شبکه‌های اجتماعی فشرده و پرمیوم */
-.social {
-  display: inline-flex;
   gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--r-lg);
+  background: transparent;
+  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  white-space: nowrap;
+  transition: border-color var(--dur-150), background-color var(--dur-150), color var(--dur-150);
 }
 
-.social a {
-  position: relative; /* برای تولتیپ لازم داریم */
-  display: inline-flex;
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+.benefit:hover {
+  border-color: color-mix(in oklab, var(--primary) 35%, transparent);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
+}
+
+.benefitIcon { font-size: 1rem; }
+.benefitText { font-weight: 700; color: var(--text-strong); font-size: .92rem; }
+
+/* از 768px به بالا: پنج‌ستونه و بدون اسکرول */
+@media (min-width: 768px) {
+  .benefits {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+    overflow: visible;
+    padding: 0;
+  }
+  .benefit { justify-content: center; white-space: normal; }
+}
+
+/* ===== پیام احساسی — بسیار مینیمال ===================================== */
+.bottomBlurb {
+  display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(180deg, var(--surface-2), var(--surface));
-  border: 1px solid var(--border);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .06) inset,
-              0 1px 6px rgba(0, 0, 0, .08);
+  gap: 6px;
+  font-size: .92rem;
+  font-weight: 700;
+  color: var(--text-strong);
+  padding-block: 4px;
+}
+
+.blurbIcon { font-size: 1.05rem; }
+.blurbHeart { font-size: 1.05rem; }
+
+/* مینیمال: انیمیشن قلب خاموش؛ اگر خواستی روشنش کنی، animation بده */
+@media (prefers-reduced-motion: no-preference) {
+  .blurbHeart { animation: none; }
+}
+
+/* ===== بخش پایینی: کپی‌رایت + شبکه‌ها ================================== */
+/* ===== بخش پایینی: کپی‌رایت + شبکه‌ها ================================== */
+.bottom {
+  display: grid;
+  gap: 10px;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+  grid-template-columns: 1fr; /* موبایل: تک‌ستونه */
+  text-align: center; /* پیش‌فرض: وسط */
+}
+
+/* از 768px به بالا: کپی راست، سوشال چپ (در RTL) */
+@media (min-width: 768px) {
+  .bottom {
+    grid-template-columns: 1fr auto;
+    text-align: start;
+  }
+}
+
+
+
+.copy {
+  color: var(--text-weak);
+  font-size: .85rem;
+}
+
+/* شبکه‌های اجتماعی: آیکن تخت، کم‌کنتراست، هیت‌تارگت مناسب */
+/* فقط در موبایل: شبکه‌ها سمت چپ */
+@media (max-width: 767px) {
+  .social {
+    justify-content: flex-start; /* چپ‌چین */
+  }
+}
+.social a {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 32px;
+  block-size: 32px;
+  border-radius: 8px;
   color: var(--text);
-  transition: transform var(--dur-150),
-              box-shadow var(--dur-150),
-              background var(--dur-150),
-              border-color var(--dur-150);
+  background: transparent;
+  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  transition:
+    transform var(--dur-150),
+    border-color var(--dur-150),
+    background-color var(--dur-150),
+    color var(--dur-150);
 }
 
 .social a:hover {
   transform: translateY(-1px);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, .08) inset,
-              0 4px 12px rgba(0, 0, 0, .12);
-  background: linear-gradient(180deg, var(--surface-3), var(--surface-2));
-  border-color: color-mix(in oklab, var(--primary) 40%, var(--border));
+  color: var(--primary);
+  border-color: color-mix(in oklab, var(--primary) 40%, transparent);
+  background: color-mix(in oklab, var(--primary) 10%, transparent);
 }
 
-/* ===== Tooltip با data-label ===== */
-.social a span::after {
-  content: attr(data-label);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  font-size: .75rem;
-  font-weight: 600;
-  color: var(--text);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-sm);
-  padding: 2px 6px;
-  box-shadow: var(--elev-xs);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--dur-150), transform var(--dur-150);
-  z-index: 10;
+/* تولتیپ بصری حذف شده (سادگی بیشتر)؛ می‌تونی title در HTML نگه داری */
+
+/* ===== فوکوس قابل‌دسترسی =============================================== */
+:where(a, button, [role="button"]):focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px color-mix(in oklab, var(--focus-ring) 45%, transparent);
+  border-radius: 8px;
 }
 
-.social a:hover span::after {
-  opacity: 1;
-  transform: translateX(-50%) translateY(-2px);
-}
-
-
-/* ریسپانسیو لطیف */
-@media (max-width: 480px) {
-  .row { grid-template-columns: 1fr; } /* عنوان بالا، لینک‌ها زیرش */
-}
-
-/* کاهش حرکت */
+/* ===== کاهش حرکت ======================================================= */
 @media (prefers-reduced-motion: reduce) {
-  .listRow a, .social a { transition: none; }
+  .benefit,
+  .social a { transition: none; }
+}
+
+/* ===== ریز‌بهینه‌سازی‌های کوچک ======================================== */
+
+/* جلوگیری از محو شدن اسکرول‌بار افقی در iOS */
+.benefits::-webkit-scrollbar { height: 6px; }
+.benefits::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--text) 14%, transparent);
+  border-radius: 999px;
 }

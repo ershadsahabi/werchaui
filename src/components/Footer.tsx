@@ -11,64 +11,54 @@ export default function Footer() {
       <div className={styles.topLine} aria-hidden="true" />
 
       <div className={`container ${styles.inner}`}>
-        {/* نوار مزایا (افزوده) */}
+
+        {/* نوار مزایا */}
         <section className={styles.benefits} aria-label="مزایای فروشگاه">
+          <div className={styles.benefit}>
+            <span className={styles.benefitIcon} aria-hidden="true">✅</span>
+            <span className={styles.benefitText}>تضمین اصالت کالا</span>
+          </div>
           <div className={styles.benefit}>
             <span className={styles.benefitIcon} aria-hidden="true">🚚</span>
             <span className={styles.benefitText}>ارسال سریع و مطمئن</span>
+          </div>
+          <div className={styles.benefit}>
+            <span className={styles.benefitIcon} aria-hidden="true">📝</span>
+            <span className={styles.benefitText}>بلاگ (مقالات)</span>
           </div>
           <div className={styles.benefit}>
             <span className={styles.benefitIcon} aria-hidden="true">💬</span>
             <span className={styles.benefitText}>پشتیبانی واقعی</span>
           </div>
           <div className={styles.benefit}>
-            <span className={styles.benefitIcon} aria-hidden="true">🔁</span>
-            <span className={styles.benefitText}>۷ روز ضمانت بازگشت</span>
+            <span className={styles.benefitIcon} aria-hidden="true">🔄</span>
+            <span className={styles.benefitText}>مرجوعی آسان</span>
           </div>
         </section>
 
-        {/* ردیف لینک‌های خرید (افقی) */}
-        <nav className={styles.row} aria-label="پیوندهای خرید">
-          <span className={styles.rowTitle}>خرید</span>
-          <ul className={styles.listRow}>
-            <li><Link href={c.nav.shop}>فروشگاه</Link></li>
-            <li><Link href="/categories/food">غذای سگ و گربه</Link></li>
-            <li><Link href="/categories/snacks">تشویقی</Link></li>
-            <li><Link href="/categories/accessories">اکسسوری</Link></li>
-            <li><Link href={c.nav.brands}>برندها</Link></li>
-            <li><Link href={c.nav.offers}>پیشنهادها</Link></li>
-          </ul>
-        </nav>
-
-        {/* ردیف لینک‌های پشتیبانی (افقی) */}
-        <nav className={styles.row} aria-label="پیوندهای پشتیبانی">
-          <span className={styles.rowTitle}>پشتیبانی</span>
-          <ul className={styles.listRow}>
-            <li><Link href={c.nav.faq}>سؤالات متداول</Link></li>
-            <li><Link href={c.nav.shipping}>ارسال و تحویل</Link></li>
-            <li><Link href={c.nav.returns}>مرجوعی و تعویض</Link></li>
-            <li><Link href={c.nav.contact}>ارتباط با ما</Link></li>
-          </ul>
-        </nav>
-
+        <p className={styles.bottomBlurb}>
+          <span className={styles.blurbIcon} aria-hidden="true">🐶</span>
+          شادی پت‌هامون، خوشحالی دل ماست
+          <span className={styles.blurbIcon} aria-hidden="true">🐱</span>
+          <span className={styles.blurbHeart} aria-hidden="true">💖</span>
+        </p>
 
         {/* پایین فوتر: کپی‌رایت + شبکه‌ها */}
         <div className={styles.bottom}>
           <span className={styles.copy}>© {y} {c.brand} — همه حقوق محفوظ است.</span>
           <div className={styles.social} aria-label="شبکه‌های اجتماعی">
-<a href={c.socials.instagram} target="_blank" rel="noopener noreferrer" aria-label="اینستاگرام">
-  <span data-label="اینستاگرام">{iconInstagram}</span>
-</a>
-<a href={c.socials.x} target="_blank" rel="noopener noreferrer" aria-label="X">
-  <span data-label="X">{iconX}</span>
-</a>
-<a href={c.socials.telegram} target="_blank" rel="noopener noreferrer" aria-label="تلگرام">
-  <span data-label="تلگرام">{iconTelegram}</span>
-</a>
-<a href={c.socials.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="واتساپ">
-  <span data-label="واتساپ">{iconWhatsapp}</span>
-</a>
-
+            <a href={c.socials.instagram} target="_blank" rel="noopener noreferrer" aria-label="اینستاگرام" title="Instagram">
+              <span data-label="اینستاگرام">{iconInstagram}</span>
+            </a>
+            <a href={c.socials.x} target="_blank" rel="noopener noreferrer" aria-label="X" title="X">
+              <span data-label="X">{iconX}</span>
+            </a>
+            <a href={c.socials.telegram} target="_blank" rel="noopener noreferrer" aria-label="تلگرام" title="Telegram">
+              <span data-label="تلگرام">{iconTelegram}</span>
+            </a>
+            <a href={c.socials.whatsapp} target="_blank" rel="noopener noreferrer" aria-label="واتساپ" title="WhatsApp">
+              <span data-label="واتساپ">{iconWhatsapp}</span>
+            </a>
           </div>
         </div>
       </div>
@@ -78,7 +68,11 @@ export default function Footer() {
 
 /* آیکن‌های مینیمال */
 function iconBase(path: string, size = 18) {
-  return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true"><path d={path} fill="currentColor" /></svg>;
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
+      <path d={path} fill="currentColor" />
+    </svg>
+  );
 }
 const iconInstagram = iconBase("M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5zm5 5a5 5 0 100 10 5 5 0 000-10zm6.5-.9a1.1 1.1 0 100 2.2 1.1 1.1 0 000-2.2z");
 const iconTelegram  = iconBase("M21.9 5.3L3.8 12.3c-1 .4-1 1.7.1 2l4.5 1.4 1.7 5c.2 .7 1.1 .8 1.5 .2l2.4-3.3 4.7 3.4c.6 .5 1.5 .1 1.7-.7l2.8-13c.3-1-0.7-1.8-1.3-1.4z");

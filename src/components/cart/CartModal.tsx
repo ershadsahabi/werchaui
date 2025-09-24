@@ -5,7 +5,6 @@ import Image from 'next/image';
 import styles from './CartModal.module.css';
 import { useCartStore, useCartTotal } from '@/store/cart';
 import { useCartUI } from '@/store/cart-ui';
-import GuardedCheckoutLink from '@/components/GuardedCheckoutLink';
 
 function formatIRR(n: number) {
   try { return n.toLocaleString('fa-IR'); } catch { return String(n); }
@@ -33,7 +32,7 @@ export default function CartModal() {
     return () => document.removeEventListener('keydown', onKey);
   }, [closeCart]);
 
-  // قفل اسکرول + فوکوس + تِرپ فوکِس
+  // قفل اسکرول + فوکوس + ترپ فاکس
   useEffect(() => {
     if (!open) return;
     lastActiveRef.current = document.activeElement as HTMLElement | null;
@@ -125,6 +124,8 @@ export default function CartModal() {
                 const isZero = hasStock && (it.stock as number) === 0;
                 const subtotal = (it.price || 0) * (it.qty || 0);
 
+                const isOne = (it.qty || 0) <= 1;
+
                 return (
                   <article key={it.id} className={styles.row} role="listitem" aria-label={it.title}>
                     <div className={styles.thumbWrap}>
@@ -135,17 +136,6 @@ export default function CartModal() {
                         height={72}
                         className={styles.thumb}
                       />
-                      <button
-                        type="button"
-                        className={`${styles.removeFab}`}
-                        onClick={() => remove(it.id)}
-                        aria-label="حذف از سبد"
-                        title="حذف"
-                      >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                        </svg>
-                      </button>
                     </div>
 
                     <div className={styles.body}>
@@ -169,15 +159,27 @@ export default function CartModal() {
                     </div>
 
                     <div className={styles.controls}>
-                      <div className={styles.qty}>
+                      <div className={styles.qty} aria-label="تعداد محصول">
+                        {/* minus / trash */}
                         <button
                           type="button"
-                          onClick={() => setQty(it.id, Math.max(1, it.qty - 1))}
-                          aria-label="کم کردن"
-                          disabled={it.qty <= 1}
-                          className={styles.iconBtn}
+                          onClick={() => {
+                            if (isOne) return remove(it.id);
+                            return setQty(it.id, Math.max(1, it.qty - 1));
+                          }}
+                          aria-label={isOne ? "حذف از سبد" : "کم کردن"}
+                          title={isOne ? "حذف" : "کم کردن"}
+                          className={`${styles.iconBtn} ${styles.btnDec}`}
                         >
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/></svg>
+                          {isOne ? (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                              <path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                            </svg>
+                          ) : (
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                              <path d="M5 12h14"/>
+                            </svg>
+                          )}
                         </button>
 
                         <input
@@ -210,22 +212,15 @@ export default function CartModal() {
                             setQty(it.id, capped);
                           }}
                           aria-label="افزایش"
+                          title="افزایش"
                           disabled={!!atMax}
-                          className={styles.iconBtn}
+                          className={`${styles.iconBtn} ${styles.btnInc}`}
                         >
-                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                            <path d="M12 5v14M5 12h14"/>
+                          </svg>
                         </button>
                       </div>
-
-                      {/* مخفی شد؛ حالا موبایل هم از removeFab استفاده می‌کند */}
-                      <button
-                        type="button"
-                        className={styles.removeInline}
-                        onClick={() => remove(it.id)}
-                        aria-label="حذف از سبد"
-                      >
-                        حذف
-                      </button>
                     </div>
                   </article>
                 );
@@ -238,11 +233,12 @@ export default function CartModal() {
                 <strong>{formatIRR(total)}</strong>
                 <span className={styles.unitSuffix}>تومان</span>
               </div>
+
               <div className={styles.actions}>
-                <Link href="/cart" className={styles.ghostBtn} onClick={closeCart}>مشاهده سبد</Link>
-                <GuardedCheckoutLink className={styles.checkoutBtn} onClick={closeCart}>
-                  ادامه ثبت سفارش
-                </GuardedCheckoutLink>
+                {/* فقط یک دکمه — مسیر /cart — اما از استایل checkoutBtn استفاده شده */}
+                <Link href="/cart" className={styles.checkoutBtn} onClick={closeCart}>
+                  مشاهده سبد خرید
+                </Link>
               </div>
             </footer>
           </>

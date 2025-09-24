@@ -77,51 +77,6 @@
   pointer-events: none;
 }
 
-/* ===== Search (بدون رینگ فوکِس) ======================================= */
-.search {
-  min-inline-size: 0;      /* اجازهٔ جمع‌شدن محتوا */
-  flex: 1 1 200px;
-  display: none;           /* موبایل: داخل دراور */
-  align-items: center;
-  gap: 6px;
-  background: var(--input-bg);
-  border: 1px solid var(--input-border);
-  border-radius: var(--r-pill);
-  padding: 4px 6px 4px 8px;
-  transition: border-color var(--dur-300), background var(--dur-300), box-shadow var(--dur-300);
-}
-/* هنگام فوکِس داخل، هیچ رینگ/برجستگی اضافه‌ای نده */
-.search:focus-within {
-  border-color: var(--input-border);
-  box-shadow: none;
-}
-.searchOpen { display: flex; min-inline-size: 0; flex: 1 1 180px; }
-
-.searchInput {
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
-  border: none;
-  color: var(--input-text);
-  inline-size: 100%;
-  min-block-size: var(--input-h-md);
-  padding: 0 8px;
-  outline: none;
-  box-shadow: none; /* لغو هر رینگ سراسری */
-}
-.searchInput::placeholder { color: var(--input-ph); }
-
-.searchBtn {
-  inline-size: 36px; block-size: 36px;
-  border-radius: var(--r-pill);
-  display: inline-flex;
-  align-items: center; justify-content: center;
-  color: var(--icon-weak);
-  transition: background var(--dur-300), color var(--dur-300);
-  cursor: pointer;
-}
-.searchBtn:hover { background: var(--surface-2); color: var(--icon-color); }
-.searchBtn:focus-visible { box-shadow: none; outline: none; }
 
 /* ===== Desktop Nav ====================================================== */
 .navDesktop {
@@ -175,7 +130,7 @@
   color: var(--on-accent);
   font-size: 11px; font-weight: 800;
   display: inline-flex; align-items: center; justify-content: center;
-  border: 1px solid color-mix(in oklab, black 16%, transparent);
+  border: none;
   box-shadow: 0 2px 6px rgba(0,0,0,.25);
 }
 

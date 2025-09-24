@@ -1,6 +1,6 @@
 // منبع دادهٔ فرانت برای اطلاعات تماس و لینک‌ها
 export const CONTACT = {
-  brand: "Wircino",
+  brand: "ورچینو",
   slogan: "همه‌چیز برای سلامت و شادی پت",
   addressLines: [
     "کردستان، سنندج",

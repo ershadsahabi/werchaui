@@ -1,4 +1,4 @@
-// F:\Shahrivar1404\Werch_app\werchaui\src\lib\server-fetch.ts
+// src\lib\server-fetch.ts
 
 import { cookies } from "next/headers";
 

@@ -21,7 +21,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void }) 
   const [showPw2, setShowPw2] = useState(false);
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null); // فقط برای خطاهای عمومی
+  const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
 
   // focus
@@ -56,7 +56,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void }) 
       return;
     }
     if (passwordsMismatch) {
-      return; // پیام mismatch به‌صورت لوکال زیر فیلد دوم نمایش داده می‌شود
+      return;
     }
 
     setError(null);
@@ -93,7 +93,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void }) 
           onChange={(e)=>setEmail(e.target.value)}
           autoComplete="email"
           inputMode="email"
-          placeholder="" /* فقط لیبل دیده می‌شود */
+          placeholder=""
           required
           aria-describedby={error ? ids.err : undefined}
           aria-invalid={error ? true : undefined}
@@ -116,7 +116,7 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void }) 
         <label className={s.label} htmlFor={ids.username}>نام‌کاربری (اختیاری)</label>
       </div>
 
-      {/* رمز + تکرار رمز — کنار هم در یک ردیف */}
+      {/* رمز + تکرار رمز */}
       <div className={s.grid}>
         <div className={s.field}>
           <span className={s.icon} aria-hidden>🔒</span>
@@ -212,8 +212,8 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void }) 
         </div>
       </div>
 
-      {done && <p id={ids.success} className={s.success} role="status">حساب با موفقیت ساخته شد!</p>}
-      {error && <p id={ids.err} className={s.error} role="alert">{error}</p>}
+      {done && <p id={ids.success} className={s.success} role="status" aria-live="polite">حساب با موفقیت ساخته شد!</p>}
+      {error && <p id={ids.err} className={s.error} role="alert" aria-live="polite">{error}</p>}
 
       <div className={s.helper}>
         <label className={s.checkLabel}>
@@ -239,15 +239,11 @@ export default function RegisterForm({ onSuccess }: { onSuccess?: () => void }) 
       {/* فقط برای این فرم: فوکوس براق ورودی‌ها خاموش شود */}
       <style jsx>{`
         .quiet-focus :global(.${s.input}:focus) {
-          box-shadow: none !important;                  /* بدون درخشش */
+          box-shadow: none !important;
           border-color: color-mix(in oklab, var(--primary) 34%, var(--border) 66%) !important;
           background: color-mix(in oklab, var(--surface) 90%, transparent) !important;
         }
-        /* اگر خواستی هنگام hover هم مات باشه: */
-        .quiet-focus :global(.${s.input}:hover) {
-          box-shadow: none;
-        }
-        /* placeholder همچنان نامرئی بماند */
+        .quiet-focus :global(.${s.input}:hover) { box-shadow: none; }
         .quiet-focus :global(.${s.input}::placeholder) { opacity: 0; }
       `}</style>
     </form>
