@@ -1,3 +1,4 @@
+// src\components\blog\TrackRead.tsx
 "use client";
 
 import { useEffect } from "react";

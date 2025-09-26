@@ -1,5 +1,3 @@
-// src\lib\api.ts
-
 // Detect server vs client
 const isServer = typeof window === 'undefined';
 
@@ -21,16 +19,18 @@ export const endpoints = {
   me:         `${API_BASE}/api/accounts/me/`,
 
   // Shop
-  products:    `${API_BASE}/api/catalog/products/`,
-  orderCreate: `${API_BASE}/api/orders/create/`,
-  lastAddress: `${API_BASE}/api/orders/last-address/`,
+  products:       `${API_BASE}/api/catalog/products/`,
+  productDetail:  (slug: string) => `${API_BASE}/api/catalog/products/${encodeURIComponent(slug)}/`,
+  categories:     `${API_BASE}/api/catalog/categories/`, 
+  orderCreate:    `${API_BASE}/api/orders/create/`,
+  lastAddress:    `${API_BASE}/api/orders/last-address/`,
 
-  // Blog (جدید)
-  blogIndex:     `${API_BASE}/api/blog/posts/`,            // GET (list)
-  blogPosts:     `${API_BASE}/api/blog/posts/`,            // + <slug>/  → GET (detail)
-  blogCategories:`${API_BASE}/api/blog/categories/`,       // GET
-  blogRefs:      `${API_BASE}/api/blog/references/`,       // (اگر داری)
+  // Blog
+  blogIndex:      `${API_BASE}/api/blog/posts/`,
+  blogPosts:      `${API_BASE}/api/blog/posts/`,
+  blogCategories: `${API_BASE}/api/blog/categories/`,
+  blogRefs:       `${API_BASE}/api/blog/references/`,
 
-  // Helper‌های فانکشنال
+  // Helpers
   blogPost: (slug: string) => `${API_BASE}/api/blog/posts/${encodeURIComponent(slug)}/`,
 };

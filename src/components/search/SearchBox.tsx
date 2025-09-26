@@ -1,7 +1,8 @@
-// components/search/SearchBox.tsx
+// Werch_app\werchaui\src\components\search\SearchBox.tsx
+
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { endpoints } from '@/lib/api';
@@ -9,6 +10,7 @@ import styles from './SearchBox.module.css';
 
 type ProductHit = {
   id: number;
+  slug?: string;
   title: string;
   image?: string | null;
   price: number;
@@ -18,10 +20,10 @@ type ProductHit = {
 type Props = {
   id?: string;
   placeholder?: string;
-  className?: string;         // برای استفاده با استایل‌های موجود هدر
-  inputClassName?: string;    // مثل styles.searchInput
-  buttonClassName?: string;   // مثل styles.searchBtn
-  onSubmitted?: () => void;   // در موبایل برای بستن دراور
+  className?: string;
+  inputClassName?: string;
+  buttonClassName?: string;
+  onSubmitted?: () => void;
 };
 
 const STORAGE_KEY = 'petshop-search-recent';
@@ -50,13 +52,14 @@ export default function SearchBox({
   const listId = `${id}-listbox`;
   const inputId = `${id}-input`;
 
-  // recent searches
+  // recent searches (load)
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) setRecent(JSON.parse(raw));
     } catch {}
   }, []);
+
   const pushRecent = (term: string) => {
     try {
       const prev = recent.filter((r) => r !== term);
@@ -66,7 +69,7 @@ export default function SearchBox({
     } catch {}
   };
 
-  // خارج کلیک → بستن
+  // click outside → close
   useEffect(() => {
     const onDoc = (e: MouseEvent) => {
       if (!boxRef.current) return;
@@ -79,11 +82,14 @@ export default function SearchBox({
     return () => document.removeEventListener('mousedown', onDoc);
   }, []);
 
-  // دی‌بونس فچ
+  // debounce fetch
   useEffect(() => {
-    if (!q.trim()) {
+    const _clean = (v: any) =>
+      v == null || v === '' || v === 'undefined' || v === 'null' ? null : v;
+
+    if (!_clean(q)) {
       setHits([]);
-      setOpen(recent.length > 0); // خالی: فقط «جستجوهای اخیر» را نشان بده
+      setOpen(recent.length > 0); // show recent if empty
       return;
     }
 
@@ -94,7 +100,9 @@ export default function SearchBox({
 
     const t = setTimeout(async () => {
       try {
-        const url = `${endpoints.products}?page_size=5&q=${encodeURIComponent(q.trim())}`;
+        const url = `${endpoints.products}?page_size=5&q=${encodeURIComponent(
+          String(q).trim()
+        )}`;
         const res = await fetch(url, { signal: ctrl.signal, cache: 'no-store' });
         if (!res.ok) throw new Error('failed');
         const data = await res.json();
@@ -102,6 +110,7 @@ export default function SearchBox({
         setHits(
           list.map((p: any) => ({
             id: p.id,
+            slug: p.slug,
             title: p.title,
             image: p.image || null,
             price: p.price,
@@ -127,6 +136,10 @@ export default function SearchBox({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q]);
 
+  const goToDetail = (handle: string | number) => {
+    router.push(`/shop/${handle}`);
+  };
+
   const onSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     const term = q.trim();
@@ -134,15 +147,15 @@ export default function SearchBox({
 
     pushRecent(term);
 
-    // اگر آیتمی فعال است و انتخاب‌پذیر، مستقیم به صفحه محصول برو
+    // go to selected item if any
     if (active >= 0 && hits[active]) {
-      const pid = hits[active].id;
-      router.push(`/product/${pid}`);
+      const handle = hits[active].slug ?? String(hits[active].id);
+      goToDetail(handle);
     } else {
-      // در غیر این صورت به صفحه لیست نتایج
+      // otherwise go to search results page
       const params = new URLSearchParams(sp.toString());
       params.set('q', term);
-      params.delete('page'); // از اول
+      params.delete('page'); // reset to first page
       router.push(`/shop?${params.toString()}`);
     }
 
@@ -181,7 +194,6 @@ export default function SearchBox({
     'aria-owns': listId,
     'aria-controls': listId,
   };
-
   const activeDesc = active >= 0 ? `${id}-opt-${hits[active]?.id}` : undefined;
 
   return (
@@ -202,133 +214,149 @@ export default function SearchBox({
           onKeyDown={onKeyDown}
           autoComplete="off"
         />
-<button
-  type="submit"
-  className={`${styles.btn} ${buttonClassName || ''}`}
-  aria-label="جستجو"
->
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <circle cx="10" cy="10" r="6" stroke="currentColor" strokeWidth="2"/>
-    <path d="M15 15l6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-  </svg>
-</button>
-
+        <button
+          type="submit"
+          className={`${styles.btn} ${buttonClassName || ''}`}
+          aria-label="جستجو"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <circle cx="10" cy="10" r="6" stroke="currentColor" strokeWidth="2" />
+            <path d="M15 15l6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </button>
       </form>
 
-      {/* لیست پیشنهادها */}
       {(showHits || showRecent) && (
         <ul id={listId} role="listbox" className={styles.list} aria-label="پیشنهادهای جستجو">
           {showRecent && (
-  <>
-    <li className={styles.groupTitle} aria-hidden>جستجوهای اخیر</li>
-
-    {recent.map((term, idx) => {
-      const idAttr = `${id}-recent-${idx}`;
-      return (
-        <li
-          key={idAttr}
-          id={idAttr}
-          role="option"
-          aria-selected={false}
-          className={`${styles.item} ${styles.recentRow}`}
-          onMouseDown={(e) => e.preventDefault()}
-        >
-          {/* آیکن ساعت */}
-          <span className={styles.recentIcon} aria-hidden="true">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8"/>
-              <path d="M12 7v5l3 2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </span>
-
-          {/* متن ترم - کلیک روی متن = اجرا */}
-          <button
-            type="button"
-            className={styles.recentTerm}
-            title={term}
-            onClick={() => { setQ(term); setTimeout(() => onSubmit(), 0); }}
-          >
-            {term}
-          </button>
-
-          {/* حذف تکی */}
-          <button
-            type="button"
-            className={styles.recentRemove}
-            aria-label={`حذف ${term} از جستجوهای اخیر`}
-            title="حذف از تاریخچه"
-            onClick={() => {
-              const next = recent.filter((r) => r !== term);
-              setRecent(next);
-              try { localStorage.setItem('petshop-search-recent', JSON.stringify(next)); } catch {}
-            }}
-          >
-            ×
-          </button>
-        </li>
-      );
-    })}
-
-    {/* اکشن گروهی */}
-    <li className={styles.recentActions}>
-      <button
-        type="button"
-        className={styles.clearAllBtn}
-        onClick={() => {
-          setRecent([]);
-          try { localStorage.removeItem('petshop-search-recent'); } catch {}
-        }}
-      >
-        پاک کردن همه
-      </button>
-    </li>
-
-    {q.trim().length > 0 && <li className={styles.separator} aria-hidden />}
-  </>
-)}
-
-
-          {showHits && hits.map((h, i) => {
-            const idAttr = `${id}-opt-${h.id}`;
-            const selected = i === active;
-            return (
-              <li
-                key={idAttr}
-                id={idAttr}
-                role="option"
-                aria-selected={selected}
-                className={`${styles.item} ${selected ? styles.itemActive : ''}`}
-                onMouseEnter={() => setActive(i)}
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => { router.push(`/product/${h.id}`); setOpen(false); onSubmitted?.(); }}
-              >
-                <div className={styles.thumb}>
-                  <Image
-                    src={h.image || '/publicimages/hero22.png'}
-                    alt=""
-                    width={40}
-                    height={40}
-                  />
-                </div>
-                <div className={styles.meta}>
-                  <div className={styles.title} title={h.title}>{h.title}</div>
-                  <div className={styles.sub}>
-                    {h.price.toLocaleString('fa-IR')} تومان
-                    {typeof h.stock === 'number' && h.stock >= 0 && (
-                      <span className={styles.stock}> • موجودی {h.stock}</span>
-                    )}
-                  </div>
-                </div>
+            <>
+              <li className={styles.groupTitle} aria-hidden>
+                جستجوهای اخیر
               </li>
-            );
-          })}
+
+              {recent.map((term, idx) => {
+                const idAttr = `${id}-recent-${idx}`;
+                return (
+                  <li
+                    key={idAttr}
+                    id={idAttr}
+                    role="option"
+                    aria-selected={false}
+                    className={`${styles.item} ${styles.recentRow}`}
+                    onMouseDown={(e) => e.preventDefault()}
+                  >
+                    <span className={styles.recentIcon} aria-hidden="true">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+                        <path
+                          d="M12 7v5l3 2"
+                          stroke="currentColor"
+                          strokeWidth="1.8"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </span>
+
+                    <button
+                      type="button"
+                      className={styles.recentTerm}
+                      title={term}
+                      onClick={() => {
+                        setQ(term);
+                        setTimeout(() => onSubmit(), 0);
+                      }}
+                    >
+                      {term}
+                    </button>
+
+                    <button
+                      type="button"
+                      className={styles.recentRemove}
+                      aria-label={`حذف ${term} از جستجوهای اخیر`}
+                      title="حذف از تاریخچه"
+                      onClick={() => {
+                        const next = recent.filter((r) => r !== term);
+                        setRecent(next);
+                        try {
+                          localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+                        } catch {}
+                      }}
+                    >
+                      ×
+                    </button>
+                  </li>
+                );
+              })}
+
+              <li className={styles.recentActions}>
+                <button
+                  type="button"
+                  className={styles.clearAllBtn}
+                  onClick={() => {
+                    setRecent([]);
+                    try {
+                      localStorage.removeItem(STORAGE_KEY);
+                    } catch {}
+                  }}
+                >
+                  پاک کردن همه
+                </button>
+              </li>
+
+              {q.trim().length > 0 && <li className={styles.separator} aria-hidden />}
+            </>
+          )}
+
+          {showHits &&
+            hits.map((h, i) => {
+              const idAttr = `${id}-opt-${h.id}`;
+              const selected = i === active;
+              return (
+                <li
+                  key={idAttr}
+                  id={idAttr}
+                  role="option"
+                  aria-selected={selected}
+                  className={`${styles.item} ${selected ? styles.itemActive : ''}`}
+                  onMouseEnter={() => setActive(i)}
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() => {
+                    const handle = h.slug ?? String(h.id);
+                    goToDetail(handle); // ← /shop/[slug]
+                    setOpen(false);
+                    onSubmitted?.();
+                  }}
+                >
+                  <div className={styles.thumb}>
+                    <Image
+                      src={h.image || '/publicimages/hero22.png'}
+                      alt=""
+                      width={40}
+                      height={40}
+                    />
+                  </div>
+                  <div className={styles.meta}>
+                    <div className={styles.title} title={h.title}>
+                      {h.title}
+                    </div>
+                    <div className={styles.sub}>
+                      {h.price.toLocaleString('fa-IR')} تومان
+                      {typeof h.stock === 'number' && h.stock >= 0 && (
+                        <span className={styles.stock}> • موجودی {h.stock}</span>
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
 
           {q.trim() && (
             <li
@@ -344,7 +372,6 @@ export default function SearchBox({
           )}
         </ul>
       )}
-
     </div>
   );
 }

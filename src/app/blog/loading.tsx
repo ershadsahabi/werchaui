@@ -1,3 +1,5 @@
+// src\app\blog\loading.tsx
+
 export default function LoadingBlog() {
   return (
     <section className="stack gap-4" dir="rtl">

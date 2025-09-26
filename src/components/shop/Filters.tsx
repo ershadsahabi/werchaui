@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import styles from '@/app/shop/Shop.module.css';
 
 type Search = {
@@ -9,12 +10,19 @@ type Search = {
   sort?: 'latest'|'price-asc'|'price-desc'|'rating'; page?: string;
 };
 
+type CategoryFacet = {
+  key: string;
+  label: string;
+  image?: string | null;
+  description?: string | null;
+};
+
 export default function Filters({
   facets,
   current,
   className,
 }: {
-  facets: { categories: { key: string; label: string }[]; brands: string[] };
+  facets: { categories: CategoryFacet[]; brands: string[] };
   current: Search;
   className?: string;
 }) {
@@ -23,11 +31,17 @@ export default function Filters({
   const router = useRouter();
   const sp = useSearchParams();
 
-  const [q, setQ] = useState(current.q || '');
+  // فقط برای ورودی‌ها state محلی داریم
+  const [q, setQ]     = useState(current.q   || '');
   const [min, setMin] = useState(current.min || '');
   const [max, setMax] = useState(current.max || '');
-  const cat = current.cat || '';
+  const cat   = current.cat   || '';
   const brand = current.brand || '';
+
+  // همگام‌سازی state ورودی‌ها وقتی URL/props عوض می‌شود
+  useEffect(()=>{ setQ(current.q || '');   }, [current.q]);
+  useEffect(()=>{ setMin(current.min || ''); }, [current.min]);
+  useEffect(()=>{ setMax(current.max || ''); }, [current.max]);
 
   const setParam = (patch: Partial<Search>) => {
     const next = new URLSearchParams(sp.toString());
@@ -39,19 +53,35 @@ export default function Filters({
     router.push(`${pathname}?${next.toString()}`, { scroll: false });
   };
 
+  const removeFilter = (key: keyof Search) => {
+    // علاوه بر حذف از URL، state محلی مرتبط را هم خالی کن
+    if (key === 'q')  setQ('');
+    if (key === 'min') setMin('');
+    if (key === 'max') setMax('');
+    setParam({ [key]: '' } as Partial<Search>);
+  };
+
   const clearAll = () => {
+    // URL تمیز + ورودی‌ها ریست
+    setQ(''); setMin(''); setMax('');
     router.push(`${pathname}`, { scroll: false });
   };
 
+  // چیپ‌ها را از current (و نه state محلی) می‌سازیم تا با URL هم‌نظر باشد
   const selected = useMemo(() => {
-    const chips: { key: string; label: string }[] = [];
-    if (cat) chips.push({ key: 'cat', label: facets.categories.find(c=>c.key===cat)?.label || '' });
-    if (brand) chips.push({ key: 'brand', label: brand });
-    if (min) chips.push({ key: 'min', label: `از ${Number(min).toLocaleString('fa-IR')}` });
-    if (max) chips.push({ key: 'max', label: `تا ${Number(max).toLocaleString('fa-IR')}` });
-    if (q) chips.push({ key: 'q', label: `جستجو: ${q}` });
+    const chips: { key: keyof Search; label: string }[] = [];
+    if (current.cat)  chips.push({ key: 'cat',  label: facets.categories.find(c=>c.key===current.cat)?.label || '' });
+    if (current.brand)chips.push({ key: 'brand',label: current.brand });
+    if (current.min)  chips.push({ key: 'min',  label: `از ${Number(current.min).toLocaleString('fa-IR')}` });
+    if (current.max)  chips.push({ key: 'max',  label: `تا ${Number(current.max).toLocaleString('fa-IR')}` });
+    if (current.q)    chips.push({ key: 'q',    label: `جستجو: ${current.q}` });
     return chips;
-  }, [cat, brand, min, max, q, facets.categories]);
+  }, [current, facets.categories]);
+
+  const selectedCat = useMemo(
+    () => (cat ? facets.categories.find(c => c.key === cat) || null : null),
+    [cat, facets.categories]
+  );
 
   return (
     <div className={className}>
@@ -72,7 +102,6 @@ export default function Filters({
         <div className={styles.filterBlock}>
           <label className={styles.blockTitle} htmlFor="q-input">جستجو</label>
           <div className={styles.row}>
-            {/* از styles.select برای رنگ/کنتراست ورودی‌ها استفاده می‌کنیم */}
             <input
               id="q-input"
               className={styles.select}
@@ -82,9 +111,8 @@ export default function Filters({
             />
             <button
               type="button"
-              onClick={()=>setParam({ q })}
+              onClick={()=>setParam({ q })}  /* q خالی ⇒ حذف پارامتر */
               title="اجرای جستجو"
-              /* تضمین کنتراست با توکن‌ها */
               style={{
                 background: 'var(--btn-bg)',
                 color: 'var(--on-primary)',
@@ -103,26 +131,43 @@ export default function Filters({
           </div>
         </div>
 
-        {/* دسته‌بندی */}
+        {/* دسته‌بندی (Dropdown) */}
         <div className={styles.filterBlock}>
-          <span className={styles.blockTitle}>دسته‌بندی</span>
-          <div className={styles.chips} role="group" aria-label="فیلتر بر اساس دسته‌بندی">
-            {facets.categories.map(c => {
-              const on = current.cat === c.key;
-              return (
-                <button
-                  key={c.key}
-                  type="button"
-                  className={`${styles.chip} ${on ? styles.chipOn : ''}`}
-                  onClick={()=> setParam({ cat: on ? '' : c.key })}
-                  aria-pressed={on}
-                  title={on ? `حذف فیلتر ${c.label}` : `اعمال فیلتر ${c.label}`}
-                >
-                  {c.label}
-                </button>
-              );
-            })}
-          </div>
+          <label className={styles.blockTitle} htmlFor="cat-select">دسته‌بندی</label>
+          <select
+            id="cat-select"
+            className={styles.select}
+            value={cat}
+            onChange={(e)=> setParam({ cat: e.target.value })}
+            title="انتخاب دسته‌بندی"
+          >
+            <option value="">همه دسته‌ها</option>
+            {facets.categories.map(c => (
+              <option key={c.key} value={c.key}>{c.label}</option>
+            ))}
+          </select>
+
+          {/* پیش‌نمایش 1×1 کامل (object-fit: contain) */}
+          {selectedCat && (
+            <div className={styles.catPreviewCard} aria-label={`پیش‌نمایش ${selectedCat.label}`}>
+              <div className={styles.catPrevMedia} /* مربع */>
+                <Image
+                  src={selectedCat.image || '/publicimages/hero22.png'}
+                  alt={selectedCat.label}
+                  fill
+                  className={styles.catPrevImg}   /* object-fit: contain */
+                  sizes="(min-width:768px) 280px, 100vw"
+                />
+              </div>
+              <div className={styles.catPrevBody}>
+                <div className={styles.catPrevTitle}>{selectedCat.label}</div>
+                {selectedCat.description ? (
+                  <div className={styles.catPrevDesc}>{selectedCat.description}</div>
+                ) : null}
+              </div>
+ 
+            </div>
+          )}
         </div>
 
         {/* برند */}
@@ -188,11 +233,11 @@ export default function Filters({
             <div className={styles.selTitle}>فیلترهای فعال</div>
             <div className={styles.selChips}>
               {selected.map(ch => (
-                <span key={ch.key} className={styles.selChip}>
+                <span key={ch.key as string} className={styles.selChip}>
                   {ch.label}
                   <button
                     type="button"
-                    onClick={()=> setParam({ [ch.key]: '' } as any)}
+                    onClick={()=> removeFilter(ch.key)}
                     aria-label={`حذف فیلتر ${ch.label}`}
                     title={`حذف فیلتر ${ch.label}`}
                   >

@@ -1,33 +1,38 @@
 'use client';
 
-// ساختار اصلی حفظ شده (anchor + Image با width/height و onLoadingComplete)
 import Image from 'next/image';
+import Link from 'next/link';
 import styles from './ProductCard.module.css';
 import { useCartStore } from '@/store/cart';
 import { useCartUI } from '@/store/cart-ui';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 type Product = {
   id: number;
+  slug?: string;           // ← برای لینک جزئیات
   title: string;
   price: number;
   image?: string | null;
   rating?: number;
-  inStock?: boolean;    // کلاینتی
-  in_stock?: boolean;   // از API
-  stock?: number;       // از API
-  badge?: string | null;
+  inStock?: boolean;       // کلاینتی (اختیاری)
+  in_stock?: boolean;      // از API
+  stock?: number;          // از API
+  badge?: string | null;   // متن بج
   category?: string;
   brand?: string;
 };
 
-export default function ProductCard({ product }: { product: Product }) {
+type Props = {
+  product: Product;
+  className?: string;
+};
+
+export default function ProductCard({ product, className }: Props) {
   const add = useCartStore((s) => s.add);
   const openCart = useCartUI((s) => s.openCart);
 
   const stockVal = typeof product.stock === 'number' ? product.stock : undefined;
 
-  // اگر stock داریم، مرجع تصمیم فقط stock>0 است
   const inStock =
     stockVal !== undefined
       ? stockVal > 0
@@ -35,24 +40,22 @@ export default function ProductCard({ product }: { product: Product }) {
 
   const [shape, setShape] = useState<'portrait' | 'landscape' | 'square' | ''>('');
 
+  // detailHref:
+  const detailHref = useMemo(() => `/shop/${product.slug ?? String(product.id)}`, [product.slug, product.id]);
+
+
   const handleAdd = () => {
     add(
-      {
-        id: product.id,
-        title: product.title,
-        price: product.price,
-        image: product.image || undefined,
-        stock: stockVal, // برای clamp تعداد در استور
-      },
+      { id: product.id, title: product.title, price: product.price, image: product.image || undefined, stock: stockVal },
       1
     );
     openCart();
   };
 
   return (
-    <div className={styles.card}>
-      <a
-        href={`/product/${product.id}`}
+    <div className={`${styles.card} ${className ?? ''}`}>
+      <Link
+        href={detailHref}
         className={`${styles.thumb} ${shape ? styles[shape] : ''}`}
         aria-label={product.title}
       >
@@ -68,46 +71,28 @@ export default function ProductCard({ product }: { product: Product }) {
           onLoadingComplete={(img) => {
             const w = img.naturalWidth || 1;
             const h = img.naturalHeight || 1;
-            if (Math.abs(w - h) / Math.max(w, h) < 0.04) {
-              setShape('square');
-            } else if (h > w) {
-              setShape('portrait');
-            } else {
-              setShape('landscape');
-            }
+            if (Math.abs(w - h) / Math.max(w, h) < 0.04) setShape('square');
+            else if (h > w) setShape('portrait');
+            else setShape('landscape');
           }}
           className={styles.img}
         />
 
-        {/* نشان سفارشی محصول */}
         {product.badge && <span className={styles.badge}>{product.badge}</span>}
 
-        {/* وضعیت موجودی */}
         {!inStock ? (
-          <span className={styles.badgeOut} aria-live="polite">
-            ناموجود
-          </span>
+          <span className={styles.badgeOut} aria-live="polite">ناموجود</span>
         ) : typeof stockVal === 'number' && stockVal > 0 ? (
-          <span className={styles.stockBadge} aria-live="polite">
-            موجودی {stockVal}
-          </span>
+          <span className={styles.stockBadge} aria-live="polite">موجودی {stockVal}</span>
         ) : null}
 
-        {/* جلوه نور ملایم */}
         <span aria-hidden className={styles.shine} />
-      </a>
+      </Link>
 
       <div className={styles.body}>
-        {/* ردیف مشترک: عنوان در راست، برند در چپ */}
         <div className={styles.head}>
-          <div id={`p-title-${product.id}`} className={styles.title} title={product.title}>
-            {product.title}
-          </div>
-          {product.brand && (
-            <div className={styles.brand} title={`برند ${product.brand}`} aria-label={`برند ${product.brand}`}>
-              {product.brand}
-            </div>
-          )}
+          <div id={`p-title-${product.id}`} className={styles.title} title={product.title}>{product.title}</div>
+          {product.brand && <div className={styles.brand} title={`برند ${product.brand}`} aria-label={`برند ${product.brand}`}>{product.brand}</div>}
         </div>
 
         <div className={styles.meta}>

@@ -1,4 +1,4 @@
-// src\app\shop\page.tsx
+// src/app/shop/page.tsx
 
 import styles from './Shop.module.css';
 import Link from 'next/link';
@@ -9,11 +9,14 @@ import ProductCard from '@/components/ProductCard';
 import { endpoints } from '@/lib/api';
 import { serverFetch } from "@/lib/server-fetch";
 
-
 const PAGE_SIZE = 12;
 
+export const metadata = {
+  title: "فروشگاه",
+  description: "فروشگاه ورچینو",
+};
+
 async function fetchProducts(params: Record<string, string>) {
-  // فقط پارامترهای تعریف‌شده و غیرخالی به URL اضافه شوند
   const usp = new URLSearchParams({ page_size: String(PAGE_SIZE) });
   Object.entries(params).forEach(([k, v]) => {
     if (v != null && v !== "" && v !== "undefined" && v !== "null") {
@@ -22,8 +25,6 @@ async function fetchProducts(params: Record<string, string>) {
   });
 
   const url = `${endpoints.products}?${usp.toString()}`;
-
-  // مهم: از serverFetch استفاده می‌کنیم تا کوکی کاربر پاس شود و زیر Throttle کاربر حساب شود
   const res = await serverFetch(url, { method: "GET", revalidate: 300 });
 
   if (!res.ok) {
@@ -33,7 +34,6 @@ async function fetchProducts(params: Record<string, string>) {
   }
   return res.json();
 }
-
 
 export default async function ShopPage({
   searchParams,
@@ -71,6 +71,7 @@ export default async function ShopPage({
       <section className="container">
         <div className={styles.grid}>
           <aside className={styles.sidebar}>
+            {/* بنر دسته داخل خودِ فیلتر رندر می‌شود */}
             <Filters facets={facets} current={s as any} className={styles.filterCard} />
           </aside>
 

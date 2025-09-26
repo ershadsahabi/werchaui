@@ -75,7 +75,7 @@
   outline:none;
   background:var(--bl-field-bg-focus);                   /* same as rest */
   box-shadow:inset 0 0 0 1px var(--bl-field-line-focus) !important;
-}
+} 
 
 /* ===================== Input with icon ===================== */
 .input{
@@ -269,12 +269,38 @@ html.light .cardChrome{
 
 
 
-/* --- Light placeholder visibility fix (put at the very end) --- */
-html.light .cardChrome{
-  --bl-placeholder: var(--text-mute); /* رنگ خوانا روی پس‌زمینه روشن */
+
+/* قوانین محکم و scoped؛ فقط اگر لازم شد */
+.cardChrome input::placeholder { color: var(--input-ph) !important; }
+.cardChrome input::-webkit-input-placeholder { color: var(--input-ph) !important; } /* برای ساپورت Safari قدیمی‌تر */
+
+
+
+
+/* --- در انتهای components/blog/filters.module.css اضافه کن --- */
+
+/* ظرف وضعیت */
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 20px; /* ارتفاع ثابت تا پرش layout نداشته باشیم */
 }
 
-html.light .cardChrome .input::placeholder{
-  color: var(--bl-placeholder) !important;
-  opacity: 1; /* جلوگیری از کم‌نور شدن پیش‌فرض مرورگر */
+/* متن وضعیت (خلاصهٔ فیلترها) */
+.statusText {
+  color: var(--text-weak);
+  font-size: .9rem;
+}
+
+/* اسپینر کوچک و خنثی */
+@keyframes bl-spin { to { transform: rotate(360deg); } }
+.spinner {
+  inline-size: 16px;
+  block-size: 16px;
+  border: 2px solid currentColor;
+  border-inline-start-color: transparent;
+  border-radius: 50%;
+  animation: bl-spin 800ms linear infinite;
+  opacity: .75;
 }

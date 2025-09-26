@@ -1,4 +1,4 @@
-// F:\Shahrivar1404\Werch_app\werchaui\src\lib\server-blog.ts
+// src\lib\server-blog.ts
 
 import { endpoints } from "./api";
 import { serverFetch } from "./server-fetch";

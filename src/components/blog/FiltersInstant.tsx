@@ -1,3 +1,4 @@
+// src/components/blog/FiltersInstant.tsx
 "use client";
 
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
@@ -18,6 +19,29 @@ export default function FiltersInstant({ categories }: { categories: BlogCategor
 
   const didMountRef = useRef(false);
 
+  // ⬅️ این ref موقعیت اسکرول را قبل از ناوبری ذخیره می‌کند
+  const savedScrollRef = useRef<number | null>(null);
+
+  // ⬅️ ناوبری با حفظ اسکرول (بدون بالا پریدن صفحه)
+  const navigateWithScrollPreserved = (href: string) => {
+    if (typeof window !== "undefined") {
+      savedScrollRef.current = window.scrollY;
+    }
+    startTransition(() => {
+      router.replace(href, { scroll: false });
+    });
+  };
+
+  // ⬅️ وقتی Transition تمام شد، اسکرول را برگردان
+  useEffect(() => {
+    if (!pending && savedScrollRef.current != null) {
+      const y = savedScrollRef.current;
+      savedScrollRef.current = null;
+      // کمی تأخیر برای اطمینان از رندر نتایج
+      requestAnimationFrame(() => window.scrollTo({ top: y }));
+    }
+  }, [pending]);
+
   const makeUrl = useMemo(() => {
     return (patch: Record<string, string | null>, resetPage: boolean) => {
       const sp = new URLSearchParams(searchParams.toString());
@@ -31,23 +55,19 @@ export default function FiltersInstant({ categories }: { categories: BlogCategor
     };
   }, [pathname, searchParams]);
 
-  function onCategoryChange(next: string) {
-    startTransition(() => {
-      router.replace(makeUrl({ category: next || null }, true), { scroll: false });
-    });
-  }
+  // --- تغییر مرتب‌سازی
   function onOrderingChange(next: string) {
-    startTransition(() => {
-      router.replace(makeUrl({ ordering: next || null }, true), { scroll: false });
-    });
+    const href = makeUrl({ ordering: next || null }, true);
+    navigateWithScrollPreserved(href);
   }
 
+  // --- جستجو
   const commitSearch = (nextQ: string) => {
-    startTransition(() => {
-      router.replace(makeUrl({ q: nextQ || null }, true), { scroll: false });
-    });
+    const href = makeUrl({ q: nextQ || null }, true);
+    navigateWithScrollPreserved(href);
   };
 
+  // دیباونس پویا برای جستجو (80–140ms)
   useEffect(() => {
     if (!didMountRef.current) {
       didMountRef.current = true;
@@ -56,7 +76,10 @@ export default function FiltersInstant({ categories }: { categories: BlogCategor
     const nextQ = q.trim();
     const currQ = (searchParams.get("q") || "").trim();
     if (nextQ === currQ) return;
-    const h = setTimeout(() => commitSearch(nextQ), 160);
+
+    const len = nextQ.length;
+    const delay = len > 16 ? 80 : len > 8 ? 110 : 140;
+    const h = setTimeout(() => commitSearch(nextQ), delay);
     return () => clearTimeout(h);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [q]);
@@ -66,10 +89,32 @@ export default function FiltersInstant({ categories }: { categories: BlogCategor
 
   function onClearAll() {
     setQ("");
-    startTransition(() => {
-      router.replace(makeUrl({ q: null, category: null, ordering: "new" }, true), { scroll: false });
-    });
+    const href = makeUrl({ q: null, category: null, ordering: "new" }, true);
+    navigateWithScrollPreserved(href);
   }
+
+  // --- ساخت لینک دسته با prefetch دستی + حفظ اسکرول
+  const categoryHref = (slug: string) => makeUrl({ category: slug || null }, true);
+
+  // برچسب مرتب‌سازی برای نمایش وضعیت
+  const orderingLabel = (() => {
+    switch (ordering) {
+      case "old": return "قدیمی‌تر";
+      case "title": return "عنوان (A→Z)";
+      case "-title": return "عنوان (Z→A)";
+      default: return "جدیدترین";
+    }
+  })();
+
+  // نام دسته فعال
+  const activeCatName = category ? (categories.find(c => c.slug === category)?.name || category) : "همه موضوعات";
+
+  // خلاصه وضعیت (همیشه نمایش بده)
+  const summary = [
+    `دسته: ${activeCatName}`,
+    `مرتب‌سازی: ${orderingLabel}`,
+    q.trim() ? `جستجو: «${q.trim()}»` : null,
+  ].filter(Boolean).join(" • ");
 
   return (
     <section
@@ -127,37 +172,44 @@ export default function FiltersInstant({ categories }: { categories: BlogCategor
         </div>
       </div>
 
-      {/* ردیف دوم: دسته‌ها (چیپ‌ها) */}
+      {/* ردیف دوم: دسته‌ها (چیپ‌ها) — به‌جای <Link> از <a> با کنترل کامل ناوبری */}
       <div className={styles.chipsRow} role="group" aria-label="دسته‌ها">
-        <button
-          type="button"
+        {/* همه موضوعات */}
+        <a
+          href={categoryHref("")}
           className={`${styles.chip} ${!category ? styles.chipActive : ""}`}
-          onClick={() => onCategoryChange("")}
           aria-pressed={!category}
+          onMouseEnter={(e) => router.prefetch((e.currentTarget as HTMLAnchorElement).href)}
+          onFocus={(e) => router.prefetch((e.currentTarget as HTMLAnchorElement).href)}
+          onClick={(e) => { e.preventDefault(); navigateWithScrollPreserved((e.currentTarget as HTMLAnchorElement).href); }}
         >
           همه موضوعات
-        </button>
-        {topCats.map((c) => (
-          <button
-            key={c.slug}
-            type="button"
-            className={`${styles.chip} ${category === c.slug ? styles.chipActive : ""}`}
-            onClick={() => onCategoryChange(c.slug)}
-            aria-pressed={category === c.slug}
-          >
-            {c.name}
-          </button>
-        ))}
+        </a>
+
+        {topCats.map((c) => {
+          const active = category === c.slug;
+          const href = categoryHref(c.slug);
+          return (
+            <a
+              key={c.slug}
+              href={href}
+              className={`${styles.chip} ${active ? styles.chipActive : ""}`}
+              aria-pressed={active}
+              onMouseEnter={() => router.prefetch(href)}
+              onFocus={() => router.prefetch(href)}
+              onClick={(e) => { e.preventDefault(); navigateWithScrollPreserved(href); }}
+            >
+              {c.name}
+            </a>
+          );
+        })}
       </div>
 
-      {/* خط وضعیت (جای قبلی) */}
+      {/* خط وضعیت: اسپینر کوچک + خلاصه فیلترها (بدون متن‌های قبلی) */}
       <div className={styles.footerRow}>
-        <div id="filters-status" className="t-mute" aria-live="polite">
-          {pending
-            ? "در حال به‌روزرسانی…"
-            : hasFilter
-              ? "نتایج به‌روز شد."
-              : "برای شروع، یک دسته را انتخاب کنید یا عبارت خود را وارد کنید."}
+        <div id="filters-status" className={styles.status} aria-live="polite">
+          {pending && <span className={styles.spinner} aria-hidden="true" />}
+          <span className={styles.statusText}>نتایج بر اساس — {summary}</span>
         </div>
 
         <div className={styles.actions}>

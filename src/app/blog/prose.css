@@ -1,13 +1,140 @@
-/* F:\Shahrivar1404\Werch_app\werchaui\src\app\blog\prose.css  */
+/* \src\app\blog\prose.css */
 
-.prose { color: var(--text); line-height: 1.9; font-size: 1.02rem; }
-.prose h2 { margin-block: 18px 10px; font-weight: 900; color: var(--text-strong); font-size: 1.3rem; }
-.prose h3 { margin-block: 14px 8px;  font-weight: 800; color: var(--text-strong); font-size: 1.1rem; }
-.prose p, .prose ul, .prose ol, .prose blockquote, .prose figure { margin-block: 10px; }
-.prose ul, .prose ol { padding-inline-start: 1.25em; }
+/* پایهٔ خوانایی + حداکثر پهنای خط */
+.prose {
+  color: var(--text);
+  line-height: 1.9;
+  font-size: 1.02rem;
+
+  /* کنترل measure برای متن‌های بلند */
+  max-inline-size: 72ch;
+  margin-inline: auto;
+
+  /* حاشیه افقی کوچک روی موبایل */
+  padding-inline: 8px;
+}
+
+/* هدینگ‌ها — با فاصله‌های تمیز و anchor-offset برای هدایت */
+.prose h2 {
+  margin-block: 22px 12px;
+  font-weight: 900;
+  color: var(--text-strong);
+  font-size: 1.3rem;
+  scroll-margin-top: 84px; /* اگر هدر چسبان داری، هدینگ زیر هدر نرود */
+}
+.prose h3 {
+  margin-block: 16px 10px;
+  font-weight: 800;
+  color: var(--text-strong);
+  font-size: 1.1rem;
+  scroll-margin-top: 84px;
+}
+
+/* پاراگراف و بلاک‌های عمومی */
+.prose p,
+.prose ul,
+.prose ol,
+.prose blockquote,
+.prose figure {
+  margin-block: 10px;
+}
+
+/* لیست‌ها؛ فاصله و تورفتگی منطقی در RTL */
+.prose ul,
+.prose ol {
+  padding-inline-start: 1.25em;
+}
 .prose li { margin-block: 6px; }
-.prose a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
-html:not(.light) .prose a:hover { color: var(--link-hover); }  /* فقط در بلاگ و فقط hover */
-.prose blockquote { border-inline-start: 3px solid var(--border); padding-inline: 12px; color: var(--text-weak); background: color-mix(in oklab, var(--text) 4%, transparent); border-radius: var(--r-sm); }
-.prose img { border-radius: var(--r-lg); }
-.prose .ref { font-size: .85em; vertical-align: super; }
+
+/* لینک‌ها */
+.prose a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: .08em;
+}
+html:not(.light) .prose a:hover { color: var(--link-hover); }
+
+/* نقل‌قول */
+.prose blockquote {
+  border-inline-start: 3px solid var(--border);
+  padding-inline: 12px;
+  color: var(--text-weak);
+  background: color-mix(in oklab, var(--text) 4%, transparent);
+  border-radius: var(--r-sm);
+}
+
+/* تصویرها: گردی و واکنش‌گرا */
+.prose img {
+  display: block;
+  max-inline-size: 100%;
+  height: auto;
+  border-radius: var(--r-lg);
+}
+
+/* رفرنس‌های داخل متن */
+.prose .ref {
+  font-size: .85em;
+  vertical-align: super;
+}
+
+/* figure / figcaption هماهنگ */
+.prose figure { margin-block: 16px; }
+.prose figcaption {
+  color: var(--text-mute);
+  font-size: .9rem;
+  text-align: center;
+  margin-block-start: 6px;
+}
+
+/* جداول (اگر در محتوا باشد) */
+.prose table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-block: 12px;
+}
+.prose th, .prose td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.prose tr:last-child td { border-bottom: none; }
+.prose th {
+  text-align: start;
+  color: var(--text-weak);
+  background: color-mix(in oklab, var(--text) 4%, transparent);
+}
+
+/* کد و pre (اگر محتوا داشت) */
+.prose code {
+  background: color-mix(in oklab, var(--text) 8%, transparent);
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: .92em;
+}
+.prose pre {
+  background: color-mix(in oklab, var(--text) 10%, transparent);
+  padding: 12px;
+  border-radius: var(--r-lg);
+  overflow: auto;
+}
+
+/* خط افقی */
+.prose hr {
+  border: 0;
+  height: 1px;
+  background: var(--border);
+  margin-block: 20px;
+}
+
+/* اندازه‌ها در موبایل کمی نرم‌تر */
+@media (max-width: 640px) {
+  .prose { font-size: 1rem; line-height: 1.85; }
+  .prose h2 { font-size: 1.22rem; }
+  .prose h3 { font-size: 1.06rem; }
+}

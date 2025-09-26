@@ -1,3 +1,5 @@
+// src\components\blog\ReferencesPanel.tsx
+
 "use client";
 
 import { useId, useState } from "react";

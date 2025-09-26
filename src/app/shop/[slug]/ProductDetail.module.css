@@ -1,0 +1,208 @@
+/* ===== Layout ===== */
+.root { padding-block: 20px 36px; }
+.bc { display:flex; gap:8px; color:var(--text-weak); margin-bottom:14px; }
+.sep{opacity:.6}
+.here{color:var(--text-strong); font-weight:800;}
+
+.header { display: grid; gap: 10px; margin-block: 6px 18px; }
+.title { font-size: 1.6rem; font-weight: 900; letter-spacing: -.01em; }
+.pills { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* دو ستونِ اصلی */
+.main {
+  display: grid; gap: 20px;
+  grid-template-columns: 1.1fr .9fr;
+}
+@media (max-width: 980px){
+  .main{ grid-template-columns: 1fr; gap: 16px; }
+  .title{ font-size: 1.4rem; }
+}
+.galleryCol { min-width: 0; }
+.infoCol { display: grid; gap: 16px; align-content: start; }
+
+/* ===== کارت دسته (اختیاری) ===== */
+.catCard{
+  display:grid; grid-template-columns: 96px 1fr auto; gap: 12px; align-items:center;
+  border:1px solid var(--card-border);
+  border-radius: var(--r-xl);
+  background: linear-gradient(180deg,
+    color-mix(in oklab, var(--surface) 96%, transparent 4%),
+    color-mix(in oklab, var(--surface-2) 92%, transparent 8%));
+  padding: 10px 12px; box-shadow: var(--elev-xs);
+  margin-block: 8px 16px;
+}
+@media (max-width: 640px){
+  .catCard{ grid-template-columns: 72px 1fr; grid-auto-rows:auto; }
+}
+.catThumb{
+  position:relative; width:96px; aspect-ratio:1/1; border-radius: var(--r-lg);
+  background: var(--muted);
+  overflow:hidden; border:1px solid var(--card-border);
+}
+@media (max-width: 640px){ .catThumb{ width:72px; } }
+.catThumbImg{
+  object-fit: contain; object-position: center; /* ← 1×1 کامل، بدون برش */
+}
+.catBody{ display:grid; gap:6px; }
+.catTitle{ font-weight:900; letter-spacing:-.01em; }
+.catDesc{ color:var(--text-weak); line-height:1.8; }
+.catActions{ display:flex; align-items:center; }
+
+/* ===== Gallery ===== */
+.gallery { display: grid; gap: 10px; }
+.mainMedia {
+  position: relative; overflow: hidden; border-radius: var(--r-xl);
+  background: var(--muted); border: 1px solid var(--card-border);
+  box-shadow: var(--elev-sm);
+  --zx: 50%; --zy: 50%;
+  aspect-ratio: 1/1; /* موبایل پایدار */
+}
+@media (min-width: 981px){
+  .mainMedia{ aspect-ratio: auto; }
+}
+.mainImg {
+  width: 100%; height: auto; display: block;
+  transform-origin: var(--zx) var(--zy);
+  transition: transform var(--dur-300);
+}
+.mainMedia:hover .mainImg { transform: scale(1.08); }
+
+.zoomGlass {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(600px 320px at 20% -10%, color-mix(in oklab, var(--primary) 14%, transparent) 0%, transparent 60%),
+    radial-gradient(420px 280px at 100% 120%, color-mix(in oklab, var(--accent) 14%, transparent) 0%, transparent 60%);
+  opacity: .9;
+}
+@media (hover: none) and (pointer: coarse){
+  /* روی موبایل افکت گلاس را حذف کن */
+  .zoomGlass { display: none; }
+}
+
+.thumbs {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+@media (max-width: 980px){
+  .thumbs{
+    flex-wrap: nowrap; overflow-x: auto; padding-block: 2px;
+    scroll-snap-type: x mandatory; scrollbar-width: none;
+  }
+  .thumbs::-webkit-scrollbar { display: none; }
+}
+.thumbBtn {
+  padding: 0; border: 1px solid var(--card-border); background: var(--surface);
+  border-radius: var(--r-md); overflow: hidden; box-shadow: var(--elev-xs);
+  transition: transform var(--dur-150), border-color var(--dur-150);
+  scroll-snap-align: start;
+}
+.thumbBtn:hover { transform: translateY(-1px); border-color: color-mix(in oklab, var(--primary) 40%, var(--card-border)); }
+.thumbActive { outline: none; box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 45%, transparent); }
+.thumbImg { display:block; width:120px; height:120px; object-fit:cover; }
+@media (max-width: 560px){
+  .thumbImg { width: 92px; height: 92px; }
+}
+
+/* ===== Buy Box ===== */
+.buyBox {
+  position: sticky; top: 12px;
+  border: 1px solid var(--card-border); border-radius: var(--r-xl);
+  padding: 16px; box-shadow: var(--elev-sm);
+  display: grid; gap: 12px;
+  background: var(--surface);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  isolation: isolate;
+  z-index: 2;
+}
+@media (max-width: 980px){
+  .buyBox{ top: 8px; padding: 14px; border-radius: var(--r-lg); }
+}
+
+.priceRow { display:flex; align-items:center; justify-content:space-between; gap: 10px; }
+.priceBig { font-size: 1.8rem; font-weight: 900; color: var(--text-strong); }
+.tmn { font-size:.9rem; color: var(--text-mute); }
+.brandPill {
+  background: var(--chip-bg); color: var(--chip-text);
+  border: 1px solid var(--card-border); padding: 6px 10px; border-radius: var(--r-lg);
+  font-size: .82rem;
+}
+
+.stockRow { display:flex; align-items:center; gap: 8px; }
+.stock { font-weight: 800; }
+.stockOk  { color: var(--success); }
+.stockOut { color: var(--danger); }
+
+.controls { display:flex; gap: 10px; align-items:center; }
+@media (max-width: 560px){
+  .controls{ flex-wrap: wrap; gap: 8px; }
+}
+.qty {
+  display: inline-grid; grid-template-columns: 42px 72px 42px; align-items: center;
+  border: 1px solid var(--input-border); border-radius: var(--r-lg);
+  background: var(--input-bg); height: 46px; overflow: hidden;
+}
+.qty > button {
+  height: 100%; border: 0; background: transparent; color: var(--text);
+  transition: background var(--dur-150); font-weight: 900; font-size: 1.1rem;
+}
+.qty > button:hover { background: color-mix(in oklab, var(--primary) 16%, transparent); }
+.qty > input {
+  height: 100%; border: 0; background: transparent; text-align: center; color: var(--text);
+  font-weight: 800; font-size: 1rem;
+}
+
+.cta {
+  height: 46px; padding-inline: 18px; display: inline-flex; gap: 10px; align-items: center; justify-content: center;
+  background: var(--btn-bg); color: var(--btn-text); border: 1px solid transparent;
+  border-radius: var(--r-lg); font-weight: 900; box-shadow: var(--elev-xs);
+  transition: transform var(--dur-150), background var(--dur-150);
+}
+.cta:hover { transform: translateY(-1px); background: var(--btn-bg-press); }
+.cta:disabled { opacity: .7; cursor: not-allowed; }
+.isLoading { position: relative; pointer-events: none; }
+.loader {
+  inline-size: 1.05em; block-size: 1.05em;
+  border: 2px solid currentColor; border-inline-start-color: transparent;
+  border-radius: 50%; animation: spin 800ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.totalRow { font-size: .95rem; color: var(--text-strong); }
+.bullets { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; }
+.bullets li { list-style: disc; color: var(--text-weak); }
+
+/* ===== Description ===== */
+.desc { background: var(--surface); border: 1px solid var(--card-border); border-radius: var(--r-xl); padding: 16px; box-shadow: var(--elev-xs); }
+.h2 { font-size: 1.1rem; font-weight: 900; margin-bottom: 10px; }
+.descText { color: var(--text); line-height: 1.8; }
+
+/* ===== Related ===== */
+.related { margin-top: 28px; }
+.relatedGrid { display:grid; gap: 14px; grid-template-columns: repeat(4, minmax(0,1fr)); }
+@media (max-width: 1200px){ .relatedGrid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+@media (max-width: 900px){ .relatedGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+@media (max-width: 560px){ .relatedGrid{ grid-template-columns: 1fr; } }
+
+/* ===== Mobile Bottom Bar (CTA) ===== */
+.mobileBar {
+  position: fixed; inset-inline: 0; inset-block-end: 0;
+  display: none; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px max(12px, env(safe-area-inset-right)) 12px max(12px, env(safe-area-inset-left));
+  background: color-mix(in oklab, var(--ink-800, #101723) 94%, transparent);
+  border-top: 1px solid var(--card-border);
+  transform: translateY(100%); transition: transform var(--dur-300);
+  z-index: 1000;
+}
+@media (max-width: 980px){
+  .mobileBar { display: flex; }
+}
+.mobileBarVisible { transform: translateY(0%); }
+.mobilePrice { font-weight: 900; font-size: 1.05rem; color: var(--text-strong); }
+.mobileCta {
+  height: 42px; padding-inline: 16px; border-radius: var(--r-lg);
+  background: var(--btn-bg); color: var(--btn-text); border: 1px solid transparent; box-shadow: var(--elev-xs);
+}
+.mobileCta:disabled{ opacity: .7; cursor: not-allowed; }
+
+
+

@@ -1,3 +1,4 @@
+// src/app/blog/[slug]/page.tsx
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -84,16 +85,17 @@ export default async function BlogPostPage({ params }: { params: Params }) {
             <Image src={post.cover} alt="" width={1280} height={720} priority />
           </div>
           {(post as any).cover_caption ? (
-            <figcaption className="t-mute" style={{ fontSize: ".85rem" }}>
+            <figcaption className="t-mute" style={{ fontSize: ".85rem", textAlign: "center" }}>
               {(post as any).cover_caption}
             </figcaption>
           ) : null}
         </figure>
       ) : null}
 
-      {/* بدنهٔ مقاله — اگر خیلی حساس هستی، این suppressHydrationWarning کمک می‌کند */}
+      {/* بدنهٔ مقاله — برای ثبات SSR/CSR */}
       {html ? (
         <div
+          id="post-content"                // ⬅️ برای اسکرول/Anchor و scroll-margin
           className="prose"
           suppressHydrationWarning
           dangerouslySetInnerHTML={{ __html: html }}

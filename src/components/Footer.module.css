@@ -1,170 +1,195 @@
-/* ===== Footer (Minimal / Mobile-first) ================================== */
+/* components/Footer.module.css
+   =======================================================================
+   Footer — شیشه‌ای (Glass) و هم‌پالت با Header
+   - RTL-safe، mobile-first، مینیمال
+   - هماهنگ با tokens.css و variables.css
+   - نوار مزایا: هم پشتیبانی marquee و هم اسکرول افقی عادی
+   ======================================================================= */
 
-/* پوسته تخت و کم‌کنتراست */
+/* ===== Scoped tokens ==================================================== */
 .footer {
-  background: var(--surface);
+  /* دقیقاً مثل هدر */
+  --ftr-blur:   var(--backdrop, blur(10px) saturate(115%));
+  --ftr-bg:     color-mix(in oklab, var(--surface) 88%, transparent);
+  --ftr-border: var(--border);
+
+  /* چیپ مزایا */
+  --chip-bg:    color-mix(in oklab, var(--text) 5%, transparent);
+  --chip-brd:   color-mix(in oklab, var(--text) 8%, var(--card-border));
+
+  background: var(--ftr-bg);
   color: var(--text);
-  border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
+  border-top: 1px solid var(--ftr-border);
+  backdrop-filter: var(--ftr-blur);
+  -webkit-backdrop-filter: var(--ftr-blur);
+  transition: background var(--dur-300), border-color var(--dur-300);
 }
 
-/* خط خیلی ظریف بالای فوتر */
 .topLine {
   inline-size: 100%;
   block-size: 1px;
-  background: color-mix(in oklab, var(--text) 10%, transparent);
+  background: var(--ftr-border);
 }
 
-/* کانتینر داخلی با فاصله‌های واکنشی */
+/* ===== Container ======================================================== */
 .inner {
-  padding-block: clamp(12px, 2.5vw, 18px);
   display: grid;
-  gap: clamp(8px, 2vw, 16px);
+  gap: clamp(8px, 2vw, 14px);
+  padding-block: clamp(12px, 2.5vw, 18px);
 }
 
-/* ===== نوار مزایا — موبایل: اسکرول افقی، دسکتاپ: پنج‌ستونه ============== */
-
-/* ظرف مزایا: در موبایل افقی و اسکرولی */
+/* ===== Benefits lane (Marquee-friendly) =================================
+   اگر Footer.tsx شما benefitsTrack را رندر کند → marquee فعال می‌شود.
+   اگر نه، .benefits به‌صورت اسکرول افقی عادی کار می‌کند.
+============================================================================ */
 .benefits {
+  position: relative;
+  overflow: hidden;
+  padding-block: 6px;
+  direction: ltr; /* برای حرکت translateX ساده‌تر */
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+          mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  --marquee-duration: 32s;
+}
+
+/* نسخهٔ marquee */
+.benefitsTrack {
+  display: inline-flex;
+  gap: 10px;
+  min-width: max-content;
+  will-change: transform;
+  animation: ftr-marquee var(--marquee-duration) linear infinite;
+}
+.benefits:hover .benefitsTrack,
+.benefits:focus-within .benefitsTrack { animation-play-state: paused; }
+
+/* نسخهٔ غیر-marquee (fallback) */
+.benefits:not(:has(.benefitsTrack)) {
   display: flex;
   gap: 8px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
-  padding: 6px 0;
 }
+.benefits:not(:has(.benefitsTrack)) > .benefit { scroll-snap-align: start; }
 
-/* هر کارت مزیت: چیپ تخت با مرز لطیف و هیت‌تارگت مناسب */
+/* چیپ مزایا */
 .benefit {
-  scroll-snap-align: start;
+  direction: rtl; /* محتوای فارسی داخل چیپ */
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 12px;
-  border-radius: var(--r-lg);
-  background: transparent;
-  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
+  padding: 8px 12px;
+  border-radius: var(--r-sm);
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-brd);
   white-space: nowrap;
-  transition: border-color var(--dur-150), background-color var(--dur-150), color var(--dur-150);
+  transition: background-color var(--dur-200), border-color var(--dur-200), color var(--dur-200);
 }
-
 .benefit:hover {
-  border-color: color-mix(in oklab, var(--primary) 35%, transparent);
-  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  background: var(--surface-2); /* هم‌رفتار با هاور آیتم‌های هدر */
+  border-color: color-mix(in oklab, var(--primary) 24%, var(--card-border));
 }
 
-.benefitIcon { font-size: 1rem; }
-.benefitText { font-weight: 700; color: var(--text-strong); font-size: .92rem; }
+.benefitIcon { font-size: .95rem; }
+.benefitText {
+  font-weight: 800;
+  color: var(--text-strong);
+  letter-spacing: -0.01em;
+  animation: ftr-float 6s ease-in-out infinite;
+}
+.benefit:nth-child(2n) .benefitText { animation-duration: 7s; animation-delay: .3s; }
+.benefit:nth-child(3n) .benefitText { animation-duration: 5.5s; animation-delay: .6s; }
 
-/* از 768px به بالا: پنج‌ستونه و بدون اسکرول */
-@media (min-width: 768px) {
-  .benefits {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 8px;
-    overflow: visible;
-    padding: 0;
-  }
-  .benefit { justify-content: center; white-space: normal; }
+/* Marquee & Float keyframes */
+@keyframes ftr-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); } /* آیتم‌ها دوبار تکرار شده‌اند */
+}
+@keyframes ftr-float {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-3px); }
 }
 
-/* ===== پیام احساسی — بسیار مینیمال ===================================== */
+/* ===== Blurb ============================================================ */
 .bottomBlurb {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   font-size: .92rem;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--text-strong);
-  padding-block: 4px;
+  padding-block: 2px;
 }
+.blurbIcon, .blurbHeart { font-size: 1rem; }
 
-.blurbIcon { font-size: 1.05rem; }
-.blurbHeart { font-size: 1.05rem; }
-
-/* مینیمال: انیمیشن قلب خاموش؛ اگر خواستی روشنش کنی، animation بده */
-@media (prefers-reduced-motion: no-preference) {
-  .blurbHeart { animation: none; }
-}
-
-/* ===== بخش پایینی: کپی‌رایت + شبکه‌ها ================================== */
-/* ===== بخش پایینی: کپی‌رایت + شبکه‌ها ================================== */
+/* ===== Bottom row ======================================================= */
 .bottom {
   display: grid;
   gap: 10px;
   align-items: center;
   padding-top: 10px;
-  border-top: 1px solid color-mix(in oklab, var(--text) 10%, transparent);
-  grid-template-columns: 1fr; /* موبایل: تک‌ستونه */
-  text-align: center; /* پیش‌فرض: وسط */
+  border-top: 1px solid var(--ftr-border);
+  grid-template-columns: 1fr;  /* موبایل */
+  text-align: center;
 }
-
-/* از 768px به بالا: کپی راست، سوشال چپ (در RTL) */
 @media (min-width: 768px) {
-  .bottom {
-    grid-template-columns: 1fr auto;
-    text-align: start;
-  }
+  .bottom { grid-template-columns: 1fr auto; text-align: start; }
 }
-
-
 
 .copy {
   color: var(--text-weak);
-  font-size: .85rem;
+  font-size: .87rem;
 }
 
-/* شبکه‌های اجتماعی: آیکن تخت، کم‌کنتراست، هیت‌تارگت مناسب */
-/* فقط در موبایل: شبکه‌ها سمت چپ */
-@media (max-width: 767px) {
-  .social {
-    justify-content: flex-start; /* چپ‌چین */
-  }
+/* ===== Socials — هم‌استایل با iconBtn هدر ============================== */
+.social {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }
 .social a {
-  display: inline-grid;
-  place-items: center;
-  inline-size: 32px;
-  block-size: 32px;
-  border-radius: 8px;
-  color: var(--text);
-  background: transparent;
-  border: 1px solid color-mix(in oklab, var(--text) 12%, transparent);
-  transition:
-    transform var(--dur-150),
-    border-color var(--dur-150),
-    background-color var(--dur-150),
-    color var(--dur-150);
+  position: relative;
+  inline-size: 40px; block-size: 40px; /* اندازهٔ آیکن‌باتن‌های هدر */
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm);
+  background: var(--btn-outline-bg);
+  border: 1px solid var(--btn-outline-border);
+  color: var(--icon-color);
+  transition: background var(--dur-300), border-color var(--dur-300), color var(--dur-300);
 }
-
 .social a:hover {
-  transform: translateY(-1px);
-  color: var(--primary);
-  border-color: color-mix(in oklab, var(--primary) 40%, transparent);
-  background: color-mix(in oklab, var(--primary) 10%, transparent);
+  background: var(--surface-2);
+  border-color: color-mix(in oklab, var(--primary) 30%, var(--btn-outline-border));
+}
+.social span[data-label] svg {
+  inline-size: var(--size-lg);
+  block-size: var(--size-lg);
 }
 
-/* تولتیپ بصری حذف شده (سادگی بیشتر)؛ می‌تونی title در HTML نگه داری */
-
-/* ===== فوکوس قابل‌دسترسی =============================================== */
+/* ===== Focus ring (یکسان با هدر) ====================================== */
 :where(a, button, [role="button"]):focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px color-mix(in oklab, var(--focus-ring) 45%, transparent);
-  border-radius: 8px;
+  box-shadow: 0 0 0 3px var(--btn-ring);
+  border-radius: var(--r-sm);
 }
 
-/* ===== کاهش حرکت ======================================================= */
+/* ===== Reduced Motion =================================================== */
 @media (prefers-reduced-motion: reduce) {
-  .benefit,
-  .social a { transition: none; }
+  .benefitsTrack, .benefitText { animation: none !important; }
 }
 
-/* ===== ریز‌بهینه‌سازی‌های کوچک ======================================== */
-
-/* جلوگیری از محو شدن اسکرول‌بار افقی در iOS */
+/* ===== Horizontal scrollbar (زمان توقف marquee یا fallback) ============ */
 .benefits::-webkit-scrollbar { height: 6px; }
 .benefits::-webkit-scrollbar-thumb {
-  background: color-mix(in oklab, var(--text) 14%, transparent);
+  background: color-mix(in oklab, var(--text) 12%, transparent);
   border-radius: 999px;
+}
+
+/* ===== Desktop tweaks =================================================== */
+@media (min-width: 1024px) {
+  .social a { inline-size: 40px; block-size: 40px; }
+  .inner { gap: var(--sp-3); }
 }

@@ -44,38 +44,19 @@
 }
 
 /* ===== Brand / Logo ===================================================== */
+
+/* کانتینر لوگو */
 .logo {
-  --logo-size: 44px;
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  inline-size: var(--logo-size);
-  block-size: var(--logo-size);
-  flex: 0 0 var(--logo-size);
-  min-inline-size: var(--logo-size);
-  max-inline-size: var(--logo-size);
-  border-radius: calc(var(--r-sm) + 4px);
-  overflow: hidden;
-  background: var(--glass);
-  border: 1px solid var(--glass-border);
-  backdrop-filter: var(--backdrop);
-  -webkit-backdrop-filter: var(--backdrop);
-  box-shadow: var(--elev-xs);
-  transition:
-    transform var(--dur-300),
-    box-shadow var(--dur-300),
-    border-color var(--dur-300),
-    background var(--dur-300),
-    filter var(--dur-300);
+  width: auto;
+  height: 2.2rem; /* ارتفاع نسبی — تغییر بده تا خوب بشینه */
 }
+
 .logoImg {
-  inline-size: 100%;
-  block-size: 100%;
-  object-fit: contain;
-  padding: 4%;
-  pointer-events: none;
+  width: 2.5rem;   /* نسبت به root font-size */
+  height: auto;    /* تناسب حفظ میشه */
 }
+
 
 
 /* ===== Desktop Nav ====================================================== */

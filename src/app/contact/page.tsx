@@ -4,7 +4,7 @@ import { CONTACT } from "@/lib/contact";
 import Link from "next/link";
 
 export const metadata = {
-  title: "تماس با ما | Wircino",
+  title: "تماس با ما",
   description: "راه‌های ارتباط با Wircino",
 };
 
